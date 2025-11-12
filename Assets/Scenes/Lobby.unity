@@ -15227,8 +15227,9 @@ GameObject:
   - component: {fileID: 1431540304}
   - component: {fileID: 1431540305}
   - component: {fileID: 1431540306}
+  - component: {fileID: 1431540307}
   m_Layer: 7
-  m_Name: Samurai
+  m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15420,16 +15421,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69681d20c0db841469bb966717f7e72a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  anim: {fileID: 1431540298}
-  Attackpointright: {fileID: 667739015}
-  Attackpointleft: {fileID: 1423535400}
-  Enemy:
-    serializedVersion: 2
-    m_Bits: 64
-  isAttacking: 0
-  isJAttacking: 0
-  damage: 0
-  isFrozen: 0
 --- !u!114 &1431540305
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15443,6 +15434,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   Data: {fileID: 11400000, guid: d7f2cb8d92e57f94a9e08187c5b3c6f7, type: 2}
+  state: {fileID: 1431540307}
   _groundCheckPoint: {fileID: 2069266154}
   _groundCheckSize: {x: 0.49, y: 0.03}
   _frontWallCheckPoint: {fileID: 472601788}
@@ -15461,6 +15453,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0eb28a97727be114aabc6722d57a3ed6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+--- !u!114 &1431540307
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1431540297}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c401a8b46e691c3428a5fd7b34ecd39a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
 --- !u!4 &1471535851 stripped
