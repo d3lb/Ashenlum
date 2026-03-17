@@ -24,7 +24,6 @@ public class PlayerMovement : MonoBehaviour
     public float LastOnWallLeftTime { get; private set; }
 
     //Jump
-    private bool _isJumpFalling;
     private int _jumpNumber;
 
     //Wall Jump
@@ -67,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
         SetGravityScale(Data.gravityScale);
         state.IsFacingRight = true;
     }
-
+    
     private void Update()
     {
         #region TIMERS
@@ -216,9 +215,9 @@ public class PlayerMovement : MonoBehaviour
             else if (RB.linearVelocity.y < 0 && _moveInput.y < 0)
             {
                 //Much higher gravity if holding down
-                SetGravityScale(Data.gravityScale * Data.fastFallGravityMult);
+                SetGravityScale(Data.gravityScale);
                 //Caps maximum fall speed, so when falling over large distances we don't accelerate to insanely high speeds
-                RB.linearVelocity = new Vector2(RB.linearVelocity.x, Mathf.Max(RB.linearVelocity.y, -Data.maxFastFallSpeed));
+                RB.linearVelocity = new Vector2(RB.linearVelocity.x, Mathf.Max(RB.linearVelocity.y));
             }
             else if ((state.IsJumping || state.IsWallJumping || state.IsFalling) && Mathf.Abs(RB.linearVelocity.y) < Data.jumpHangTimeThreshold)
             {

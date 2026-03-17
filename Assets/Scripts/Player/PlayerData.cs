@@ -6,14 +6,10 @@ public class PlayerData : ScriptableObject
     [Header("Gravity")]
     [HideInInspector] public float gravityStrength; //Downwards force (gravity) needed for the desired jumpHeight and jumpTimeToApex.
     [HideInInspector] public float gravityScale; //Strength of the player's gravity as a multiplier of gravity (set in ProjectSettings/Physics2D).
-                                                 //Also the value the player's rigidbody2D.gravityScale is set to.
+
     [Space(5)]
     public float fallGravityMult; //Multiplier to the player's gravityScale when falling.
     public float maxFallSpeed; //Maximum fall speed (terminal velocity) of the player when falling.
-    [Space(5)]
-    public float fastFallGravityMult; //Larger multiplier to the player's gravityScale when they are falling and a downwards input is pressed.
-                                      //Seen in games such as Celeste, lets the player fall extra fast if they wish.
-    public float maxFastFallSpeed; //Maximum fall speed(terminal velocity) of the player when performing a faster fall.
 
     [Space(20)]
 
