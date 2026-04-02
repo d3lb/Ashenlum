@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
 
     //States
     [SerializeField] private PlayerState state;
+    private int facingDir;
 
     //Timers
     public float LastOnGroundTime { get; private set; }
@@ -35,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
     private bool _dashRefilling;
     private Vector2 _lastDashDir;
 
-
+        
     //Input
     private Vector2 _moveInput;
 
@@ -84,7 +85,13 @@ public class PlayerMovement : MonoBehaviour
         _moveInput.y = Input.GetAxisRaw("Vertical");
 
         // Check If player should be facing left or right
-        Facing();
+        if (_moveInput.x != 0)
+        {
+            facingDir = (_moveInput.x > 0) ? 1 : -1;
+            state.IsFacingRight = facingDir == 1;
+        }
+        Sprite.flipX = facingDir == -1;
+
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -117,18 +124,14 @@ public class PlayerMovement : MonoBehaviour
                 _jumpNumber = 0;
             }
 
-            //Right Wall Check
-            if (((Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && state.IsFacingRight)
-                    || (Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && !state.IsFacingRight)) && !state.IsWallJumping)
-                LastOnWallRightTime = Data.coyoteTime;
+            //Wall Check
+            bool frontWall = Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer);
+            bool backWall  = Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, _groundLayer);
 
-            //Left Wall Check
-            if (((Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && !state.IsFacingRight)
-                || (Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, _groundLayer) && state.IsFacingRight)) && !state.IsWallJumping)
-                LastOnWallLeftTime = Data.coyoteTime;
+            if (frontWall) LastOnWallRightTime = Data.coyoteTime;
+            if (backWall)  LastOnWallLeftTime  = Data.coyoteTime;
 
-            //Two checks needed for both left and right walls since whenever the play turns the wall checkPoints swap sides
-            LastOnWallTime = Mathf.Max(LastOnWallLeftTime, LastOnWallRightTime);
+            LastOnWallTime = Mathf.Max(LastOnWallLeftTime, LastOnWallRightTime);    
         }
         #endregion
 
@@ -156,8 +159,11 @@ public class PlayerMovement : MonoBehaviour
             state.IsJumping = true;
             state.IsWallJumping = false;
             state.IsFalling = false;
+
             _jumpNumber++;
             Jump();
+
+            LastPressedJumpTime = 0;
         }
         else if (!state.IsBusy)
         {
@@ -172,6 +178,8 @@ public class PlayerMovement : MonoBehaviour
                 _lastWallJumpDir = (LastOnWallRightTime > 0) ? -1 : 1;
 
                 WallJump(_lastWallJumpDir);
+
+                LastPressedJumpTime = 0;
             }
         }
         #endregion
@@ -244,10 +252,7 @@ public class PlayerMovement : MonoBehaviour
         //Handle Run
         if (!state.IsBusy)
         {
-            if (state.IsWallJumping)
-                Run(Data.wallJumpRunLerp);
-            else
-                Run(1);
+                Run();
         }
 
         //Handle Slide
@@ -276,63 +281,36 @@ public class PlayerMovement : MonoBehaviour
 
     //MOVEMENT METHODS
     #region RUN METHODS
-    private void Run(float lerpAmount)
+    private void Run()
     {
         //Calculate the direction we want to move in and our desired velocity
         float targetSpeed = _moveInput.x * Data.runMaxSpeed;
-        //We can reduce are control using Lerp() this smooths changes to are direction and speed
-        targetSpeed = Mathf.Lerp(RB.linearVelocity.x, targetSpeed, lerpAmount);
 
-        #region Calculate AccelRate
-        float accelRate;
 
         //Gets an acceleration value based on if we are accelerating (includes turning) 
-        //or trying to decelerate (stop). As well as applying a multiplier if we're air borne.
-        if (LastOnGroundTime > 0)
-            accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount : Data.runDeccelAmount;
-        else
-            accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount * Data.accelInAir : Data.runDeccelAmount * Data.deccelInAir;
-        #endregion
+        float accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount : Data.runDeccelAmount;
 
         #region Conserve Momentum
         //We won't slow the player down if they are moving in their desired direction but at a greater speed than their maxSpeed
         if (Data.doConserveMomentum && Mathf.Abs(RB.linearVelocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(RB.linearVelocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && LastOnGroundTime < 0)
         {
             //Prevent any deceleration from happening, or in other words conserve are current momentum
-            //You could experiment with allowing for the player to slightly increae their speed whilst in this "state"
             accelRate = 0;
         }
         #endregion
-
-        //Calculate difference between current velocity and desired velocity
-        float speedDif = targetSpeed - RB.linearVelocity.x;
-        //Calculate force along x-axis to apply to thr player
-
-        float movement = speedDif * accelRate;
-
-        //Convert this to a vector and apply to rigidbody
-        RB.AddForce(movement * Vector2.right, ForceMode2D.Force);
-
         /*
 		 * For those interested here is what AddForce() will do
 		 * RB.velocity = new Vector2(RB.velocity.x + (Time.fixedDeltaTime  * speedDif * accelRate) / RB.mass, RB.velocity.y);
 		 * Time.fixedDeltaTime is by default in Unity 0.02 seconds equal to 50 FixedUpdate() calls per second
 		*/
-    }
 
-    private void Facing()
-    {
-        if (_moveInput.x < 0)
-        {
-            state.IsFacingRight = false;
-            transform.localScale = new Vector2(-1, transform.localScale.y);
-        }
-        else if (_moveInput.x > 0) 
-        {
-            state.IsFacingRight = true;
-            transform.localScale = new Vector2(1, transform.localScale.y); 
-        }
+        float newVelX = Mathf.Lerp(
+            RB.linearVelocity.x,
+            targetSpeed,
+            accelRate * Time.fixedDeltaTime
+        );
 
+        RB.linearVelocity = new Vector2(newVelX, RB.linearVelocity.y);
     }
     #endregion
 

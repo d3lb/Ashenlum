@@ -16,7 +16,6 @@ public class Enemy : MonoBehaviour
     public float dirX = 0f;
     private float speed = 2.5f;
 
-    // Start is called before the first frame update
     void Start()
     {
         health = maxHealth;
@@ -27,17 +26,6 @@ public class Enemy : MonoBehaviour
 
     void Update()
     {
-        dirX = Input.GetAxisRaw("Horizontal");
-
-        if (dirX > 0f )
-        {
-            sprite.flipX = false;
-        }
-        else if (dirX < 0f)
-        {
-            sprite.flipX = true;
-        }
-
         Collider2D[] playerInSight = Physics2D.OverlapCircleAll(playerCheck.position, playerCheckRange, playerLayer);
 
         
@@ -49,17 +37,20 @@ public class Enemy : MonoBehaviour
 
         if (playerInSight.Length > 0)
         {
-            // Move towards player when detected
             Vector2 targetPosition = new Vector2(playerInSight[0].transform.position.x, transform.position.y);
             Vector2 currentPosition = new Vector2(transform.position.x, transform.position.y);
 
-            // Move towards the player
             rb.linearVelocity = (targetPosition - currentPosition).normalized * speed;
         }
         else
         {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         }
+
+        if (rb.linearVelocity.x > 0.01f)
+            sprite.flipX = false;
+        else if (rb.linearVelocity.x < -0.01f)
+            sprite.flipX = true;
     }
 
     public void TakeDamage(float damage)
@@ -71,7 +62,7 @@ public class Enemy : MonoBehaviour
 
     public void CheckOverHeal()
     {
-        if(health > maxHealth)
+        if (health > maxHealth)
         {
             health = maxHealth;
         }
