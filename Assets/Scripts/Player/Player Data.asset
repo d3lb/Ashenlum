@@ -19,8 +19,8 @@ MonoBehaviour:
   runMaxSpeed: 10
   runAcceleration: 2
   runAccelAmount: 10
-  runDecceleration: 1
-  runDeccelAmount: 5
+  runDecceleration: 2
+  runDeccelAmount: 10
   accelInAir: 1
   deccelInAir: 1
   doConserveMomentum: 1

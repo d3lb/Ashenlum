@@ -2,21 +2,26 @@ using UnityEngine;
 
 public class PlayerState : MonoBehaviour
 {
-    public bool IsGrounded { get; set; }
 
-    public bool IsJumping { get; set; }
-    public bool IsWallJumping { get; set; }
-    public bool IsFalling { get; set; }
+    public enum PlayerStateType
+    {
+        Idle,
+        Run,
+        Jump,
+        Fall,
+        Dash,
+        WallSlide,
+        Attack,
+        Dead
+    }
 
-    public bool IsDashing { get; set; }
+    public PlayerStateType CurrentState;
 
-    public bool IsSliding { get; set; }
-    
-    public bool IsAttacking { get; set; }
-    public bool IsTakingDamage { get; set; }
-    public bool IsDead { get; set; }
+    public bool IsDashing;
+    public bool IsSliding;
 
     public bool IsFacingRight { get; set; } = true;
-
-    public bool IsBusy => IsDashing || IsAttacking || IsDead;
+    public bool IsBusy => CurrentState == PlayerStateType.Dash
+                  || CurrentState == PlayerStateType.Attack
+                  || CurrentState == PlayerStateType.Dead;
 }

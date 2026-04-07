@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static PlayerState;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -11,7 +12,6 @@ public class PlayerMovement : MonoBehaviour
 
     //Components
     public Rigidbody2D RB { get; private set; }
-    private List<GameObject> trailObjects = new List<GameObject>(); // For The Dash Trail
     private SpriteRenderer Sprite;
 
     //States
@@ -28,7 +28,6 @@ public class PlayerMovement : MonoBehaviour
     private int _jumpNumber;
 
     //Wall Jump
-    private float _wallJumpStartTime;
     private int _lastWallJumpDir;
 
     //Dash
@@ -39,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
         
     //Input
     private Vector2 _moveInput;
+    public Vector2 MoveInput => _moveInput; // for Graph debugging
 
     public float LastPressedJumpTime { get; private set; }
     public float LastPressedDashTime { get; private set; }
@@ -67,7 +67,7 @@ public class PlayerMovement : MonoBehaviour
         SetGravityScale(Data.gravityScale);
         state.IsFacingRight = true;
     }
-    
+
     private void Update()
     {
         #region TIMERS
@@ -90,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
             facingDir = (_moveInput.x > 0) ? 1 : -1;
             state.IsFacingRight = facingDir == 1;
         }
-        Sprite.flipX = facingDir == -1;
+            Sprite.flipX = facingDir == -1;
 
 
         if (Input.GetKeyDown(KeyCode.Space))
@@ -102,7 +102,7 @@ public class PlayerMovement : MonoBehaviour
             // Cancel the jump buffer if released early
             LastPressedJumpTime = 0;
 
-            if (state.IsJumping)
+            if (state.CurrentState == PlayerStateType.Jump)
                 StartCoroutine(CutJump());
         }
 
@@ -112,17 +112,16 @@ public class PlayerMovement : MonoBehaviour
         }
         #endregion
 
-
-
         #region COLLISION CHECKS
-        if (!state.IsDashing && !state.IsJumping)
+        if (state.CurrentState != PlayerStateType.Dash && state.CurrentState != PlayerStateType.Jump)
         {
             //Ground Check
-            if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer) && !state.IsJumping)
+            if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer) && state.CurrentState != PlayerStateType.Jump)
             {
                 LastOnGroundTime = Data.coyoteTime;
                 _jumpNumber = 0;
             }
+
 
             //Wall Check
             bool frontWall = Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer);
@@ -131,62 +130,41 @@ public class PlayerMovement : MonoBehaviour
             if (frontWall) LastOnWallRightTime = Data.coyoteTime;
             if (backWall)  LastOnWallLeftTime  = Data.coyoteTime;
 
-            LastOnWallTime = Mathf.Max(LastOnWallLeftTime, LastOnWallRightTime);    
+            LastOnWallTime = Mathf.Max(LastOnWallLeftTime, LastOnWallRightTime);
+
+
+            //Slide Check
+            state.IsSliding =
+                LastOnGroundTime <= 0 &&
+                LastOnWallTime > 0 &&
+                Mathf.Abs(_moveInput.x) > 0.1f;
         }
         #endregion
 
         #region JUMP CHECKS
-        if (state.IsJumping && RB.linearVelocity.y < 0)
-        {
-            state.IsJumping = false;
-
-            if (!state.IsWallJumping)
-                state.IsFalling = true;
-        }
-
-        if (state.IsWallJumping && Time.time - _wallJumpStartTime > Data.wallJumpTime)
-        {
-            state.IsWallJumping = false;
-        }
-
-        if (LastOnGroundTime > 0 && !state.IsJumping && !state.IsWallJumping)
-        {
-            state.IsFalling = false;
-        }
-
         if (CanJump() && LastPressedJumpTime > 0)
         {
-            state.IsJumping = true;
-            state.IsWallJumping = false;
-            state.IsFalling = false;
-
             _jumpNumber++;
             Jump();
 
             LastPressedJumpTime = 0;
         }
-        else if (!state.IsBusy)
+        //WALL JUMP
+        else if (CanWallJump() && LastPressedJumpTime > 0)
         {
-            //WALL JUMP
-            if (CanWallJump() && LastPressedJumpTime > 0)
-            {
-                state.IsWallJumping = true;
-                state.IsJumping = false;
-                state.IsFalling = false;
+            _lastWallJumpDir = (LastOnWallRightTime > 0) ? -1 : 1;
 
-                _wallJumpStartTime = Time.time;
-                _lastWallJumpDir = (LastOnWallRightTime > 0) ? -1 : 1;
+            WallJump(_lastWallJumpDir);
 
-                WallJump(_lastWallJumpDir);
-
-                LastPressedJumpTime = 0;
-            }
+            LastPressedJumpTime = 0;
         }
         #endregion
 
         #region DASH CHECKS
         if (CanDash())
         {
+            LastPressedDashTime = 0;
+
             // If there is horizontal input, dash that way
             if (Mathf.Abs(_moveInput.x) > 0.1f)
             {
@@ -198,9 +176,7 @@ public class PlayerMovement : MonoBehaviour
                 _lastDashDir = state.IsFacingRight ? Vector2.right : Vector2.left;
             }
 
-            state.IsDashing = true;
-            state.IsJumping = false;
-            state.IsWallJumping = false;
+            state.CurrentState = PlayerStateType.Dash;
 
             StartCoroutine(StartDash(_lastDashDir));
         }
@@ -208,15 +184,11 @@ public class PlayerMovement : MonoBehaviour
 
         #region SLIDE CHECKS
         if (CanSlide() && ((LastOnWallLeftTime > 0 && _moveInput.x < 0) || (LastOnWallRightTime > 0 && _moveInput.x > 0)))
-            state.IsSliding = true;
-        else
-            state.IsSliding = false;
+            state.CurrentState = PlayerStateType.WallSlide;
         #endregion
 
         #region GRAVITY
-        if (!state.IsBusy)
-        {
-            if (state.IsSliding)
+        if (state.CurrentState == PlayerStateType.WallSlide)
             {
                 SetGravityScale(0);
             }
@@ -227,7 +199,7 @@ public class PlayerMovement : MonoBehaviour
                 //Caps maximum fall speed, so when falling over large distances we don't accelerate to insanely high speeds
                 RB.linearVelocity = new Vector2(RB.linearVelocity.x, Mathf.Max(RB.linearVelocity.y));
             }
-            else if ((state.IsJumping || state.IsWallJumping || state.IsFalling) && Mathf.Abs(RB.linearVelocity.y) < Data.jumpHangTimeThreshold)
+            else if ((state.CurrentState == PlayerStateType.Jump || state.CurrentState == PlayerStateType.Fall) && Mathf.Abs(RB.linearVelocity.y) < Data.jumpHangTimeThreshold)
             {
                 SetGravityScale(Data.gravityScale * Data.jumpHangGravityMult);
             }
@@ -243,21 +215,54 @@ public class PlayerMovement : MonoBehaviour
                 //Default gravity if standing on a platform or moving upwards
                 SetGravityScale(Data.gravityScale);
             }
-        }
+
         #endregion
+
+        UpdateState();
+        Debug.Log("State: " + state.CurrentState);
     }
 
     private void FixedUpdate()
     {
         //Handle Run
-        if (!state.IsBusy)
-        {
-                Run();
-        }
+            Run();
 
         //Handle Slide
-        if (state.IsSliding)
+        if (state.CurrentState == PlayerStateType.WallSlide)
             Slide();
+    }
+
+    void UpdateState()
+    {
+        // ACTION STATES
+        if (state.IsDashing)
+        {
+            state.CurrentState = PlayerStateType.Dash;
+            return;
+        }
+
+        if (state.IsSliding)
+        {
+            state.CurrentState = PlayerStateType.WallSlide;
+            return;
+        }
+
+        // AIR STATES
+        if (LastOnGroundTime <= 0)
+        {
+            if (RB.linearVelocity.y > 0.1f)
+                state.CurrentState = PlayerStateType.Jump;
+            else 
+                state.CurrentState = PlayerStateType.Fall;
+
+            return;
+        }
+
+        // GROUND STATES
+        if (Mathf.Abs(RB.linearVelocity.x) > 0.1f && _moveInput.x != 0)
+            state.CurrentState = PlayerStateType.Run;
+        else
+            state.CurrentState = PlayerStateType.Idle;
     }
 
     #region GENERAL METHODS
@@ -298,11 +303,6 @@ public class PlayerMovement : MonoBehaviour
             accelRate = 0;
         }
         #endregion
-        /*
-		 * For those interested here is what AddForce() will do
-		 * RB.velocity = new Vector2(RB.velocity.x + (Time.fixedDeltaTime  * speedDif * accelRate) / RB.mass, RB.velocity.y);
-		 * Time.fixedDeltaTime is by default in Unity 0.02 seconds equal to 50 FixedUpdate() calls per second
-		*/
 
         float newVelX = Mathf.Lerp(
             RB.linearVelocity.x,
@@ -365,10 +365,7 @@ public class PlayerMovement : MonoBehaviour
     //Dash Coroutine
     private IEnumerator StartDash(Vector2 dir)
     {
-        LastOnGroundTime = 0;
-        LastPressedDashTime = 0;
-        
-        StartCoroutine(CreateTrailObjects());
+        state.IsDashing = true;
 
         _dashesLeft--;
         float gScale = Data.gravityScale;
@@ -386,9 +383,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //Dash over
-        SetGravityScale(gScale);
         state.IsDashing = false;
-        ClearTrail();
+        SetGravityScale(gScale);
     }
 
     //Short period before the player is able to dash again
@@ -398,37 +394,6 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(Data.dashRefillTime);
         _dashRefilling = false;
         _dashesLeft = Mathf.Min(Data.dashAmount, _dashesLeft + 1);
-    }
-
-    private IEnumerator CreateTrailObjects()
-    {
-        while (state.IsDashing)
-        {
-            GameObject trailObject = new GameObject("Trail");
-            trailObject.transform.position = transform.position;
-
-            GameObject Trail = new GameObject("DashTrail");
-            Trail.transform.SetParent(trailObject.transform);
-            Trail.transform.localPosition = Vector3.zero;
-
-            SpriteRenderer TrailRenderer = Trail.AddComponent<SpriteRenderer>();
-            TrailRenderer.sprite = Sprite.sprite;
-            TrailRenderer.flipX = Sprite.flipX;
-            TrailRenderer.color = new Color(0f, 0f, 0f, 0.85f);
-
-            trailObjects.Add(trailObject);
-
-            yield return new WaitForSeconds(0.05f);
-        }
-    }
-
-    private void ClearTrail()
-    {
-        foreach (var obj in trailObjects)
-        {
-            Destroy(obj);
-        }
-        trailObjects.Clear();
     }
     #endregion
 
@@ -452,17 +417,17 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanJump()
     {
-        return LastOnGroundTime > 0 && !state.IsJumping || _jumpNumber < Data.jumpAmount;
+        return LastOnGroundTime > 0 && state.CurrentState != PlayerStateType.Jump || _jumpNumber < Data.jumpAmount;
     }
 
     private bool CanWallJump()
     {
-        return LastPressedJumpTime > 0 && LastOnWallTime > 0 && LastOnGroundTime <= 0 && (!state.IsWallJumping ||
+        return LastPressedJumpTime > 0 && LastOnWallTime > 0 && LastOnGroundTime <= 0 && (state.CurrentState != PlayerStateType.Jump ||
              (LastOnWallRightTime > 0 && _lastWallJumpDir == 1) || (LastOnWallLeftTime > 0 && _lastWallJumpDir == -1));
     }
     private bool CanDash()
     {
-        if (!state.IsDashing && _dashesLeft < Data.dashAmount && LastOnGroundTime > 0 && !_dashRefilling)
+        if (state.CurrentState != PlayerStateType.Dash && _dashesLeft < Data.dashAmount && LastOnGroundTime > 0 && !_dashRefilling)
         {
             StartCoroutine(nameof(RefillDash), 1);
         }
@@ -473,7 +438,7 @@ public class PlayerMovement : MonoBehaviour
 
     public bool CanSlide()
     {
-        if (LastOnWallTime > 0 && !state.IsJumping && !state.IsWallJumping && !state.IsDashing && LastOnGroundTime <= 0)
+        if (LastOnWallTime > 0 && state.CurrentState != PlayerStateType.Jump && state.CurrentState != PlayerStateType.Dash && LastOnGroundTime <= 0)
             return true;
         else
             return false;
