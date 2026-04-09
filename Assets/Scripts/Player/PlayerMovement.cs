@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
     public float LastOnWallLeftTime { get; private set; }
 
     //Jump
-    private int _jumpNumber;
+    public int _jumpNumber;
 
     //Wall Jump
     private int _lastWallJumpDir;
@@ -417,7 +417,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanJump()
     {
-        return LastOnGroundTime > 0 && state.CurrentState != PlayerStateType.Jump || _jumpNumber < Data.jumpAmount;
+        return LastOnGroundTime > 0 || _jumpNumber < Data.jumpAmount && LastOnGroundTime > 0;
     }
 
     private bool CanWallJump()
