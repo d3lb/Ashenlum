@@ -23,7 +23,11 @@ public class PlayerMovement : MonoBehaviour
     public float LastOnWallTime { get; private set; }
     public float LastOnWallRightTime { get; private set; }
     public float LastOnWallLeftTime { get; private set; }
+    public float LastPressedJumpTime { get; private set; }
+    public float LastPressedDashTime { get; private set; }
 
+    //Ground
+    private bool wasGroundedLastFrame;
     //Jump
     public int _jumpNumber;
 
@@ -40,8 +44,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 _moveInput;
     public Vector2 MoveInput => _moveInput; // for Graph debugging
 
-    public float LastPressedJumpTime { get; private set; }
-    public float LastPressedDashTime { get; private set; }
+
     
 
     //Checks & Tags
@@ -119,9 +122,21 @@ public class PlayerMovement : MonoBehaviour
             if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer) && state.CurrentState != PlayerStateType.Jump)
             {
                 LastOnGroundTime = Data.coyoteTime;
+            }
+
+            // Detect leaving ground
+            if (LastOnGroundTime <= 0 && wasGroundedLastFrame)
+            {
+                _jumpNumber = 1; // consume jump
+            }
+
+            // Reset jumps when grounded
+            if (LastOnGroundTime > 0)
+            {
                 _jumpNumber = 0;
             }
 
+            wasGroundedLastFrame = LastOnGroundTime > 0;
 
             //Wall Check
             bool frontWall = Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer);
@@ -154,6 +169,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _lastWallJumpDir = (LastOnWallRightTime > 0) ? -1 : 1;
 
+            _jumpNumber++;
             WallJump(_lastWallJumpDir);
 
             LastPressedJumpTime = 0;
@@ -322,6 +338,12 @@ public class PlayerMovement : MonoBehaviour
         LastOnGroundTime = 0;
 
         float force = Data.jumpForce;
+
+        if (_jumpNumber > 1)
+        {
+            force *= 0.6f;
+        }
+
         if (RB.linearVelocity.y < 0)
             force -= RB.linearVelocity.y;
 
@@ -330,7 +352,7 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator CutJump()
     {
         yield return null;
-        if (RB.linearVelocity.y > 0)
+        if (RB.linearVelocity.y > 0 && _jumpNumber == 1)
             RB.linearVelocity = new Vector2(RB.linearVelocity.x, RB.linearVelocity.y * 0.5f);
     }
 
@@ -417,7 +439,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanJump()
     {
-        return LastOnGroundTime > 0 || _jumpNumber < Data.jumpAmount && LastOnGroundTime > 0;
+        return LastOnGroundTime > 0 ||  _jumpNumber < Data.jumpAmount;
     }
 
     private bool CanWallJump()
