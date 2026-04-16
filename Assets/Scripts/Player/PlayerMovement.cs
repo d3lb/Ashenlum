@@ -5,8 +5,7 @@ using static PlayerState;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public PlayerData Data;
-    private PlayerAnimation playerAnimation;
+    [SerializeField] private PlayerData data;
 
     #region VARIABLES 
 
@@ -28,8 +27,10 @@ public class PlayerMovement : MonoBehaviour
 
     //Ground
     private bool wasGroundedLastFrame;
+
     //Jump
-    public int _jumpNumber;
+    private int jumpNumber;
+    public int JumpNumber => jumpNumber;
 
     //Wall Jump
     private int _lastWallJumpDir;
@@ -67,7 +68,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Start()
     {
-        SetGravityScale(Data.gravityScale);
+        SetGravityScale(data.gravityScale);
         state.IsFacingRight = true;
     }
 
@@ -98,7 +99,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            LastPressedJumpTime = Data.jumpInputBufferTime;
+            LastPressedJumpTime = data.jumpInputBufferTime;
         }
         else if (Input.GetKeyUp(KeyCode.Space))
         {
@@ -111,7 +112,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            LastPressedDashTime = Data.dashInputBufferTime;
+            LastPressedDashTime = data.dashInputBufferTime;
         }
         #endregion
 
@@ -121,19 +122,19 @@ public class PlayerMovement : MonoBehaviour
             //Ground Check
             if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer) && state.CurrentState != PlayerStateType.Jump)
             {
-                LastOnGroundTime = Data.coyoteTime;
+                LastOnGroundTime = data.coyoteTime;
             }
 
             // Detect leaving ground
             if (LastOnGroundTime <= 0 && wasGroundedLastFrame)
             {
-                _jumpNumber = 1; // consume jump
+                jumpNumber = 1; // consume jump
             }
 
             // Reset jumps when grounded
             if (LastOnGroundTime > 0)
             {
-                _jumpNumber = 0;
+                jumpNumber = 0;
             }
 
             wasGroundedLastFrame = LastOnGroundTime > 0;
@@ -142,8 +143,8 @@ public class PlayerMovement : MonoBehaviour
             bool frontWall = Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer);
             bool backWall  = Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, _groundLayer);
 
-            if (frontWall) LastOnWallRightTime = Data.coyoteTime;
-            if (backWall)  LastOnWallLeftTime  = Data.coyoteTime;
+            if (frontWall) LastOnWallRightTime = data.coyoteTime;
+            if (backWall)  LastOnWallLeftTime  = data.coyoteTime;
 
             LastOnWallTime = Mathf.Max(LastOnWallLeftTime, LastOnWallRightTime);
 
@@ -159,7 +160,7 @@ public class PlayerMovement : MonoBehaviour
         #region JUMP CHECKS
         if (CanJump() && LastPressedJumpTime > 0)
         {
-            _jumpNumber++;
+            jumpNumber++;
             Jump();
 
             LastPressedJumpTime = 0;
@@ -169,7 +170,7 @@ public class PlayerMovement : MonoBehaviour
         {
             _lastWallJumpDir = (LastOnWallRightTime > 0) ? -1 : 1;
 
-            _jumpNumber++;
+            jumpNumber++;
             WallJump(_lastWallJumpDir);
 
             LastPressedJumpTime = 0;
@@ -211,31 +212,30 @@ public class PlayerMovement : MonoBehaviour
             else if (RB.linearVelocity.y < 0 && _moveInput.y < 0)
             {
                 //Much higher gravity if holding down
-                SetGravityScale(Data.gravityScale);
+                SetGravityScale(data.gravityScale);
                 //Caps maximum fall speed, so when falling over large distances we don't accelerate to insanely high speeds
                 RB.linearVelocity = new Vector2(RB.linearVelocity.x, Mathf.Max(RB.linearVelocity.y));
             }
-            else if ((state.CurrentState == PlayerStateType.Jump || state.CurrentState == PlayerStateType.Fall) && Mathf.Abs(RB.linearVelocity.y) < Data.jumpHangTimeThreshold)
+            else if ((state.CurrentState == PlayerStateType.Jump || state.CurrentState == PlayerStateType.Fall) && Mathf.Abs(RB.linearVelocity.y) < data.jumpHangTimeThreshold)
             {
-                SetGravityScale(Data.gravityScale * Data.jumpHangGravityMult);
+                SetGravityScale(data.gravityScale * data.jumpHangGravityMult);
             }
             else if (RB.linearVelocity.y < 0)
             {
                 //Higher gravity if falling
-                SetGravityScale(Data.gravityScale * Data.fallGravityMult);
+                SetGravityScale(data.gravityScale * data.fallGravityMult);
                 //Caps maximum fall speed, so when falling over large distances we don't accelerate to insanely high speeds
-                RB.linearVelocity = new Vector2(RB.linearVelocity.x, Mathf.Max(RB.linearVelocity.y, -Data.maxFallSpeed));
+                RB.linearVelocity = new Vector2(RB.linearVelocity.x, Mathf.Max(RB.linearVelocity.y, -data.maxFallSpeed));
             }
             else
             {
                 //Default gravity if standing on a platform or moving upwards
-                SetGravityScale(Data.gravityScale);
+                SetGravityScale(data.gravityScale);
             }
 
         #endregion
 
         UpdateState();
-        Debug.Log("State: " + state.CurrentState);
     }
 
     private void FixedUpdate()
@@ -305,15 +305,15 @@ public class PlayerMovement : MonoBehaviour
     private void Run()
     {
         //Calculate the direction we want to move in and our desired velocity
-        float targetSpeed = _moveInput.x * Data.runMaxSpeed;
+        float targetSpeed = _moveInput.x * data.runMaxSpeed;
 
 
         //Gets an acceleration value based on if we are accelerating (includes turning) 
-        float accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? Data.runAccelAmount : Data.runDeccelAmount;
+        float accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? data.runAccelAmount : data.runDeccelAmount;
 
         #region Conserve Momentum
         //We won't slow the player down if they are moving in their desired direction but at a greater speed than their maxSpeed
-        if (Data.doConserveMomentum && Mathf.Abs(RB.linearVelocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(RB.linearVelocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && LastOnGroundTime < 0)
+        if (data.doConserveMomentum && Mathf.Abs(RB.linearVelocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(RB.linearVelocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && LastOnGroundTime < 0)
         {
             //Prevent any deceleration from happening, or in other words conserve are current momentum
             accelRate = 0;
@@ -337,9 +337,9 @@ public class PlayerMovement : MonoBehaviour
         LastPressedJumpTime = 0;
         LastOnGroundTime = 0;
 
-        float force = Data.jumpForce;
+        float force = data.jumpForce;
 
-        if (_jumpNumber > 1)
+        if (jumpNumber > 1)
         {
             force *= 0.6f;
         }
@@ -352,7 +352,7 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator CutJump()
     {
         yield return null;
-        if (RB.linearVelocity.y > 0 && _jumpNumber == 1)
+        if (RB.linearVelocity.y > 0 && jumpNumber == 1)
             RB.linearVelocity = new Vector2(RB.linearVelocity.x, RB.linearVelocity.y * 0.5f);
     }
 
@@ -367,7 +367,7 @@ public class PlayerMovement : MonoBehaviour
         LastOnWallLeftTime = 0;
 
         #region Perform Wall Jump
-        Vector2 force = new Vector2(Data.wallJumpForce.x, Data.wallJumpForce.y);
+        Vector2 force = new Vector2(data.wallJumpForce.x, data.wallJumpForce.y);
         force.x *= dir; //apply force in opposite direction of wall
 
         if (Mathf.Sign(RB.linearVelocity.x) != Mathf.Sign(force.x))
@@ -390,16 +390,16 @@ public class PlayerMovement : MonoBehaviour
         state.IsDashing = true;
 
         _dashesLeft--;
-        float gScale = Data.gravityScale;
+        float gScale = data.gravityScale;
         SetGravityScale(0);
 
         RB.linearVelocity = Vector2.zero;
         
-        RB.AddForce(dir * Data.dashSpeed, ForceMode2D.Impulse);
+        RB.AddForce(dir * data.dashSpeed, ForceMode2D.Impulse);
 
         float startTime = Time.time;
 
-        while (Time.time - startTime <= Data.dashTime)
+        while (Time.time - startTime <= data.dashTime)
         {
             yield return null;
         }
@@ -413,9 +413,9 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator RefillDash(int amount)
     {
         _dashRefilling = true;
-        yield return new WaitForSeconds(Data.dashRefillTime);
+        yield return new WaitForSeconds(data.dashRefillTime);
         _dashRefilling = false;
-        _dashesLeft = Mathf.Min(Data.dashAmount, _dashesLeft + 1);
+        _dashesLeft = Mathf.Min(data.dashAmount, _dashesLeft + 1);
     }
     #endregion
 
@@ -424,8 +424,8 @@ public class PlayerMovement : MonoBehaviour
     {
         //Works the same as the Run but only in the y-axis
         //THis seems to work fine, buit maybe you'll find a better way to implement a slide into this system
-        float speedDif = Data.slideSpeed - RB.linearVelocity.y;
-        float movement = speedDif * Data.slideAccel;
+        float speedDif = data.slideSpeed - RB.linearVelocity.y;
+        float movement = speedDif * data.slideAccel;
         //So, we clamp the movement here to prevent any over corrections (these aren't noticeable in the Run)
         //The force applied can't be greater than the (negative) speedDifference * by how many times a second FixedUpdate() is called. For more info research how force are applied to rigidbodies.
         movement = Mathf.Clamp(movement, -Mathf.Abs(speedDif) * (1 / Time.fixedDeltaTime), Mathf.Abs(speedDif) * (1 / Time.fixedDeltaTime));
@@ -439,7 +439,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanJump()
     {
-        return LastOnGroundTime > 0 ||  _jumpNumber < Data.jumpAmount;
+        return LastOnGroundTime > 0 ||  jumpNumber < data.jumpAmount;
     }
 
     private bool CanWallJump()
@@ -449,7 +449,7 @@ public class PlayerMovement : MonoBehaviour
     }
     private bool CanDash()
     {
-        if (state.CurrentState != PlayerStateType.Dash && _dashesLeft < Data.dashAmount && LastOnGroundTime > 0 && !_dashRefilling)
+        if (state.CurrentState != PlayerStateType.Dash && _dashesLeft < data.dashAmount && LastOnGroundTime > 0 && !_dashRefilling)
         {
             StartCoroutine(nameof(RefillDash), 1);
         }

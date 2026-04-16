@@ -18,6 +18,6 @@ public class DebugUI : MonoBehaviour
             "GroundTime: " + player.LastOnGroundTime.ToString("F2") + "\n" +
             "WallTime: " + player.LastOnWallTime.ToString("F2") + "\n" +
             "IsDashing: " + state.IsDashing + "\n" +
-            "Jumps: " + player._jumpNumber;
+            "Jumps: " + player.JumpNumber;
     }
 }
