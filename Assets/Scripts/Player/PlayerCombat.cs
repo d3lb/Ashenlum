@@ -4,6 +4,8 @@ public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private PlayerState states;
 
+    private int baseAttackDamage = 2;
+
     [SerializeField] private float attackCooldown = 0.4f;
     [SerializeField] private float attackRange = 2f;
 
@@ -36,7 +38,7 @@ public class PlayerCombat : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            Debug.Log("Hit: " + hit.name);
+            hit.GetComponent<EnemyHealth>()?.TakeDamage(baseAttackDamage, transform.position);
         }
     }
 
