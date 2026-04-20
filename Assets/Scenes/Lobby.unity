@@ -330,9 +330,9 @@ GameObject:
   m_Component:
   - component: {fileID: 289071726}
   - component: {fileID: 289071725}
+  - component: {fileID: 289071727}
   - component: {fileID: 289071724}
   - component: {fileID: 289071723}
-  - component: {fileID: 289071727}
   - component: {fileID: 289071728}
   - component: {fileID: 289071729}
   m_Layer: 6
@@ -356,8 +356,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerCheck: {fileID: 863671980}
   speed: 2.5
-  playerCheckRange: 7
-  playerStopCheckRange: 3
+  playerCheckRange: 8
+  playerStopCheckRange: 2
   playerLayer:
     serializedVersion: 2
     m_Bits: 128
@@ -371,7 +371,7 @@ BoxCollider2D:
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 5c6a040ad9e0f4b49a7e2796a5bf1241, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -498,7 +498,7 @@ Rigidbody2D:
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 2
-  m_Material: {fileID: 6200000, guid: 5c6a040ad9e0f4b49a7e2796a5bf1241, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -506,8 +506,8 @@ Rigidbody2D:
     serializedVersion: 2
     m_Bits: 0
   m_Interpolate: 1
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_SleepingMode: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!114 &289071728
 MonoBehaviour:
@@ -522,8 +522,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   whiteFlashMat: {fileID: 2100000, guid: 9659d46c6a5fa964d8b670eeede936f7, type: 2}
-  hp: 44
-  knockbackStrength: 5
+  hp: 4444
+  knockbackStrength: 6
   hitFlashTime: 0.15
   knockbackTime: 0.2
 --- !u!114 &289071729
@@ -1244,7 +1244,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0.122588634, y: -0.1555934}
+  m_Offset: {x: 0.122588634, y: -0.14309335}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -1254,7 +1254,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1.1839437, y: 2.0922332}
+  m_Size: {x: 1.1839437, y: 2.067233}
   m_EdgeRadius: 0
 --- !u!114 &1431540310
 MonoBehaviour:
@@ -27964,6 +27964,8 @@ MonoBehaviour:
   player: {fileID: 1431540305}
   text: {fileID: 2007458673}
   state: {fileID: 1431540307}
+  Estate: {fileID: 289071729}
+  Ehealth: {fileID: 289071728}
 --- !u!114 &2007458673
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -52,23 +52,23 @@ public class EnemyMove : MonoBehaviour
 
     private void FixedUpdate()
     {
-        switch (state.CurrentState)
+        if (state.CurrentState != EnemyState.EnemyStateType.Hit)
         {
-            case EnemyState.EnemyStateType.Idle:
+            if (state.CurrentState == EnemyState.EnemyStateType.Idle)
+            {
                 rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-                break;
+            }
 
-            case EnemyState.EnemyStateType.Chase:
+            if (state.CurrentState == EnemyState.EnemyStateType.Chase)
+            {
                 ChasePlayer();
-                break;
+            }
 
-            case EnemyState.EnemyStateType.Attack:
+            if (state.CurrentState == EnemyState.EnemyStateType.Attack)
+            {
                 rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-                break;
-
-            case EnemyState.EnemyStateType.Hit:
-                // ?? DO NOTHING ? let physics handle knockback
-                break;
+            }
+     
         }
 
         // flip 
@@ -90,10 +90,9 @@ public class EnemyMove : MonoBehaviour
 
         Transform player = playerInSight[0].transform;
 
-        Vector2 targetPosition = new Vector2(player.position.x, transform.position.y);
-        Vector2 currentPosition = new Vector2(transform.position.x, transform.position.y);
+        float dir = Mathf.Sign(player.position.x - transform.position.x);
 
-        rb.linearVelocity = (targetPosition - currentPosition).normalized * speed;
+        rb.linearVelocity = new Vector2(dir * speed, rb.linearVelocity.y);
     }
 
     void OnDrawGizmosSelected()
