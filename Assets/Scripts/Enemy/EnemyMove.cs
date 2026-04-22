@@ -27,9 +27,9 @@ public class EnemyMove : MonoBehaviour
 
     void Update()
     {
-        if (health._isKnocked)
+
+        if (state.CurrentState == EnemyState.EnemyStateType.Hit && state.IsKnocked)
         {
-            state.CurrentState = EnemyState.EnemyStateType.Hit;
             return;
         }
 
@@ -52,23 +52,24 @@ public class EnemyMove : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (state.CurrentState != EnemyState.EnemyStateType.Hit)
+
+        if (state.CurrentState == EnemyState.EnemyStateType.Hit)
+            return;
+
+
+        if (state.CurrentState == EnemyState.EnemyStateType.Idle)
         {
-            if (state.CurrentState == EnemyState.EnemyStateType.Idle)
-            {
-                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-            }
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+        }
 
-            if (state.CurrentState == EnemyState.EnemyStateType.Chase)
-            {
-                ChasePlayer();
-            }
+        if (state.CurrentState == EnemyState.EnemyStateType.Chase)
+        {
+            ChasePlayer();
+        }
 
-            if (state.CurrentState == EnemyState.EnemyStateType.Attack)
-            {
-                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-            }
-     
+        if (state.CurrentState == EnemyState.EnemyStateType.Attack)
+        {
+            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         }
 
         // flip 

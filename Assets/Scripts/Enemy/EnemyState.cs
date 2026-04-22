@@ -9,7 +9,9 @@ public class EnemyState : MonoBehaviour
         Attack,
         Hit
     }
-
     public EnemyStateType CurrentState;
+
+    public bool IsKnocked;
+
 
 }

@@ -1,46 +1,71 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class EnemyHealth : MonoBehaviour
 {
     [SerializeField] private Material whiteFlashMat;
     [Space(5)]
+
+    [Header("Health")]
     [SerializeField] private int hp = 6;
+    [SerializeField] private int maxHp = 6;
+
+    [Header("Knockback")]
     [SerializeField] private float knockbackStrength = 5f;
-    [SerializeField] private float hitFlashTime = 0.15f;
-    private bool isKnocked;
     [SerializeField] private float knockbackTime = 0.2f;
     private float knockbackTimer;
-    public bool _isKnocked => isKnocked;
 
-    private Material originalMat;
+    [Header("Flash")]
+    [SerializeField] private float hitFlashTime = 0.15f;
+
+    [Header("Invincibility")]
+    [SerializeField] private float iFrameTime = 0.1f;
+    private float iFrameTimer;
+    private bool isInvincible;
+
+    private Material mat;
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
+    private EnemyState state;
 
-    private Coroutine flashCoroutine;
+    private Coroutine flashCoroutine; 
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        state = GetComponent<EnemyState>();
         sprite = GetComponent<SpriteRenderer>();
-        originalMat = sprite.material;
-
+        mat = sprite.material = new Material(sprite.material);
     }
     public void Update()
     {
-        if (isKnocked)
+        if (isInvincible)
+        {
+            iFrameTimer -= Time.deltaTime;
+            if (iFrameTimer <= 0)
+                isInvincible = false;
+        }
+
+        if (state.IsKnocked)
         {
             knockbackTimer -= Time.deltaTime;
 
             if (knockbackTimer <= 0)
             {
-                isKnocked = false;
+                state.IsKnocked = false;
+                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             }
         }
     } 
     public void TakeDamage(int dmg, Vector2 attackerPos)
     {
+        if (isInvincible)
+            return;
+
         hp -= dmg;
+
+        isInvincible = true;
+        iFrameTimer = iFrameTime;
 
         // Knockback
         Vector2 dir = (transform.position - (Vector3)attackerPos).normalized;
@@ -48,7 +73,8 @@ public class EnemyHealth : MonoBehaviour
         rb.AddForce(dir * knockbackStrength, ForceMode2D.Impulse);
 
         knockbackTimer = knockbackTime;
-        isKnocked = true;
+        state.CurrentState = EnemyState.EnemyStateType.Hit;
+        state.IsKnocked = true;
 
         // Flash
         if (flashCoroutine != null)
@@ -75,8 +101,29 @@ public class EnemyHealth : MonoBehaviour
     // white flash when hit
     private IEnumerator HitFlash()
     {
-        sprite.material = whiteFlashMat;
-        yield return new WaitForSeconds(hitFlashTime);
-        sprite.material = originalMat;
+        float halfTime = hitFlashTime * 0.5f;
+        float timer = 0f;
+
+        // fade in
+        while (timer < halfTime)
+        {
+            timer += Time.deltaTime;
+            float t = timer / halfTime; // 0 -> 1
+            mat.SetFloat("_FlashAmount", t);
+            yield return null;
+        }
+
+        timer = 0f;
+
+        // fade out
+        while (timer < halfTime)
+        {
+            timer += Time.deltaTime;
+            float t = 1f - (timer / halfTime); // 1 -> 0
+            mat.SetFloat("_FlashAmount", t);
+            yield return null;
+        }
+
+        mat.SetFloat("_FlashAmount", 0f);
     }
 }

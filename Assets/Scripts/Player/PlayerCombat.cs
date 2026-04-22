@@ -1,56 +1,37 @@
 using UnityEngine;
+using System.Collections;
 
 public class PlayerCombat : MonoBehaviour
 {
     [SerializeField] private PlayerState states;
 
-    private int baseAttackDamage = 2;
-
     [SerializeField] private float attackCooldown = 0.4f;
-    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private float attackDuration = 0.1f;
+
+    [SerializeField] private Collider2D attackCollider;
 
     private float lastAttackTime;
 
-    [Header("Checks")]
-    [SerializeField] private Transform _sideAttackPoint;
-    [SerializeField] private Vector2 _sideAttackPointSize = new Vector2(2f, 2f);
-
-    [Space(4)]
-    [SerializeField] private LayerMask enemyLayer;
+    private void Awake()
+    {
+        attackCollider.enabled = false;
+    }
 
     void Update()
     {
         if (Input.GetMouseButtonDown(0) && Time.time >= lastAttackTime + attackCooldown)
         {
             lastAttackTime = Time.time;
-            Attack();
+            StartCoroutine(DoAttack());
         }
     }
 
-    private void Attack()
+    private IEnumerator DoAttack()
     {
+        attackCollider.enabled = true;
 
+        yield return new WaitForSeconds(attackDuration);
 
-        int dir = states.IsFacingRight ? 1 : -1;
-        Vector2 pos = (Vector2)transform.position + Vector2.right * dir * attackRange;
-        Collider2D[] hits = Physics2D.OverlapBoxAll(pos, _sideAttackPointSize, 0, enemyLayer);
-
-
-        foreach (var hit in hits)
-        {
-            hit.GetComponent<EnemyHealth>()?.TakeDamage(baseAttackDamage, transform.position);
-        }
+        attackCollider.enabled = false;
     }
-
-
-    #region EDITOR METHODS
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        int dir =  states.IsFacingRight ? 1 : -1;
-        Vector2 pos = (Vector2)transform.position + Vector2.right * dir * attackRange;
-
-        Gizmos.DrawWireCube(pos, _sideAttackPointSize);
-    }
-    #endregion
 }

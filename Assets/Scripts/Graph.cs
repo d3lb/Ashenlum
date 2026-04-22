@@ -14,6 +14,6 @@ public class DebugUI : MonoBehaviour
             "State: " + state.CurrentState + "\n" +
             "IsDashing: " + state.IsDashing + "\n" +
             "Jumps: " + player.JumpNumber + "\n" +
-            "Enemy State: " + Estate.CurrentState + "\n" +
+            "Enemy State: " + Estate.CurrentState + "\n";
     }
 }
