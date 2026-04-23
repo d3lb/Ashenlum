@@ -43,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
         
     //Input
     private Vector2 _moveInput;
-    public Vector2 MoveInput => _moveInput; // for Graph debugging
+    public Vector2 MoveInput => _moveInput; // for External Use
 
 
     

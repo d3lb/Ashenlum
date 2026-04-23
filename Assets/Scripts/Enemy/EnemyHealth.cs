@@ -11,6 +11,7 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] private int maxHp = 6;
 
     [Header("Knockback")]
+    [SerializeField] private bool knockbackable = true;
     [SerializeField] private float knockbackStrength = 5f;
     [SerializeField] private float knockbackTime = 0.2f;
     private float knockbackTimer;
@@ -68,14 +69,17 @@ public class EnemyHealth : MonoBehaviour
         iFrameTimer = iFrameTime;
 
         // Knockback
-        Vector2 dir = (transform.position - (Vector3)attackerPos).normalized;
+        if (knockbackable)
+        {
+            Vector2 dir = (transform.position - (Vector3)attackerPos).normalized;
+
+            rb.AddForce(dir * knockbackStrength, ForceMode2D.Impulse);
+
+            knockbackTimer = knockbackTime;
+            state.CurrentState = EnemyState.EnemyStateType.Hit;
+            state.IsKnocked = true;
+        }
         
-        rb.AddForce(dir * knockbackStrength, ForceMode2D.Impulse);
-
-        knockbackTimer = knockbackTime;
-        state.CurrentState = EnemyState.EnemyStateType.Hit;
-        state.IsKnocked = true;
-
         // Flash
         if (flashCoroutine != null)
             StopCoroutine(flashCoroutine);
