@@ -199,6 +199,7 @@ PolygonCollider2D:
     m_Paths:
     - - {x: 1.1542311, y: 1.7082648}
       - {x: 1.7864494, y: -0.8763232}
+      - {x: 0.2670617, y: -1.3129592}
       - {x: -1.2548541, y: -0.86356246}
       - {x: -0.6877179, y: 1.7536664}
       - {x: 0.26649475, y: 2.1579561}
@@ -484,7 +485,8 @@ PolygonCollider2D:
     m_Paths:
     - - {x: -1.7712288, y: 1.0977132}
       - {x: 1.0021181, y: 1.5717425}
-      - {x: 1.0068661, y: -1.4357313}
+      - {x: 1.4474821, y: 0.28287315}
+      - {x: 1.0068656, y: -0.95068026}
       - {x: -1.7991738, y: -0.7800777}
       - {x: -1.9896984, y: 0.14883274}
   m_UseDelaunayMesh: 1
@@ -878,8 +880,9 @@ PolygonCollider2D:
     m_Paths:
     - - {x: 2.09797, y: 0.98779273}
       - {x: -0.70332915, y: 1.5687664}
-      - {x: -0.7015566, y: -1.3984827}
-      - {x: 2.070026, y: -0.9339664}
+      - {x: -1.1214008, y: 0.2589655}
+      - {x: -0.7015566, y: -0.95385206}
+      - {x: 2.1104465, y: -0.79922986}
       - {x: 2.2971973, y: 0.038912714}
   m_UseDelaunayMesh: 1
 --- !u!1 &863671979
@@ -1094,6 +1097,7 @@ GameObject:
   - component: {fileID: 1187097581}
   - component: {fileID: 1187097583}
   - component: {fileID: 1187097584}
+  - component: {fileID: 1187097585}
   m_Layer: 0
   m_Name: cm
   m_TagString: Untagged
@@ -1171,6 +1175,23 @@ MonoBehaviour:
   m_MaximumFOV: 60
   m_MinimumOrthoSize: 1
   m_MaximumOrthoSize: 5000
+--- !u!114 &1187097585
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1187097580}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cinemachine::Cinemachine.CinemachineBasicMultiChannelPerlin
+  m_NoiseProfile: {fileID: 11400000, guid: 69ce8388f6785dd4c8c39915efece2f4, type: 2}
+  m_PivotOffset: {x: 0, y: 0, z: 0}
+  m_AmplitudeGain: 0
+  m_FrequencyGain: 1
+  mNoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &1299769771
 GameObject:
   m_ObjectHideFlags: 0
@@ -1182,6 +1203,7 @@ GameObject:
   - component: {fileID: 1299769773}
   - component: {fileID: 1299769772}
   - component: {fileID: 1299769774}
+  - component: {fileID: 1299769775}
   m_Layer: 0
   m_Name: Virtual Camera
   m_TagString: Untagged
@@ -1261,6 +1283,18 @@ MonoBehaviour:
   m_BoundingShape2D: {fileID: 1130316002}
   m_ConfineScreenEdges: 1
   m_Damping: 0
+--- !u!114 &1299769775
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1299769771}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 315f935d58cf33c4495d3b07f45c36de, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
 --- !u!1 &1431540297
 GameObject:
   m_ObjectHideFlags: 0
@@ -1465,6 +1499,8 @@ MonoBehaviour:
   CurrentState: 0
   IsDashing: 0
   IsSliding: 0
+  IsAttacking: 0
+  IsGrounded: 0
 --- !u!61 &1431540309
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1524,7 +1560,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   movement: {fileID: 1431540305}
-  states: {fileID: 1431540307}
+  state: {fileID: 1431540307}
+  cameraShake: {fileID: 1299769775}
   attackColliderRight: {fileID: 667739016}
   attackColliderLeft: {fileID: 253237395}
   attackColliderUp: {fileID: 35868801}
@@ -1532,10 +1569,18 @@ MonoBehaviour:
   damage: 2
   attackCooldown: 0.4
   attackDuration: 0.2
-  attackSpeed: 1
-  recoilForceX: 5
+  attackSpeed: 0.8
+  recoilForceX: 6
   recoilForceY: 3
   pogoForce: 15
+  hitPauseTime: 0.05
+  killPauseTime: 0.08
+  hitShakeDuration: 0.04
+  hitShakeAmplitude: 2
+  hitShakeFrequency: 2
+  killShakeDuration: 0.08
+  killShakeAmplitude: 3
+  killShakeFrequency: 2.5
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -28227,6 +28272,7 @@ PolygonCollider2D:
     m_Paths:
     - - {x: 1.2072859, y: -2.0077658}
       - {x: 1.8173685, y: 0.5441632}
+      - {x: 0.26723957, y: 0.95008564}
       - {x: -1.2869343, y: 0.5419153}
       - {x: -0.67157507, y: -1.9226966}
       - {x: 0.26180172, y: -2.4161038}
@@ -28302,7 +28348,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2007458670}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -28311,7 +28357,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -301.0238, y: 228}
+  m_AnchoredPosition: {x: -301.02386, y: 227.99994}
   m_SizeDelta: {x: 484.9524, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2007458672

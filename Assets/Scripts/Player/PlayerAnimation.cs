@@ -24,7 +24,7 @@ public class PlayerAnimation : MonoBehaviour
 
     public void CheckAnimation()
     {
-        if (playerMovement.RB.linearVelocity.x != 0)
+        if (playerMovement.rb.linearVelocity.x != 0)
         {
             ChangeAnimation("Run");
         }

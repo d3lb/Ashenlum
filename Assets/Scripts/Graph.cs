@@ -12,7 +12,7 @@ public class DebugUI : MonoBehaviour
     {
         text.text =
             "State: " + state.CurrentState + "\n" +
-            "IsDashing: " + state.IsDashing + "\n" +
+            "IsGrounded: " + state.IsGrounded + "\n" +
             "Jumps: " + player.JumpNumber + "\n" +
             "Enemy State: " + Estate.CurrentState + "\n";
     }

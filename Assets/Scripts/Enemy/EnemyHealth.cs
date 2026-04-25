@@ -58,10 +58,10 @@ public class EnemyHealth : MonoBehaviour
             }
         }
     } 
-    public void TakeDamage(int dmg, Vector2 attackerPos)
+    public bool TakeDamage(int dmg, Vector2 attackerPos)
     {
         if (isInvincible)
-            return;
+            return false;
 
         hp -= dmg;
 
@@ -91,7 +91,9 @@ public class EnemyHealth : MonoBehaviour
         if (hp <= 0)
         {
             Die();
+            return true;
         }
+        return false;
     }
 
 
