@@ -14,6 +14,11 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Collider2D attackColliderLeft;
     [SerializeField] private Collider2D attackColliderUp;
     [SerializeField] private Collider2D attackColliderDown;
+    [SerializeField] private Transform attackPointRight;
+    [SerializeField] private Transform attackPointLeft;
+    [SerializeField] private Transform attackPointUp;
+    [SerializeField] private Transform attackPointDown;
+    [SerializeField] private GameObject slashPrefab;
 
 
     [Header("Settings")]
@@ -47,6 +52,7 @@ public class PlayerCombat : MonoBehaviour
     private HashSet<EnemyHealth> hitEnemies = new HashSet<EnemyHealth>();
 
     private AttackType currentAttackType;
+    private int attackDir;
 
     private void Awake()
     {
@@ -89,10 +95,13 @@ public class PlayerCombat : MonoBehaviour
 
     private IEnumerator DoAttack()
     {
+
+        attackDir = state.IsFacingRight ? 1 : -1;
         float active = attackDuration / attackSpeed;
 
         var (activeCollider, attackType) = GetAttackData();
         currentAttackType = attackType;
+        SpawnSlash(attackType);
 
         state.IsAttacking = true;
         state.CurrentState = GetStateFromAttack(attackType);
@@ -166,7 +175,7 @@ public class PlayerCombat : MonoBehaviour
         if (vertical < -0.5f && movement.LastOnGroundTime <= 0)
             return (attackColliderDown, AttackType.Down);
 
-        return (state.IsFacingRight ? attackColliderRight : attackColliderLeft, AttackType.Side);
+        return (attackDir == 1 ? attackColliderRight : attackColliderLeft, AttackType.Side);
     }
 
     // shake screen
@@ -193,7 +202,7 @@ public class PlayerCombat : MonoBehaviour
     // Recoil knockback / pogo when hitting
     private void ApplyRecoil(AttackType type)
     {
-        int dir = state.IsFacingRight ? 1 : -1;
+        int dir = attackDir;
 
         switch (type)
         {
@@ -220,8 +229,8 @@ public class PlayerCombat : MonoBehaviour
     // Recoil from wall
     private void ApplyWallRecoil()
     {
-        int dir = state.IsFacingRight ? 1 : -1;
-
+        int dir = attackDir;
+        
         rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
         rb.AddForce(new Vector2(-dir * recoilForceX, 0), ForceMode2D.Impulse);
     }
@@ -238,7 +247,45 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+    // Slash VFX
+    private void SpawnSlash(AttackType type)
+    {
+        Transform point;
+        Quaternion rot = Quaternion.identity;
 
+        switch (type)
+        {
+            case AttackType.Side:
+                if (attackDir == 1) // right
+                {
+                    point = attackPointRight;
+                    rot = Quaternion.Euler(0, 0, -90);
+                }
+                else // left
+                {
+                    point = attackPointLeft;
+                    rot = Quaternion.Euler(0, 0, 90);
+                }
+                break;
+
+            case AttackType.Up:
+                point = attackPointUp;
+                rot = Quaternion.identity;
+                break;
+
+            case AttackType.Down:
+                point = attackPointDown;
+                rot = Quaternion.Euler(0, 0, 180);
+                break;
+
+            default:
+                return;
+        }
+
+        GameObject slash = Instantiate(slashPrefab, transform);
+        slash.transform.localPosition = point.localPosition;
+        slash.transform.localRotation = rot;
+    }
 
 
     // hit pause effect
