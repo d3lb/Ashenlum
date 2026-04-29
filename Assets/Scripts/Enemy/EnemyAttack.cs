@@ -1,56 +1,82 @@
 using UnityEngine;
+using System.Collections;
 
 public class EnemyAttack : MonoBehaviour
 {
-    [Header("Attack Settings")]
-    [SerializeField] private float attackCooldown = 1f;
-    [SerializeField] private float attackRange = 1.5f;
+    [Header("References")]
+    [SerializeField] private Collider2D attackColliderRight;
+    [SerializeField] private Collider2D attackColliderLeft;
     [SerializeField] private LayerMask playerLayer;
-    [SerializeField] private Transform attackPoint;
-    [SerializeField] private int attackDamage = 5;
 
+    [Header("Settings")]
+    [SerializeField] private float attackCooldown = 1f;
+    [SerializeField] private float attackWindup = 0.2f;
+    [SerializeField] private float attackDuration = 0.1f;
+    [SerializeField] private int damage = 5;
 
     private float lastAttackTime;
 
     private EnemyState state;
+    private ContactFilter2D filter;
+    private Collider2D[] results = new Collider2D[5];
 
     private void Awake()
     {
         state = GetComponent<EnemyState>();
+
+        attackColliderRight.enabled = false;
+        attackColliderLeft.enabled = false;
+
+        filter = new ContactFilter2D();
+        filter.SetLayerMask(playerLayer);
+        filter.useTriggers = true;
     }
 
     private void Update()
     {
-        // only attack in Attack state
         if (state.CurrentState != EnemyState.EnemyStateType.Attack)
             return;
 
         if (Time.time >= lastAttackTime + attackCooldown)
         {
             lastAttackTime = Time.time;
-            AttackPlayer();
+            StartCoroutine(DoAttack());
         }
     }
-
-    private void AttackPlayer()
+    private IEnumerator DoAttack()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            attackPoint.position,
-            attackRange,
-            playerLayer
-        );
+        Collider2D active = GetActiveCollider();
 
-        foreach (var hit in hits)
+        // wait before hit
+        yield return new WaitForSeconds(attackWindup);
+
+        active.enabled = true;
+
+        float timer = 0f;
+
+        while (timer < attackDuration)
         {
-            hit.GetComponent<PlayerHealth>()?.TakeDamage(attackDamage, transform.position);
+            int count = active.Overlap(filter, results);
+
+            for (int i = 0; i < count; i++)
+            {
+                PlayerHealth player = results[i].attachedRigidbody?.GetComponent<PlayerHealth>();
+
+                if (player != null)
+                {
+                    player.TakeDamage(damage, transform.position);
+                }
+            }
+
+            timer += Time.deltaTime;
+            yield return null;
         }
+
+        active.enabled = false;
     }
 
-    private void OnDrawGizmosSelected()
+    private Collider2D GetActiveCollider()
     {
-        if (attackPoint == null) return;
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(attackPoint.position, attackRange);
+        return state.IsFacingRight ? attackColliderRight : attackColliderLeft;
     }
 }

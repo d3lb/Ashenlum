@@ -11,6 +11,7 @@ public class EnemyState : MonoBehaviour
     }
     public EnemyStateType CurrentState;
 
+    public bool IsFacingRight;
     public bool IsKnocked;
 
 

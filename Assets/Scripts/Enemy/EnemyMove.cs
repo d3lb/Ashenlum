@@ -76,9 +76,18 @@ public class EnemyMove : MonoBehaviour
         if (state.CurrentState != EnemyState.EnemyStateType.Hit)
         {
             if (rb.linearVelocity.x > 0.01f)
+            {
                 sprite.flipX = false;
+                state.IsFacingRight = false;
+            }
+                
             else if (rb.linearVelocity.x < -0.01f)
+            {
                 sprite.flipX = true;
+                state.IsFacingRight = true;
+            }
+
+
         }
     }
 
