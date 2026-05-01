@@ -824,7 +824,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 128
   attackCooldown: 1
-  attackWindup: 0.2
+  attackWindup: 0.5
   attackDuration: 0.1
   damage: 25
 --- !u!1 &307106748
@@ -1810,6 +1810,7 @@ MonoBehaviour:
   IsDashing: 0
   IsSliding: 0
   IsAttacking: 0
+  IsUsingAbility: 0
   IsGrounded: 0
 --- !u!61 &1431540309
 BoxCollider2D:
@@ -1932,6 +1933,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   playerHealth: {fileID: 1431540311}
+  state: {fileID: 1431540307}
   burstRadius: 7
   burstDamage: 10
   burstHeal: 10
@@ -1940,6 +1942,8 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+  burstChargeTime: 1
+  burstSlowTime: 0.5
 --- !u!1 &1495427397
 GameObject:
   m_ObjectHideFlags: 0
@@ -28941,6 +28945,7 @@ MonoBehaviour:
   player: {fileID: 1431540305}
   text: {fileID: 2007458673}
   state: {fileID: 1431540307}
+  pAbility: {fileID: 1431540312}
   Estate: {fileID: 289071729}
 --- !u!114 &2007458673
 MonoBehaviour:

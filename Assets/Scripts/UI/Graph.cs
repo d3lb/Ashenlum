@@ -6,6 +6,7 @@ public class DebugUI : MonoBehaviour
     public PlayerMovement player;
     public TextMeshProUGUI text;
     [SerializeField] private PlayerState state;
+    [SerializeField] private PlayerAbility pAbility;
     [SerializeField] private EnemyState Estate;
 
     void Update()
@@ -14,6 +15,7 @@ public class DebugUI : MonoBehaviour
             "State: " + state.CurrentState + "\n" +
             "IsGrounded: " + state.IsGrounded + "\n" +
             "Jumps: " + player.JumpNumber + "\n" +
-            "Enemy State: " + Estate.CurrentState + "\n";
+            "Enemy State: " + Estate.CurrentState + "\n" +
+            "Burst Cooldown" + pAbility.CooldownPercent;
     }
 }

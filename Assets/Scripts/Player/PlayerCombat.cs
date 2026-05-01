@@ -86,7 +86,7 @@ public class PlayerCombat : MonoBehaviour
 
         float cooldown = attackCooldown / attackSpeed;
 
-        if (Input.GetMouseButtonDown(0) && Time.time >= lastAttackTime + cooldown)
+        if (Input.GetMouseButtonDown(0) && Time.time >= lastAttackTime + cooldown && !state.IsBusy)
         {
             lastAttackTime = Time.time;
             StartCoroutine(DoAttack());

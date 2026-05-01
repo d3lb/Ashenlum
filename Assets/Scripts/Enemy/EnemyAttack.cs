@@ -19,10 +19,11 @@ public class EnemyAttack : MonoBehaviour
     private EnemyState state;
     private ContactFilter2D filter;
     private Collider2D[] results = new Collider2D[5];
-
+    private SpriteRenderer sprite;
     private void Awake()
     {
         state = GetComponent<EnemyState>();
+            sprite = GetComponent<SpriteRenderer>();
 
         attackColliderRight.enabled = false;
         attackColliderLeft.enabled = false;
@@ -48,7 +49,9 @@ public class EnemyAttack : MonoBehaviour
         Collider2D active = GetActiveCollider();
 
         // wait before hit
+        sprite.color = Color.red;
         yield return new WaitForSeconds(attackWindup);
+        sprite.color = Color.white;
 
         active.enabled = true;
 

@@ -14,6 +14,7 @@ public class PlayerState : MonoBehaviour
         SideAttack,
         UpAttack,
         DownAttack,
+        Burst,
         Dead
     }
 
@@ -22,13 +23,15 @@ public class PlayerState : MonoBehaviour
     public bool IsDashing;
     public bool IsSliding;
     public bool IsAttacking;
-
+    public bool IsUsingAbility;
     public bool IsGrounded;
 
     public bool IsFacingRight { get; set; } = true;
 
 
-    public bool IsBusy => CurrentState == PlayerStateType.Dash
-                          || IsAttacking 
+    public bool IsBusy => IsDashing
+                          || IsAttacking
+                          || IsSliding
+                          || IsUsingAbility
                           || CurrentState == PlayerStateType.Dead;
 }

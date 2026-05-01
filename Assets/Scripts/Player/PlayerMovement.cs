@@ -243,7 +243,10 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         //Handle Run
+        if (!state.IsUsingAbility)
+        {
             Run();
+        }
 
         //Handle Slide
         if (state.CurrentState == PlayerStateType.WallSlide)
@@ -252,6 +255,11 @@ public class PlayerMovement : MonoBehaviour
 
     void UpdateState()
     {
+        if (state.IsUsingAbility)
+        {
+            return;
+        }
+
         // ACTION STATES
         if (state.IsAttacking)
         {
