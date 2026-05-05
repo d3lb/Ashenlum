@@ -115,7 +115,7 @@ public class PlayerMovement : MonoBehaviour
             LastPressedDashTime = data.dashInputBufferTime;
         }
 
-        state.IsGrounded = LastOnGroundTime > 0f; // only used by outside scripts, i kept using LastOnGroundTime in this script
+        state.IsGrounded = LastOnGroundTime > 0f;
         #endregion
 
         #region COLLISION CHECKS
@@ -127,19 +127,6 @@ public class PlayerMovement : MonoBehaviour
                 LastOnGroundTime = data.coyoteTime;
             }
 
-            // Detect leaving ground
-            if (LastOnGroundTime <= 0 && wasGroundedLastFrame)
-            {
-                jumpNumber = 1; // consume jump
-            }
-
-            // Reset jumps when grounded
-            if (LastOnGroundTime > 0)
-            {
-                jumpNumber = 0;
-            }
-
-            wasGroundedLastFrame = LastOnGroundTime > 0;
 
             //Wall Check
             bool frontWall = Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer);
@@ -160,6 +147,21 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region JUMP CHECKS
+
+        // Detect leaving ground
+        if (!state.IsGrounded && wasGroundedLastFrame)
+        {
+            jumpNumber = 1; // consume jump
+        }
+
+        // Reset jumps when grounded
+        if (LastOnGroundTime > 0)
+        {
+            jumpNumber = 0;
+        }
+
+        wasGroundedLastFrame = state.IsGrounded;
+
         if (CanJump() && LastPressedJumpTime > 0)
         {
             jumpNumber++;
@@ -172,7 +174,6 @@ public class PlayerMovement : MonoBehaviour
         {
             lastWallJumpDir = (LastOnWallRightTime > 0) ? -1 : 1;
 
-            jumpNumber++;
             WallJump(lastWallJumpDir);
 
             LastPressedJumpTime = 0;
@@ -367,7 +368,7 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator CutJump()
     {
         yield return null;
-        if (rb.linearVelocity.y > 0 && jumpNumber == 1 && !state.IsAttacking)
+        if (rb.linearVelocity.y > 0 && jumpNumber == 1)
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f);
     }
 
@@ -454,7 +455,7 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanJump()
     {
-        return LastOnGroundTime > 0 ||  jumpNumber < data.jumpAmount;
+        return (LastOnGroundTime > 0 ||  jumpNumber < data.jumpAmount ) && !state.IsBusy;
     }
 
     private bool CanWallJump()

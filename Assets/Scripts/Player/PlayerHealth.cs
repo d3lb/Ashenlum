@@ -8,6 +8,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float iFrameTime = 0.3f;
 
     [Header("Regen Settings")]
+    [SerializeField] private bool regenerate = false;
     [SerializeField] private float regenDelay = 5f;
     [SerializeField] private float regenRate = 3f;
     private float regenBuffer;
@@ -31,7 +32,7 @@ public class PlayerHealth : MonoBehaviour
                 isInvincible = false;
         }
 
-        if (Time.time >= lastHitTime + regenDelay)
+        if (Time.time >= lastHitTime + regenDelay && regenerate)
         {
             Regenerate();
         }
@@ -56,8 +57,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void Regenerate()
     {
-        if (hp >= maxHp)
-            return;
+        if (hp >= maxHp) return;
 
         regenBuffer += regenRate * Time.deltaTime;
 

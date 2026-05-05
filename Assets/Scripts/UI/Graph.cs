@@ -16,6 +16,6 @@ public class DebugUI : MonoBehaviour
             "IsGrounded: " + state.IsGrounded + "\n" +
             "Jumps: " + player.JumpNumber + "\n" +
             "Enemy State: " + Estate.CurrentState + "\n" +
-            "Burst Cooldown" + pAbility.CooldownPercent;
+            "Burst Cooldown: " + (int)(pAbility.CooldownPercent * 100) + "%";
     }
 }

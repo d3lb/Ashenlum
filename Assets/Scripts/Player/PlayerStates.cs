@@ -18,20 +18,19 @@ public class PlayerState : MonoBehaviour
         Dead
     }
 
-    public PlayerStateType CurrentState;
+    public PlayerStateType CurrentState { get; set; }
 
-    public bool IsDashing;
-    public bool IsSliding;
-    public bool IsAttacking;
-    public bool IsUsingAbility;
-    public bool IsGrounded;
+    public bool IsDashing { get; set; }
+    public bool IsSliding { get; set; }
+    public bool IsAttacking { get; set; }
+    public bool IsUsingAbility { get; set; }
+    public bool IsGrounded { get; set; }
 
     public bool IsFacingRight { get; set; } = true;
 
 
     public bool IsBusy => IsDashing
                           || IsAttacking
-                          || IsSliding
                           || IsUsingAbility
                           || CurrentState == PlayerStateType.Dead;
 }
