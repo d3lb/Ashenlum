@@ -130,7 +130,7 @@ public class PlayerCombat : MonoBehaviour
 
                     if (!recoilApplied)
                     {
-                        StartCoroutine(HitPause(isDead ? killPauseTime : hitPauseTime));
+                        TimeManager.Instance.HitStop(isDead ? killPauseTime : hitPauseTime);
                         ShakeHit(isDead);
                         ApplyRecoil(attackType);
                         recoilApplied = true;
@@ -288,14 +288,4 @@ public class PlayerCombat : MonoBehaviour
     }
 
 
-    // hit pause effect
-    private IEnumerator HitPause(float duration)
-    {
-        float originalTimeScale = Time.timeScale;
-
-        Time.timeScale = 0f;
-        yield return new WaitForSecondsRealtime(duration);
-
-        Time.timeScale = originalTimeScale;
-    }
 }

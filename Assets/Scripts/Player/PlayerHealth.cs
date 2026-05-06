@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -6,6 +7,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private int hp = 100;
     [SerializeField] private int maxHp = 100;
     [SerializeField] private float iFrameTime = 0.3f;
+    [SerializeField] private float damagedPauseTime = 0.05f;
 
     [Header("Regen Settings")]
     [SerializeField] private bool regenerate = false;
@@ -50,6 +52,7 @@ public class PlayerHealth : MonoBehaviour
 
         isInvincible = true;
         iFrameTimer = iFrameTime;
+        TimeManager.Instance.HitStop(damagedPauseTime);
 
         if (hp <= 0)
             Die();
@@ -84,4 +87,7 @@ public class PlayerHealth : MonoBehaviour
     {
         Debug.Log("Player dead");
     }
+
+
+
 }

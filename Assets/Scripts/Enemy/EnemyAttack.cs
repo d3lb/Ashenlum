@@ -6,6 +6,7 @@ public class EnemyAttack : MonoBehaviour
     [Header("References")]
     [SerializeField] private Collider2D attackColliderRight;
     [SerializeField] private Collider2D attackColliderLeft;
+    [SerializeField] private Collider2D attackColliderBody;
     [SerializeField] private LayerMask playerLayer;
 
     [Header("Settings")]
@@ -42,6 +43,18 @@ public class EnemyAttack : MonoBehaviour
         {
             lastAttackTime = Time.time;
             StartCoroutine(DoAttack());
+        }
+
+        int count = attackColliderBody.Overlap(filter, results);
+
+        for (int i = 0; i < count; i++)
+        {
+            PlayerHealth player = results[i].attachedRigidbody?.GetComponent<PlayerHealth>();
+
+            if (player != null)
+            {
+                player.TakeDamage(damage, transform.position);
+            }
         }
     }
     private IEnumerator DoAttack()
