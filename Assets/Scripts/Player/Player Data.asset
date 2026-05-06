@@ -39,7 +39,7 @@ MonoBehaviour:
   slideSpeed: -3
   slideAccel: 6
   dashAmount: 1
-  dashSpeed: 20
+  dashSpeed: 25
   dashTime: 0.2
   dashRefillTime: 0.4
   coyoteTime: 0.15

@@ -89,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
         moveInput.y = Input.GetAxisRaw("Vertical");
 
         // Check If player should be facing left or right
-        if (moveInput.x != 0)
+        if (moveInput.x != 0 && !state.IsBusy)
         {
             facingDir = (moveInput.x > 0) ? 1 : -1;
             state.IsFacingRight = facingDir == 1;
@@ -209,32 +209,36 @@ public class PlayerMovement : MonoBehaviour
 
         #region GRAVITY
         if (state.CurrentState == PlayerStateType.WallSlide)
-            {
-                SetGravityScale(0);
-            }
-            else if (rb.linearVelocity.y < 0 && moveInput.y < 0)
-            {
-                //Much higher gravity if holding down
-                SetGravityScale(data.gravityScale);
-                //Caps maximum fall speed, so when falling over large distances we don't accelerate to insanely high speeds
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y));
-            }
-            else if ((state.CurrentState == PlayerStateType.Jump || state.CurrentState == PlayerStateType.Fall) && Mathf.Abs(rb.linearVelocity.y) < data.jumpHangTimeThreshold)
-            {
-                SetGravityScale(data.gravityScale * data.jumpHangGravityMult);
-            }
-            else if (rb.linearVelocity.y < 0)
-            {
-                //Higher gravity if falling
-                SetGravityScale(data.gravityScale * data.fallGravityMult);
-                //Caps maximum fall speed, so when falling over large distances we don't accelerate to insanely high speeds
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -data.maxFallSpeed));
-            }
-            else
-            {
-                //Default gravity if standing on a platform or moving upwards
-                SetGravityScale(data.gravityScale);
-            }
+        {
+            SetGravityScale(0);
+        }
+        else if (state.CurrentState == PlayerStateType.Dash)
+        {
+            SetGravityScale(0);
+        }
+        else if (rb.linearVelocity.y < 0 && moveInput.y < 0)
+        {
+            //Much higher gravity if holding down
+            SetGravityScale(data.gravityScale);
+            //Caps maximum fall speed, so when falling over large distances we don't accelerate to insanely high speeds
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y));
+        }
+        else if ((state.CurrentState == PlayerStateType.Jump || state.CurrentState == PlayerStateType.Fall) && Mathf.Abs(rb.linearVelocity.y) < data.jumpHangTimeThreshold)
+        {
+            SetGravityScale(data.gravityScale * data.jumpHangGravityMult);
+        }
+        else if (rb.linearVelocity.y < 0)
+        {
+            //Higher gravity if falling
+            SetGravityScale(data.gravityScale * data.fallGravityMult);
+            //Caps maximum fall speed, so when falling over large distances we don't accelerate to insanely high speeds
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -data.maxFallSpeed));
+        }
+        else
+        {
+            //Default gravity if standing on a platform or moving upwards
+            SetGravityScale(data.gravityScale);
+        }
 
         #endregion
 
@@ -244,7 +248,7 @@ public class PlayerMovement : MonoBehaviour
     private void FixedUpdate()
     {
         //Handle Run
-        if (!state.IsUsingAbility)
+        if (!state.IsUsingAbility || !state.IsDashing)
         {
             Run();
         }
@@ -315,6 +319,7 @@ public class PlayerMovement : MonoBehaviour
         Time.timeScale = 1;
     }
     #endregion
+
 
     //MOVEMENT METHODS
     #region RUN METHODS
@@ -407,7 +412,6 @@ public class PlayerMovement : MonoBehaviour
 
         dashesLeft--;
         float gScale = data.gravityScale;
-        SetGravityScale(0);
 
         rb.linearVelocity = Vector2.zero;
         
@@ -422,7 +426,6 @@ public class PlayerMovement : MonoBehaviour
 
         //Dash over
         state.IsDashing = false;
-        SetGravityScale(gScale);
     }
 
     //Short period before the player is able to dash again
