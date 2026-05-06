@@ -2067,8 +2067,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   hp: 100
   maxHp: 100
-  iFrameTime: 0.3
-  damagedPauseTime: 0.05
+  iFrameTime: 0.7
+  hitRecoilX: 50
+  hitRecoilY: 10
+  damagedPauseTime: 0.2
+  hitShakeDuration: 0.1
+  hitShakeAmplitude: 3
+  hitShakeFrequency: 3
   regenerate: 0
   regenDelay: 5
   regenRate: 5

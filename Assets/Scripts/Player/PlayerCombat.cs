@@ -183,19 +183,11 @@ public class PlayerCombat : MonoBehaviour
     {
         if (isKill)
         {
-            StartCoroutine(cameraShake.Shake(
-                killShakeDuration,
-                killShakeAmplitude,
-                killShakeFrequency
-            ));
+            CameraShake.Instance.Shake(killShakeDuration, killShakeAmplitude, killShakeFrequency);
         }
         else
         {
-            StartCoroutine(cameraShake.Shake(
-                hitShakeDuration,
-                hitShakeAmplitude,
-                hitShakeFrequency
-            ));
+            CameraShake.Instance.Shake(hitShakeDuration, hitShakeAmplitude, hitShakeFrequency);
         }
     }
 
