@@ -2,35 +2,15 @@ using UnityEngine;
 
 public class PlayerAnimation : MonoBehaviour
 {
-    private Animator animator;
-    private string currentAnimation = "";
+    [Header("References")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private PlayerState state;
 
-    private PlayerMovement playerMovement;
-
-
-    public void Awake()
+    private void Update()
     {
-        animator = GetComponent<Animator>();
-    }
-
-    public void ChangeAnimation(string animation, float crossFade = 0.2f)
-    {
-        if (currentAnimation != animation)
-        {
-            currentAnimation = animation;
-            animator.CrossFade(animation, crossFade);
-        }
-    }
-
-    public void CheckAnimation()
-    {
-        if (playerMovement.rb.linearVelocity.x != 0)
-        {
-            ChangeAnimation("Run");
-        }
-        else
-        {
-            ChangeAnimation("Idle");
-        }
+        animator.SetInteger(
+            "State",
+            (int)state.CurrentState
+        );
     }
 }
