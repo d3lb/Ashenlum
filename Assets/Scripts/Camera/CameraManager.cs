@@ -1,11 +1,12 @@
 using UnityEngine;
 using Cinemachine;
+
 using static PlayerState;
 
+[DefaultExecutionOrder(100)]
 public class CameraManager : MonoBehaviour
 {
-
-    [Header("Refrences")]
+    [Header("References")]
     [SerializeField] private PlayerState state;
     [SerializeField] private CinemachineVirtualCamera cam;
     private CinemachineFramingTransposer transposer;
@@ -19,16 +20,14 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float fallYDamping = 0.3f;
     [SerializeField] private float dampingLerpSpeed = 5f;
 
-
     private void Awake()
     {
         transposer = cam.GetCinemachineComponent<CinemachineFramingTransposer>();
     }
 
-    void Update()
+    private void LateUpdate()
     {
         xOffset();
-
         yDamping();
     }
 
