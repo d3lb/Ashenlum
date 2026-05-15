@@ -38,7 +38,7 @@ public class CameraRoomBounds : MonoBehaviour
         box = GetComponent<BoxCollider2D>();
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerStay2D(Collider2D other)
     {
         if (!other.CompareTag("Player"))
             return;

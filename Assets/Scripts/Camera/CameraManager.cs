@@ -13,6 +13,8 @@ public class CameraManager : MonoBehaviour
     private CinemachineFramingTransposer transposer;
     private CameraRoomBounds currentRoom;
 
+    public CameraRoomBounds CurrentRoom => currentRoom;
+
     [Header("X Offset Settings")]
     [SerializeField] private float flipSpeed = 5f;
     [SerializeField] private float howFar = 1f;

@@ -5,17 +5,19 @@ public class DebugUI : MonoBehaviour
 {
     public PlayerMovement player;
     public TextMeshProUGUI text;
+
     [SerializeField] private PlayerState state;
     [SerializeField] private PlayerAbility pAbility;
     [SerializeField] private EnemyState Estate;
+    [SerializeField] private CameraManager camera;
 
     void Update()
     {
         text.text =
             "State: " + state.CurrentState + "\n" +
-            "IsGrounded: " + state.IsGrounded + "\n" +
             "Jumps: " + player.JumpNumber + "\n" +
             "Enemy State: " + Estate.CurrentState + "\n" +
-            "Burst Cooldown: " + (int)(pAbility.CooldownPercent * 100) + "%";
+            "Burst Cooldown: " + (int)(pAbility.CooldownPercent * 100) + "%\n" +
+            "Room: " + (camera.CurrentRoom != null ? camera.CurrentRoom.name : "None");
     }
 }
