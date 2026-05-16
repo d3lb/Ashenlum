@@ -15,6 +15,7 @@ public class CameraRoomBounds : MonoBehaviour
     [SerializeField] private float maxX;
     [Space(3)]
     [SerializeField] private bool lockY;
+    [SerializeField] private bool lockYAfterGrounded;
     [SerializeField] private float minY;
     [SerializeField] private float maxY;
 
@@ -30,6 +31,7 @@ public class CameraRoomBounds : MonoBehaviour
     public float MaxX => maxX;
 
     public bool LockY => lockY;
+    public bool LockYAfterGrounded => lockYAfterGrounded;
     public float MinY => minY;
     public float MaxY => maxY;
 

@@ -24,7 +24,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float fallYDamping = 0.3f;
     [SerializeField] private float dampingLerpSpeed = 5f;
 
-
+    private bool hasBeenGroundedInRoom;
 
     private void Awake()
     {
@@ -33,6 +33,11 @@ public class CameraManager : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (state.IsGrounded)
+        {
+            hasBeenGroundedInRoom = true;
+        }
+
         xAxis();
         yAxis();
     }
@@ -126,7 +131,7 @@ public class CameraManager : MonoBehaviour
 
         bool edgeLocked = false;
 
-        if (currentRoom.LockY)
+        if (currentRoom.LockY && (!currentRoom.LockYAfterGrounded || hasBeenGroundedInRoom))
         {
             // top edge
             if (playerY >= currentRoom.MaxY)
@@ -178,5 +183,6 @@ public class CameraManager : MonoBehaviour
     public void SetRoom(CameraRoomBounds room)
     {
         currentRoom = room;
+        hasBeenGroundedInRoom = false;
     }
 }
