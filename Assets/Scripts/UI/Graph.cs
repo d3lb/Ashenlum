@@ -9,7 +9,7 @@ public class DebugUI : MonoBehaviour
     [SerializeField] private PlayerState state;
     [SerializeField] private PlayerAbility pAbility;
     [SerializeField] private EnemyState Estate;
-    [SerializeField] private CameraManager camera;
+    [SerializeField] private CameraManager cameraa;
 
     void Update()
     {
@@ -18,6 +18,9 @@ public class DebugUI : MonoBehaviour
             "Jumps: " + player.JumpNumber + "\n" +
             "Enemy State: " + Estate.CurrentState + "\n" +
             "Burst Cooldown: " + (int)(pAbility.CooldownPercent * 100) + "%\n" +
-            "Room: " + (camera.CurrentRoom != null ? camera.CurrentRoom.name : "None");
-    }
+            "Room: " + (cameraa.CurrentRoom != null ? cameraa.CurrentRoom.name : "None"); 
+            
+            
+    
+            }
 }

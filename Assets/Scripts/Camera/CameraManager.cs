@@ -2,6 +2,7 @@ using UnityEngine;
 using Cinemachine;
 
 using static PlayerState;
+using Unity.VisualScripting;
 
 [DefaultExecutionOrder(100)]
 public class CameraManager : MonoBehaviour
@@ -19,12 +20,7 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float flipSpeed = 5f;
     [SerializeField] private float howFar = 1f;
 
-    [Header("Y Settings")]
-    [SerializeField] private float jumpYDamping = 2f;
-    [SerializeField] private float fallYDamping = 0.3f;
-    [SerializeField] private float dampingLerpSpeed = 5f;
-
-    private bool hasBeenGroundedInRoom;
+    private bool forcingYOffset;
 
     private void Awake()
     {
@@ -33,11 +29,6 @@ public class CameraManager : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (state.IsGrounded)
-        {
-            hasBeenGroundedInRoom = true;
-        }
-
         xAxis();
         yAxis();
     }
@@ -112,8 +103,33 @@ public class CameraManager : MonoBehaviour
         if (currentRoom == null)
             return;
 
-        // Y Tracked Object Offset
         Vector3 offset = transposer.m_TrackedObjectOffset;
+
+        // FORCE Y OFFSET TRANSITION
+        if (forcingYOffset)
+        {
+            offset.y = Mathf.Lerp(
+                offset.y,
+                currentRoom.TrackedYOffset,
+                5f * Time.deltaTime
+            );
+
+            transposer.m_TrackedObjectOffset = offset;
+
+           
+            transposer.m_SoftZoneHeight = 2f;
+            transposer.m_DeadZoneHeight = 0f;
+
+            // wait until close enough
+            if (Mathf.Abs(offset.y - currentRoom.TrackedYOffset) > 0.05f)
+            {
+                return;
+            }
+
+            forcingYOffset = false;
+        }
+
+        // Y Tracked Object Offset
         offset.y = Mathf.Lerp(
             offset.y,
             currentRoom.TrackedYOffset,
@@ -122,16 +138,12 @@ public class CameraManager : MonoBehaviour
         transposer.m_TrackedObjectOffset = offset;
 
         // normal jump/fall damping
-        float targetDamping =
-            state.CurrentState == PlayerStateType.Jump
-            ? jumpYDamping
-            : fallYDamping;
 
         float playerY = player.position.y;
 
         bool edgeLocked = false;
 
-        if (currentRoom.LockY && (!currentRoom.LockYAfterGrounded || hasBeenGroundedInRoom))
+        if (currentRoom.LockY)
         {
             // top edge
             if (playerY >= currentRoom.MaxY)
@@ -162,27 +174,21 @@ public class CameraManager : MonoBehaviour
 
             transposer.m_DeadZoneHeight = Mathf.Lerp(
                 transposer.m_DeadZoneHeight,
-                currentRoom.DeadZoneHeight,
+                0f,
                 7f * Time.deltaTime
             );
         }
-
-        // smooth damping changes
-        transposer.m_YDamping = Mathf.Lerp(
-            transposer.m_YDamping,
-            targetDamping,
-            dampingLerpSpeed * Time.deltaTime
-        );
     }
 
 
 
     // ROOM MANAGED SETTINGS    
-
-
     public void SetRoom(CameraRoomBounds room)
     {
-        currentRoom = room;
-        hasBeenGroundedInRoom = false;
+        if (currentRoom != room)
+        {
+            currentRoom = room;
+            forcingYOffset = currentRoom.ForceYOffset;
+        }
     }
 }

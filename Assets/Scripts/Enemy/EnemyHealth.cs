@@ -8,7 +8,6 @@ public class EnemyHealth : MonoBehaviour
 
     [Header("Health")]
     [SerializeField] private int hp = 6;
-    [SerializeField] private int maxHp = 6;
 
     [Header("Knockback")]
     [SerializeField] private bool knockbackable = true;
