@@ -2,13 +2,13 @@ using UnityEngine;
 
 public class BreakableWall : MonoBehaviour
 {
-    [SerializeField] private int hp = 6;
+    [SerializeField] private int hitsToBreak = 4;
 
-    public bool TakeDamage(int damage)
+    public bool TakeDamage()
     {
-        hp -= damage;
+        hitsToBreak--;
 
-        if (hp <= 0)
+        if (hitsToBreak <= 0)
         {
             Destroy(gameObject);
             return true;

@@ -42,9 +42,10 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float killShakeFrequency = 2.5f;
 
     [Header("Layers")]
+    [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private LayerMask breakableLayer;
-    [SerializeField] private LayerMask groundLayer;
+    [SerializeField] private LayerMask spikeLayer;
 
     private float lastAttackTime;
     private ContactFilter2D filter;
@@ -52,6 +53,8 @@ public class PlayerCombat : MonoBehaviour
     private Collider2D[] results = new Collider2D[10];
     private HashSet<EnemyHealth> hitEnemies = new HashSet<EnemyHealth>();
     private HashSet<BreakableWall> hitWalls = new HashSet<BreakableWall>();
+    private HashSet<Spike> hitSpikes = new HashSet<Spike>();
+
 
     private AttackType currentAttackType;
     private int attackDir;
@@ -65,7 +68,7 @@ public class PlayerCombat : MonoBehaviour
         attackColliderDown.enabled = false;
 
         filter = new ContactFilter2D();
-        filter.SetLayerMask(enemyLayer | breakableLayer);
+        filter.SetLayerMask(enemyLayer | breakableLayer | spikeLayer);
         filter.useTriggers = true;
 
         gfilter = new ContactFilter2D();
@@ -111,6 +114,7 @@ public class PlayerCombat : MonoBehaviour
 
         hitEnemies.Clear();
         hitWalls.Clear();
+        hitSpikes.Clear();
 
         float timer = 0f;
         bool recoilApplied = false;
@@ -144,14 +148,28 @@ public class PlayerCombat : MonoBehaviour
                 if (wall != null && !hitWalls.Contains(wall))
                 {
                     hitWalls.Add(wall);
-                    bool isBroken = wall.TakeDamage(damage);
+                    bool isBroken = wall.TakeDamage();
 
                     if (!recoilApplied)
                     {
                         TimeManager.Instance.HitStop(isBroken ? killPauseTime : hitPauseTime);
                         ShakeHit(isBroken);
+                    }
+                }
+
+                Spike spike = results[i].GetComponentInParent<Spike>();
+
+                if (spike != null)
+                {
+                    if (attackType == AttackType.Down)
+                    {
+                        rb.linearVelocity =
+                            new Vector2(
+                                rb.linearVelocity.x,
+                                pogoForce
+                            );
+
                         ApplyRecoil(attackType);
-                        recoilApplied = true;
                     }
                 }
             }

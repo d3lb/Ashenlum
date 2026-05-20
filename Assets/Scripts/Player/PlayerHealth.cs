@@ -100,10 +100,7 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        state.CurrentState = PlayerState.PlayerStateType.Dead;
-        GetComponent<Collider2D>().enabled = false;
-        rb.linearVelocity = Vector2.zero;
-        this.enabled = false;
+        Debug.Log("Player Died");
     }
 
 
