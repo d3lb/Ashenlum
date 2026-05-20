@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyMove : MonoBehaviour
+public class BasicEnemyAI : MonoBehaviour
 {
     [SerializeField] private Transform playerCheck;
     [SerializeField] private float speed = 2.5f;
