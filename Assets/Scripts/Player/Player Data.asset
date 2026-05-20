@@ -45,3 +45,6 @@ MonoBehaviour:
   coyoteTime: 0.15
   jumpInputBufferTime: 0.15
   dashInputBufferTime: 0.15
+  isDashUnlocked: 1
+  isDoubleJumpUnlocked: 1
+  isWallJumpUnlocked: 1
