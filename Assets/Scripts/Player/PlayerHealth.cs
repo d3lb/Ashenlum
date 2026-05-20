@@ -15,6 +15,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float hitShakeDuration = 0.1f;
     [SerializeField] private float hitShakeAmplitude = 3f;
     [SerializeField] private float hitShakeFrequency = 3f;
+    [SerializeField] private PlayerState state;
 
     [Header("Regen Settings")]
     [SerializeField] private bool regenerate = false;
@@ -99,7 +100,10 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        Debug.Log("Player dead");
+        state.CurrentState = PlayerState.PlayerStateType.Dead;
+        GetComponent<Collider2D>().enabled = false;
+        rb.linearVelocity = Vector2.zero;
+        this.enabled = false;
     }
 
 

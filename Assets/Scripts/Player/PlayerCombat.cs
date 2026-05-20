@@ -43,6 +43,7 @@ public class PlayerCombat : MonoBehaviour
 
     [Header("Layers")]
     [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private LayerMask breakableLayer;
     [SerializeField] private LayerMask groundLayer;
 
     private float lastAttackTime;
@@ -50,6 +51,7 @@ public class PlayerCombat : MonoBehaviour
     private ContactFilter2D gfilter;
     private Collider2D[] results = new Collider2D[10];
     private HashSet<EnemyHealth> hitEnemies = new HashSet<EnemyHealth>();
+    private HashSet<BreakableWall> hitWalls = new HashSet<BreakableWall>();
 
     private AttackType currentAttackType;
     private int attackDir;
@@ -63,7 +65,7 @@ public class PlayerCombat : MonoBehaviour
         attackColliderDown.enabled = false;
 
         filter = new ContactFilter2D();
-        filter.SetLayerMask(enemyLayer);
+        filter.SetLayerMask(enemyLayer | breakableLayer);
         filter.useTriggers = true;
 
         gfilter = new ContactFilter2D();
@@ -108,6 +110,7 @@ public class PlayerCombat : MonoBehaviour
         activeCollider.enabled = true;
 
         hitEnemies.Clear();
+        hitWalls.Clear();
 
         float timer = 0f;
         bool recoilApplied = false;
@@ -132,6 +135,21 @@ public class PlayerCombat : MonoBehaviour
                     {
                         TimeManager.Instance.HitStop(isDead ? killPauseTime : hitPauseTime);
                         ShakeHit(isDead);
+                        ApplyRecoil(attackType);
+                        recoilApplied = true;
+                    }
+                }
+                BreakableWall wall = results[i].GetComponent<BreakableWall>();
+
+                if (wall != null && !hitWalls.Contains(wall))
+                {
+                    hitWalls.Add(wall);
+                    bool isBroken = wall.TakeDamage(damage);
+
+                    if (!recoilApplied)
+                    {
+                        TimeManager.Instance.HitStop(isBroken ? killPauseTime : hitPauseTime);
+                        ShakeHit(isBroken);
                         ApplyRecoil(attackType);
                         recoilApplied = true;
                     }

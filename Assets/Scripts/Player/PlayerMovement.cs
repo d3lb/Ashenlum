@@ -458,27 +458,35 @@ public class PlayerMovement : MonoBehaviour
 
     private bool CanJump()
     {
-        return (LastOnGroundTime > 0 ||  jumpNumber < data.jumpAmount ) && !state.IsBusy;
+        int allowedJumps = data.isDoubleJumpUnlocked ? data.jumpAmount : 1;
+        return (LastOnGroundTime > 0 || jumpNumber < allowedJumps) && !state.IsBusy;
     }
 
     private bool CanWallJump()
     {
+        if (!data.isWallJumpUnlocked) return false;
+
         return LastPressedJumpTime > 0 && LastOnWallTime > 0 && LastOnGroundTime <= 0 && (state.CurrentState != PlayerStateType.Jump ||
              (LastOnWallRightTime > 0 && lastWallJumpDir == 1) || (LastOnWallLeftTime > 0 && lastWallJumpDir == -1));
     }
     private bool CanDash()
     {
+       
+        if (!data.isDashUnlocked) return false;
+
         if (state.CurrentState != PlayerStateType.Dash && dashesLeft < data.dashAmount && LastOnGroundTime > 0 && !dashRefilling)
         {
             StartCoroutine(nameof(RefillDash), 1);
         }
 
         return !state.IsBusy && dashesLeft > 0 && LastPressedDashTime > 0;
-        
+
     }
 
     public bool CanSlide()
     {
+        if (!data.isWallJumpUnlocked) return false;
+
         if (LastOnWallTime > 0 && state.CurrentState != PlayerStateType.Jump && state.CurrentState != PlayerStateType.Dash && LastOnGroundTime <= 0)
             return true;
         else
