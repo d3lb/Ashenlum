@@ -21,6 +21,7 @@ public class BasicEnemyAttack : MonoBehaviour
     private Rigidbody2D rb;
 
 
+
     private void Awake()
     {
         state = GetComponent<EnemyState>();
