@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
+using static PlayerState;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -7,6 +9,7 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private int hp = 100;
     [SerializeField] private int maxHp = 100;
     [SerializeField] private float iFrameTime = 0.3f;
+    [SerializeField] private float respawnDelay = 1.5f;
 
     [Header("Getting Hit")]
     [SerializeField] private float hitRecoilX = 8f;
@@ -15,14 +18,14 @@ public class PlayerHealth : MonoBehaviour
     [SerializeField] private float hitShakeDuration = 0.1f;
     [SerializeField] private float hitShakeAmplitude = 3f;
     [SerializeField] private float hitShakeFrequency = 3f;
-    [SerializeField] private PlayerState state;
 
     [Header("Regen Settings")]
     [SerializeField] private bool regenerate = false;
     [SerializeField] private float regenDelay = 5f;
     [SerializeField] private float regenRate = 3f;
-    private float regenBuffer;
 
+    private float regenBuffer;
+    private PlayerState state;
     private Rigidbody2D rb;
     private float lastHitTime;
     private float iFrameTimer;
@@ -35,6 +38,7 @@ public class PlayerHealth : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        state = GetComponent<PlayerState>();
     }
 
     public void Update()
@@ -54,23 +58,20 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int dmg, Vector2 attackerPos)
     {
-        if (isInvincible)
-            return;
+        if (hp <= 0 || isInvincible) return;
 
         lastHitTime = Time.time;
         regenBuffer = 0f;
-
         hp -= dmg;
-
         isInvincible = true;
         iFrameTimer = iFrameTime;
-        TimeManager.Instance.HitStop(damagedPauseTime);
-        CameraShake.Instance.Shake(hitShakeDuration, hitShakeAmplitude, hitShakeFrequency);
+
+        if (TimeManager.Instance != null) TimeManager.Instance.HitStop(damagedPauseTime);
+        if (CameraShake.Instance != null) CameraShake.Instance.Shake(hitShakeDuration, hitShakeAmplitude, hitShakeFrequency);
+
         ApplyHitRecoil(attackerPos);
 
-
-        if (hp <= 0)
-            Die();
+        if (hp <= 0) Die();
     }
 
     private void Regenerate()
@@ -82,38 +83,46 @@ public class PlayerHealth : MonoBehaviour
         if (regenBuffer >= 1f)
         {
             int amount = Mathf.FloorToInt(regenBuffer);
-
-            Heal(amount);   
+            Heal(amount);
             regenBuffer -= amount;
-
         }
     }
 
     public void Heal(int amount)
     {
         hp += amount;
-
-        if (hp > maxHp)
-            hp = maxHp;
+        if (hp > maxHp) hp = maxHp;
     }
 
-
-    void Die()
+    private void Die()
     {
-        Debug.Log("Player Died");
+        if (state != null && state.CurrentState == PlayerStateType.Dead) return;
+
+        if (state != null) state.CurrentState = PlayerStateType.Dead;
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.bodyType = RigidbodyType2D.Static;
+        }
+
+        StartCoroutine(ReloadScene());
     }
 
+    private IEnumerator ReloadScene()
+    {
+        yield return new WaitForSecondsRealtime(respawnDelay);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 
-    // Apply hit recoil to player when hit
     private void ApplyHitRecoil(Vector2 attackerPos)
     {
         Vector2 dir = (transform.position - (Vector3)attackerPos).normalized;
 
-        rb.linearVelocity = Vector2.zero;
-
-        rb.AddForce(
-            new Vector2(dir.x * hitRecoilX, hitRecoilY),
-            ForceMode2D.Impulse
-        );
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.AddForce(new Vector2(dir.x * hitRecoilX, hitRecoilY), ForceMode2D.Impulse);
+        }
     }
 }

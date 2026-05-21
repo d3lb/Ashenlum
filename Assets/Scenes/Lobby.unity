@@ -3239,7 +3239,7 @@ Transform:
   m_GameObject: {fileID: 1299769771}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 80.860695, y: -26.675291, z: -10}
+  m_LocalPosition: {x: -7.5093, y: 10.63471, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3508,7 +3508,7 @@ Transform:
   m_GameObject: {fileID: 1431540297}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 90.67, y: -35.11, z: 0}
+  m_LocalPosition: {x: 2.3, y: 2.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3708,13 +3708,13 @@ MonoBehaviour:
   hp: 100
   maxHp: 100
   iFrameTime: 0.7
+  respawnDelay: 0.3
   hitRecoilX: 50
   hitRecoilY: 10
   damagedPauseTime: 0.2
   hitShakeDuration: 0.1
   hitShakeAmplitude: 3
   hitShakeFrequency: 3
-  state: {fileID: 0}
   regenerate: 0
   regenDelay: 5
   regenRate: 5
@@ -161956,7 +161956,7 @@ Transform:
   m_GameObject: {fileID: 2051250560}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 80.860695, y: -26.675291, z: -10}
+  m_LocalPosition: {x: -7.5093, y: 10.63471, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
