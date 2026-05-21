@@ -15,7 +15,7 @@ public class BasicEnemyAI : MonoBehaviour
     private EnemyState state;
     private EnemyHealth health;
 
-
+    private Transform currentTarget;
 
     void Start()
     {
@@ -27,17 +27,28 @@ public class BasicEnemyAI : MonoBehaviour
 
     void Update()
     {
-
-        if (state.CurrentState == EnemyState.EnemyStateType.Hit && state.IsKnocked)
+        if (state.CurrentState == EnemyState.EnemyStateType.Hit
+            && state.IsKnocked)
         {
             return;
         }
 
-        Collider2D[] playerInSight = Physics2D.OverlapCircleAll(playerCheck.position, playerCheckRange, playerLayer);
+        Collider2D[] playerInSight =
+            Physics2D.OverlapCircleAll(
+                playerCheck.position,
+                playerCheckRange,
+                playerLayer
+            );
 
         if (playerInSight.Length > 0)
         {
-            float distance = Vector2.Distance(transform.position, playerInSight[0].transform.position);
+            currentTarget = playerInSight[0].transform;
+
+            float distance =
+                Vector2.Distance(
+                    transform.position,
+                    currentTarget.position
+                );
 
             if (distance > playerStopCheckRange)
                 state.CurrentState = EnemyState.EnemyStateType.Chase;
@@ -46,6 +57,7 @@ public class BasicEnemyAI : MonoBehaviour
         }
         else
         {
+            currentTarget = null;
             state.CurrentState = EnemyState.EnemyStateType.Idle;
         }
     }
@@ -69,40 +81,38 @@ public class BasicEnemyAI : MonoBehaviour
 
         if (state.CurrentState == EnemyState.EnemyStateType.Attack)
         {
-            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+            if (!state.IsAttacking)
+            {
+                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+            }
         }
 
         // flip 
-        if (state.CurrentState != EnemyState.EnemyStateType.Hit)
+        if (currentTarget != null && !state.IsAttacking)
         {
-            if (rb.linearVelocity.x > 0.01f)
-            {
-                sprite.flipX = false;
-                state.IsFacingRight = false;
-            }
-                
-            else if (rb.linearVelocity.x < -0.01f)
-            {
-                sprite.flipX = true;
-                state.IsFacingRight = true;
-            }
+            bool facingRight =
+                currentTarget.position.x > transform.position.x;
 
-
+            state.IsFacingRight = facingRight;
+            sprite.flipX = !facingRight;
         }
     }
 
     private void ChasePlayer()
     {
-        Collider2D[] playerInSight = Physics2D.OverlapCircleAll(playerCheck.position, playerCheckRange, playerLayer);
-
-        if (playerInSight.Length == 0)
+        if (currentTarget == null)
             return;
 
-        Transform player = playerInSight[0].transform;
+        float dir =
+            Mathf.Sign(
+                currentTarget.position.x - transform.position.x
+            );
 
-        float dir = Mathf.Sign(player.position.x - transform.position.x);
-
-        rb.linearVelocity = new Vector2(dir * speed, rb.linearVelocity.y);
+        rb.linearVelocity =
+            new Vector2(
+                dir * speed,
+                rb.linearVelocity.y
+            );
     }
 
     void OnDrawGizmosSelected()
