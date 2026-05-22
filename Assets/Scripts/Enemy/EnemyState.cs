@@ -4,7 +4,7 @@ public class EnemyState : MonoBehaviour
 {
     public enum EnemyStateType
     {
-        Idle,
+        Patrol,
         Chase,
         Attack,
         Hit

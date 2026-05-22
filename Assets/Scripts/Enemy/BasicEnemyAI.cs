@@ -4,11 +4,23 @@ using UnityEngine;
 
 public class BasicEnemyAI : MonoBehaviour
 {
+    [Header("Refrences")]
     [SerializeField] private Transform playerCheck;
+    [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private LayerMask sightBlockLayer;
+
+    [Header("Settings")]
     [SerializeField] private float speed = 2.5f;
     [SerializeField] private float playerCheckRange = 7f;
     [SerializeField] private float playerStopCheckRange = 3f;
-    [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private float loseTargetTime = 2f;
+
+
+    [Header("Patrol")]
+    [SerializeField] private Transform pointA;
+    [SerializeField] private Transform pointB;
+    [SerializeField] private float patrolSpeed = 1.5f;
+    [SerializeField] private float arriveDistance = 0.1f;
 
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
@@ -16,6 +28,9 @@ public class BasicEnemyAI : MonoBehaviour
     private EnemyHealth health;
 
     private Transform currentTarget;
+    private Transform patrolTarget;
+    private float loseTargetTimer;
+
 
     void Start()
     {
@@ -23,6 +38,7 @@ public class BasicEnemyAI : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
         state = GetComponent<EnemyState>();
         health = GetComponent<EnemyHealth>();
+        patrolTarget = pointB;
     }
 
     void Update()
@@ -40,9 +56,11 @@ public class BasicEnemyAI : MonoBehaviour
                 playerLayer
             );
 
-        if (playerInSight.Length > 0)
+        if (playerInSight.Length > 0 && HasLineOfSight(playerInSight[0].transform))
         {
             currentTarget = playerInSight[0].transform;
+
+            loseTargetTimer = loseTargetTime;
 
             float distance =
                 Vector2.Distance(
@@ -57,8 +75,29 @@ public class BasicEnemyAI : MonoBehaviour
         }
         else
         {
-            currentTarget = null;
-            state.CurrentState = EnemyState.EnemyStateType.Idle;
+            if (loseTargetTimer > 0f)
+            {
+                loseTargetTimer -= Time.deltaTime;
+
+                if (currentTarget != null)
+                {
+                    float distance =
+                        Vector2.Distance(
+                            transform.position,
+                            currentTarget.position
+                        );
+
+                    if (distance > playerStopCheckRange)
+                        state.CurrentState = EnemyState.EnemyStateType.Chase;
+                    else
+                        state.CurrentState = EnemyState.EnemyStateType.Attack;
+                }
+            }
+            else
+            {
+                currentTarget = null;
+                state.CurrentState = EnemyState.EnemyStateType.Patrol;
+            }
         }
     }
 
@@ -69,9 +108,9 @@ public class BasicEnemyAI : MonoBehaviour
             return;
 
 
-        if (state.CurrentState == EnemyState.EnemyStateType.Idle)
+        if (state.CurrentState == EnemyState.EnemyStateType.Patrol)
         {
-            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+            Patrol();
         }
 
         if (state.CurrentState == EnemyState.EnemyStateType.Chase)
@@ -88,10 +127,31 @@ public class BasicEnemyAI : MonoBehaviour
         }
 
         // flip 
-        if (currentTarget != null && !state.IsAttacking)
+        if (!state.IsAttacking)
         {
-            bool facingRight =
-                currentTarget.position.x > transform.position.x;
+            bool facingRight = state.IsFacingRight;
+
+            // face player if target exists
+            if (currentTarget != null)
+            {
+                float deltaX =
+                    currentTarget.position.x - transform.position.x;
+
+                if (Mathf.Abs(deltaX) > 0.2f)
+                {
+                    facingRight = deltaX > 0f;
+                }
+            }
+            // otherwise face movement direction
+            else
+            {
+                float velocityX = rb.linearVelocity.x;
+
+                if (Mathf.Abs(velocityX) > 0.05f)
+                {
+                    facingRight = velocityX > 0f;
+                }
+            }
 
             state.IsFacingRight = facingRight;
             sprite.flipX = !facingRight;
@@ -103,16 +163,74 @@ public class BasicEnemyAI : MonoBehaviour
         if (currentTarget == null)
             return;
 
-        float dir =
-            Mathf.Sign(
-                currentTarget.position.x - transform.position.x
-            );
+        float deltaX =
+            currentTarget.position.x - transform.position.x;
+
+        if (Mathf.Abs(deltaX) < 0.2f)
+        {
+            rb.linearVelocity =
+                new Vector2(0f, rb.linearVelocity.y);
+
+            return;
+        }
+
+        float dir = Mathf.Sign(deltaX);
 
         rb.linearVelocity =
             new Vector2(
                 dir * speed,
                 rb.linearVelocity.y
             );
+    }
+
+    private void Patrol()
+    {
+        if (patrolTarget == null)
+            return;
+
+        float deltaX =
+            patrolTarget.position.x - transform.position.x;
+
+        if (Mathf.Abs(deltaX) < arriveDistance)
+        {
+            patrolTarget =
+                patrolTarget == pointA
+                ? pointB
+                : pointA;
+
+            return;
+        }
+
+        float dir = Mathf.Sign(deltaX);
+
+        rb.linearVelocity =
+            new Vector2(
+                dir * patrolSpeed,
+                rb.linearVelocity.y
+            );
+    }
+
+    private bool HasLineOfSight(Transform target)
+    {
+        Vector2 origin = transform.position;
+        Vector2 dir =
+            (target.position - transform.position).normalized;
+
+        float distance =
+            Vector2.Distance(
+                transform.position,
+                target.position
+            );
+
+        RaycastHit2D hit =
+            Physics2D.Raycast(
+                origin,
+                dir,
+                distance,
+                sightBlockLayer
+            );
+
+        return hit.collider == null;
     }
 
     void OnDrawGizmosSelected()
