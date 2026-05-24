@@ -35,6 +35,29 @@ public class PlayerHealth : MonoBehaviour
     public int MaxHP => maxHp;
     public float LastHitTime => lastHitTime;
 
+    public enum StabilityState
+    {
+        High,
+        Mid,
+        Low
+    }
+
+    public StabilityState CurrentStabilityState
+    {
+        get
+        {
+            float percent = (float)hp / maxHp;
+
+            if (percent > 0.66f)
+                return StabilityState.High;
+
+            if (percent > 0.33f)
+                return StabilityState.Mid;
+
+            return StabilityState.Low;
+        }
+    }
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();

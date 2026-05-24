@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
+using static PlayerHealth;
 using static PlayerState;
 
 public class PlayerCombat : MonoBehaviour
@@ -9,6 +11,7 @@ public class PlayerCombat : MonoBehaviour
     private Rigidbody2D rb;
     [SerializeField] private PlayerMovement movement;
     [SerializeField] private PlayerState state;
+    [SerializeField] private PlayerHealth health;
     [SerializeField] private CameraShake cameraShake;
     [SerializeField] private Collider2D attackColliderRight;
     [SerializeField] private Collider2D attackColliderLeft;
@@ -19,10 +22,15 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Transform attackPointUp;
     [SerializeField] private Transform attackPointDown;
     [SerializeField] private GameObject slashPrefab;
-
+    [SerializeField] private GameObject bigHitPrefab;
+    [SerializeField] private GameObject smallHitPrefab;
 
     [Header("Settings")]
-    [SerializeField] private int damage = 2;
+    private int damage = 2;
+    [SerializeField] private int highDamage = 2;
+    [SerializeField] private int midDamage = 3;
+    [SerializeField] private int lowDamage = 5;
+
     [SerializeField] private float attackCooldown = 0.2f;
     [SerializeField] private float attackDuration = 0.1f;
     [SerializeField] private float attackSpeed = 1f;
@@ -46,6 +54,10 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private LayerMask breakableLayer;
     [SerializeField] private LayerMask spikeLayer;
+
+    [Header("Hit VFX")]
+    [SerializeField] private float smallOffset = 0.15f;
+    [SerializeField] private float randomAngle = 15f;
 
     private float lastAttackTime;
     private ContactFilter2D filter;
@@ -100,7 +112,6 @@ public class PlayerCombat : MonoBehaviour
 
     private IEnumerator DoAttack()
     {
-
         attackDir = state.IsFacingRight ? 1 : -1;
         float active = attackDuration / attackSpeed;
 
@@ -115,6 +126,21 @@ public class PlayerCombat : MonoBehaviour
         hitEnemies.Clear();
         hitWalls.Clear();
         hitSpikes.Clear();
+
+        switch (health.CurrentStabilityState)
+        {
+            case StabilityState.High:
+                damage = highDamage;
+                break;
+
+            case StabilityState.Mid:
+                damage = midDamage;
+                break;
+
+            case StabilityState.Low:
+                damage = lowDamage;
+                break;
+        }
 
         float timer = 0f;
         bool recoilApplied = false;
@@ -134,6 +160,8 @@ public class PlayerCombat : MonoBehaviour
                 {
                     hitEnemies.Add(enemy);
                     bool isDead = enemy.TakeDamage(damage, transform.position);
+
+                    SpawnHitEffect(enemy.transform.position, attackType);
 
                     if (!recoilApplied)
                     {
@@ -287,23 +315,23 @@ public class PlayerCombat : MonoBehaviour
                 if (attackDir == 1) // right
                 {
                     point = attackPointRight;
-                    rot = Quaternion.Euler(0, 0, -90);
+                    rot = Quaternion.identity;
                 }
                 else // left
                 {
                     point = attackPointLeft;
-                    rot = Quaternion.Euler(0, 0, 90);
+                    rot = Quaternion.Euler(0, 0, 180);
                 }
                 break;
 
             case AttackType.Up:
                 point = attackPointUp;
-                rot = Quaternion.identity;
+                rot = Quaternion.Euler(0, 0, 90);
                 break;
 
             case AttackType.Down:
                 point = attackPointDown;
-                rot = Quaternion.Euler(0, 0, 180);
+                rot = Quaternion.Euler(0, 0, -90);
                 break;
 
             default:
@@ -311,8 +339,75 @@ public class PlayerCombat : MonoBehaviour
         }
 
         GameObject slash = Instantiate(slashPrefab, transform);
+
         slash.transform.localPosition = point.localPosition;
         slash.transform.localRotation = rot;
+
+        Animator anim = slash.GetComponent<Animator>();
+
+        anim.Play(Random.value < 0.5f ? "Slasher1" : "Slasher2");
+
+    }
+
+    private void SpawnHitEffect(Vector3 pos, AttackType type)
+    {
+        // BIG
+
+        Quaternion bigRot;
+
+        if (type == AttackType.Side)
+            bigRot = Quaternion.identity;
+        else
+            bigRot = Quaternion.Euler(0, 0, 90);
+
+        bigRot *= Quaternion.Euler(
+            0,
+            0,
+            Random.Range(-randomAngle, randomAngle)
+        );
+
+        Instantiate(
+            bigHitPrefab,
+            pos,
+            bigRot
+        );
+
+
+        // SMALL #1
+
+        Quaternion smallRot;
+
+        if (type == AttackType.Side)
+            smallRot = Quaternion.identity;
+        else
+            smallRot = Quaternion.Euler(0, 0, 90);
+
+        smallRot *= Quaternion.Euler(
+            0,
+            0,
+            Random.Range(-randomAngle * 2, randomAngle * 2)
+        );
+
+        Instantiate(
+            smallHitPrefab,
+            pos + Random.insideUnitSphere * smallOffset,
+            smallRot
+        );
+
+
+        // SMALL #2
+
+        smallRot *= Quaternion.Euler(
+            0,
+            0,
+            Random.Range(-randomAngle * 2, randomAngle * 2)
+        );
+
+        Instantiate(
+            smallHitPrefab,
+            pos + Random.insideUnitSphere * smallOffset,
+            smallRot
+        );
     }
 
 

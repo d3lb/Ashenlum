@@ -3638,6 +3638,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   movement: {fileID: 1431540305}
   state: {fileID: 1431540307}
+  health: {fileID: 1431540311}
   cameraShake: {fileID: 1299769775}
   attackColliderRight: {fileID: 667739016}
   attackColliderLeft: {fileID: 253237395}
@@ -3648,7 +3649,11 @@ MonoBehaviour:
   attackPointUp: {fileID: 35868800}
   attackPointDown: {fileID: 1589238900}
   slashPrefab: {fileID: 3744102069437675689, guid: 3ef07e7424265ae4d939fd0696325a99, type: 3}
-  damage: 2
+  bigHitPrefab: {fileID: 9046498765681555984, guid: fc79d9db88212894c9f54a5e36d7cd08, type: 3}
+  smallHitPrefab: {fileID: 6872354023078328444, guid: 1733307614a0ed54fa5af38193ea8f4d, type: 3}
+  highDamage: 2
+  midDamage: 3
+  lowDamage: 5
   attackCooldown: 0.4
   attackDuration: 0.1
   attackSpeed: 0.8
@@ -3675,6 +3680,8 @@ MonoBehaviour:
   spikeLayer:
     serializedVersion: 2
     m_Bits: 2048
+  smallOffset: 0.15
+  randomAngle: 10
 --- !u!114 &1431540311
 MonoBehaviour:
   m_ObjectHideFlags: 0

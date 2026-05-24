@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Slashers
+  m_Name: Small
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -21,9 +21,11 @@ AnimationClip:
   - serializedVersion: 2
     curve:
     - time: 0
-      value: {fileID: -1039075166109188903, guid: 6c319363bba5cc74dbafeed817f82ecb, type: 3}
+      value: {fileID: -6815114853713114225, guid: c4bfbe058eac45049beee86a44984586, type: 3}
     - time: 0.016666668
-      value: {fileID: 3134785247270097662, guid: 1b8a827e9a58ef646b8f3c4af5d19b78, type: 3}
+      value: {fileID: 8540805691129066755, guid: f006aaf8a70f7ef4b8881fa2464cc686, type: 3}
+    - time: 0.033333335
+      value: {fileID: -4548108575672624981, guid: 6118e4bd55e0ff849b94e33f8d97fdae, type: 3}
     attribute: m_Sprite
     path: 
     classID: 212
@@ -46,14 +48,15 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
-    - {fileID: -1039075166109188903, guid: 6c319363bba5cc74dbafeed817f82ecb, type: 3}
-    - {fileID: 3134785247270097662, guid: 1b8a827e9a58ef646b8f3c4af5d19b78, type: 3}
+    - {fileID: -6815114853713114225, guid: c4bfbe058eac45049beee86a44984586, type: 3}
+    - {fileID: 8540805691129066755, guid: f006aaf8a70f7ef4b8881fa2464cc686, type: 3}
+    - {fileID: -4548108575672624981, guid: 6118e4bd55e0ff849b94e33f8d97fdae, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.033333335
+    m_StopTime: 0.050000004
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
