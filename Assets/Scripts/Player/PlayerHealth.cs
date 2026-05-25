@@ -5,6 +5,11 @@ using static PlayerState;
 
 public class PlayerHealth : MonoBehaviour
 {
+
+    public static Vector2 checkpointPos;
+    public static bool hasCheckpoint = false;
+
+
     [Header("Main Settings")]
     [SerializeField] private int hp = 100;
     [SerializeField] private int maxHp = 100;
@@ -62,6 +67,14 @@ public class PlayerHealth : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         state = GetComponent<PlayerState>();
+    }
+
+    private void Start()
+    {
+        if (hasCheckpoint)
+        {
+            transform.position = checkpointPos;
+        }
     }
 
     public void Update()
