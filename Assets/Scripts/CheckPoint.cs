@@ -17,6 +17,7 @@ public class CheckPoint : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             isPlayerInRange = true;
+            Debug.Log("Physics Trigger: Player detected.");
         }
     }
 
@@ -32,5 +33,6 @@ public class CheckPoint : MonoBehaviour
     {
         PlayerRespawn.checkpointPosition = transform.position;
         PlayerRespawn.hasCheckpoint = true;
+        Debug.Log("Input Trigger: Progress Saved!");
     }
 }
