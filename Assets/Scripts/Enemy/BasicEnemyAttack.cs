@@ -6,7 +6,7 @@ public class BasicEnemyAttack : MonoBehaviour
     [Header("References")]
     [SerializeField] private Collider2D attackColliderRight;
     [SerializeField] private Collider2D attackColliderLeft;
-
+    [SerializeField] private EnemyAnimation enemyAnimation;
 
     [Header("Settings")]
     [SerializeField] private float attackCooldown = 1f;
@@ -50,12 +50,13 @@ public class BasicEnemyAttack : MonoBehaviour
     }
     private IEnumerator DoAttack()
     {
+
         state.IsAttacking = true;
 
         // wait before hit
-        sprite.color = Color.red;
+        enemyAnimation.TriggerPrepare();
         yield return new WaitForSeconds(attackWindup);
-        sprite.color = Color.white;
+        enemyAnimation.TriggerAttack();
 
         Collider2D active = GetActiveCollider();
 

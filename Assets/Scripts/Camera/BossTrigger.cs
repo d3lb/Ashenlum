@@ -18,4 +18,17 @@ public class BossTrigger : MonoBehaviour
 
         cameraSwitcher.SwitchToBossCam();
     }
+
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (activated)
+            return;
+
+        if (!other.CompareTag("Player"))
+            return;
+
+        activated = false;
+
+        cameraSwitcher.SwitchToGameplayCam();
+    }
 }

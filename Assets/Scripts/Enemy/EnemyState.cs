@@ -14,6 +14,4 @@ public class EnemyState : MonoBehaviour
     public bool IsFacingRight;
     public bool IsKnocked;
     public bool IsAttacking;
-
-
 }

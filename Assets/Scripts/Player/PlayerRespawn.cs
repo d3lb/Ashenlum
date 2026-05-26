@@ -2,14 +2,13 @@ using UnityEngine;
 
 public class PlayerRespawn : MonoBehaviour
 {
-    public static Vector2 checkpointPosition;
-    public static bool hasCheckpoint = false;
-
-    void Start()
+    private void Start()
     {
-        if (hasCheckpoint)
+        if (GameManager.Instance.HasCheckpoint())
         {
-            transform.position = checkpointPosition;
+            transform.position =
+                GameManager.Instance
+                .GetCheckpointPosition();
         }
     }
 }

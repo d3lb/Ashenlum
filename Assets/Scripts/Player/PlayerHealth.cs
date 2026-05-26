@@ -139,7 +139,7 @@ public class PlayerHealth : MonoBehaviour
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
-            rb.bodyType = RigidbodyType2D.Static;
+            rb.simulated = false;
         }
 
         StartCoroutine(ReloadScene());
