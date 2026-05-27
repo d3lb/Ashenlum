@@ -22,8 +22,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Transform attackPointUp;
     [SerializeField] private Transform attackPointDown;
     [SerializeField] private GameObject slashPrefab;
-    [SerializeField] private GameObject bigHitPrefab;
-    [SerializeField] private GameObject smallHitPrefab;
+    [SerializeField] private EffectSpawner effectSpawner;
 
     [Header("Settings")]
     private int damage = 2;
@@ -34,6 +33,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float attackCooldown = 0.2f;
     [SerializeField] private float attackDuration = 0.1f;
     [SerializeField] private float attackSpeed = 1f;
+    [SerializeField] private float hitFrameTime = 0.05f;
     [SerializeField] private float recoilForceX = 5f;
     [SerializeField] private float recoilForceY = 2f;
     [SerializeField] private float pogoForce = 15f;
@@ -54,10 +54,6 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private LayerMask enemyLayer;
     [SerializeField] private LayerMask breakableLayer;
     [SerializeField] private LayerMask spikeLayer;
-
-    [Header("Hit VFX")]
-    [SerializeField] private float smallOffset = 0.15f;
-    [SerializeField] private float randomAngle = 15f;
 
     private float lastAttackTime;
     private ContactFilter2D filter;
@@ -110,18 +106,20 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
+
     private IEnumerator DoAttack()
     {
         attackDir = state.IsFacingRight ? 1 : -1;
+
         float active = attackDuration / attackSpeed;
+        float hitTime = hitFrameTime / attackSpeed;
 
         var (activeCollider, attackType) = GetAttackData();
+
         currentAttackType = attackType;
-        SpawnSlash(attackType);
 
         state.IsAttacking = true;
         state.CurrentState = GetStateFromAttack(attackType);
-        activeCollider.enabled = true;
 
         hitEnemies.Clear();
         hitWalls.Clear();
@@ -142,91 +140,102 @@ public class PlayerCombat : MonoBehaviour
                 break;
         }
 
-        float timer = 0f;
-        bool recoilApplied = false;
+        // WAIT UNTIL HIT FRAME
+        yield return new WaitForSeconds(hitTime);
 
-        while (timer < active)
-        {
-            int count = activeCollider.Overlap(filter, results);
+        SpawnSlash(attackType);
+        activeCollider.enabled = true;
 
-            for (int i = 0; i < count; i++)
-            {
-                if (results[i].transform.root == transform)
-                    continue;
+        ProcessAttackHit(activeCollider, attackType);
 
-                EnemyHealth enemy = results[i].attachedRigidbody?.GetComponent<EnemyHealth>();
-
-                if (enemy != null && !hitEnemies.Contains(enemy))
-                {
-                    hitEnemies.Add(enemy);
-                    bool isDead = enemy.TakeDamage(damage, transform.position);
-
-                    SpawnHitEffect(enemy.transform.position, attackType);
-
-                    if (!recoilApplied)
-                    {
-                        TimeManager.Instance.HitStop(isDead ? killPauseTime : hitPauseTime);
-                        ShakeHit(isDead);
-                        ApplyRecoil(attackType);
-                        recoilApplied = true;
-                    }
-                }
-                BreakableWall wall = results[i].GetComponent<BreakableWall>();
-
-                if (wall != null && !hitWalls.Contains(wall))
-                {
-                    hitWalls.Add(wall);
-                    bool isBroken = wall.TakeDamage();
-
-                    if (!recoilApplied)
-                    {
-                        TimeManager.Instance.HitStop(isBroken ? killPauseTime : hitPauseTime);
-                        ShakeHit(isBroken);
-                    }
-                }
-
-                Spike spike = results[i].GetComponentInParent<Spike>();
-
-                if (spike != null)
-                {
-                    if (attackType == AttackType.Down)
-                    {
-                        rb.linearVelocity =
-                            new Vector2(
-                                rb.linearVelocity.x,
-                                pogoForce
-                            );
-
-                        ApplyRecoil(attackType);
-                    }
-                }
-            }
-
-            int groundHits = activeCollider.Overlap(gfilter, results);
-
-            for (int i = 0; i < groundHits; i++)
-            {
-                if (results[i].transform.root == transform)
-                    continue;
-
-                if (currentAttackType == AttackType.Down || currentAttackType == AttackType.Up)
-                    continue;
-
-                if (!recoilApplied)
-                {
-                    ApplyWallRecoil();
-                    recoilApplied = true;
-                }
-            }
+        yield return new WaitForSeconds(active - hitTime);
 
 
-            timer += Time.deltaTime;
-            yield return null;
-        }
+        
 
         activeCollider.enabled = false;
         state.IsAttacking = false;
     }
+
+    // Process the attack 
+    private void ProcessAttackHit(Collider2D activeCollider, AttackType attackType)
+    {
+        bool recoilApplied = false;
+
+        int count = activeCollider.Overlap(filter, results);
+
+        for (int i = 0; i < count; i++)
+        {
+            if (results[i].transform.root == transform)
+                continue;
+
+            EnemyHealth enemy = results[i].attachedRigidbody?.GetComponent<EnemyHealth>();
+
+            if (enemy != null && !hitEnemies.Contains(enemy))
+            {
+                hitEnemies.Add(enemy);
+                bool isDead = enemy.TakeDamage(damage, transform.position);
+
+                effectSpawner.SpawnHitEffect(enemy.transform.position, attackType != AttackType.Side);
+
+                if (!recoilApplied)
+                {
+                    TimeManager.Instance.HitStop(isDead ? killPauseTime : hitPauseTime);
+                    ShakeHit(isDead);
+                    ApplyRecoil(attackType);
+                    recoilApplied = true;
+                }
+            }
+            BreakableWall wall = results[i].GetComponent<BreakableWall>();
+
+            if (wall != null && !hitWalls.Contains(wall))
+            {
+                hitWalls.Add(wall);
+                bool isBroken = wall.TakeDamage();
+
+                if (!recoilApplied)
+                {
+                    TimeManager.Instance.HitStop(isBroken ? killPauseTime : hitPauseTime);
+                    ShakeHit(isBroken);
+                }
+            }
+
+            Spike spike = results[i].GetComponentInParent<Spike>();
+
+            if (spike != null)
+            {
+                if (attackType == AttackType.Down)
+                {
+                    rb.linearVelocity =
+                        new Vector2(
+                            rb.linearVelocity.x,
+                            pogoForce
+                        );
+
+                    ApplyRecoil(attackType);
+                }
+            }
+        }
+
+        int groundHits = activeCollider.Overlap(gfilter, results);
+
+        for (int i = 0; i < groundHits; i++)
+        {
+            if (results[i].transform.root == transform)
+                continue;
+
+            if (currentAttackType == AttackType.Down || currentAttackType == AttackType.Up)
+                continue;
+
+            if (!recoilApplied)
+            {
+                ApplyWallRecoil();
+                recoilApplied = true;
+            }
+        }
+
+}
+
 
     // getting data about which attack is happening
     private (Collider2D, AttackType) GetAttackData()
@@ -348,67 +357,4 @@ public class PlayerCombat : MonoBehaviour
         anim.Play(Random.value < 0.5f ? "Slasher1" : "Slasher2");
 
     }
-
-    private void SpawnHitEffect(Vector3 pos, AttackType type)
-    {
-        // BIG
-
-        Quaternion bigRot;
-
-        if (type == AttackType.Side)
-            bigRot = Quaternion.identity;
-        else
-            bigRot = Quaternion.Euler(0, 0, 90);
-
-        bigRot *= Quaternion.Euler(
-            0,
-            0,
-            Random.Range(-randomAngle, randomAngle)
-        );
-
-        Instantiate(
-            bigHitPrefab,
-            pos,
-            bigRot
-        );
-
-
-        // SMALL #1
-
-        Quaternion smallRot;
-
-        if (type == AttackType.Side)
-            smallRot = Quaternion.identity;
-        else
-            smallRot = Quaternion.Euler(0, 0, 90);
-
-        smallRot *= Quaternion.Euler(
-            0,
-            0,
-            Random.Range(-randomAngle * 2, randomAngle * 2)
-        );
-
-        Instantiate(
-            smallHitPrefab,
-            pos + Random.insideUnitSphere * smallOffset,
-            smallRot
-        );
-
-
-        // SMALL #2
-
-        smallRot *= Quaternion.Euler(
-            0,
-            0,
-            Random.Range(-randomAngle * 2, randomAngle * 2)
-        );
-
-        Instantiate(
-            smallHitPrefab,
-            pos + Random.insideUnitSphere * smallOffset,
-            smallRot
-        );
-    }
-
-
 }

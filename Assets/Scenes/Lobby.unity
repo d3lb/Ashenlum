@@ -3220,6 +3220,54 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2.298378, y: 2.108639}
   m_EdgeRadius: 0
+--- !u!1 &764272530
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 764272532}
+  - component: {fileID: 764272531}
+  m_Layer: 0
+  m_Name: EffectSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &764272531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764272530}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f7074766e4aab524d9c072784d7362a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  bigHitPrefab: {fileID: 9046498765681555984, guid: fc79d9db88212894c9f54a5e36d7cd08, type: 3}
+  smallHitPrefab: {fileID: 6872354023078328444, guid: 1733307614a0ed54fa5af38193ea8f4d, type: 3}
+  smallOffset: 0.15
+  randomAngle: 15
+--- !u!4 &764272532
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 764272530}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.85696, y: -0.81707, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &770214280
 GameObject:
   m_ObjectHideFlags: 0
@@ -5292,14 +5340,14 @@ MonoBehaviour:
   attackPointUp: {fileID: 35868800}
   attackPointDown: {fileID: 1589238900}
   slashPrefab: {fileID: 3744102069437675689, guid: 3ef07e7424265ae4d939fd0696325a99, type: 3}
-  bigHitPrefab: {fileID: 9046498765681555984, guid: fc79d9db88212894c9f54a5e36d7cd08, type: 3}
-  smallHitPrefab: {fileID: 6872354023078328444, guid: 1733307614a0ed54fa5af38193ea8f4d, type: 3}
+  effectSpawner: {fileID: 764272531}
   highDamage: 2
   midDamage: 3
   lowDamage: 5
   attackCooldown: 0.4
   attackDuration: 0.1
   attackSpeed: 0.8
+  hitFrameTime: 0.05
   recoilForceX: 6
   recoilForceY: 3
   pogoForce: 15
@@ -5323,8 +5371,6 @@ MonoBehaviour:
   spikeLayer:
     serializedVersion: 2
     m_Bits: 2048
-  smallOffset: 0.15
-  randomAngle: 10
 --- !u!114 &1431540311
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5364,9 +5410,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   playerHealth: {fileID: 1431540311}
   state: {fileID: 1431540307}
+  animator: {fileID: 1431540298}
+  wingBurstPrefab: {fileID: 1490726904561846368, guid: 27a471fc07869fc42b96695974f63422, type: 3}
+  effectSpawner: {fileID: 764272531}
   burstRadius: 7
-  burstDamage: 10
-  burstHeal: 10
+  minBurstDamage: 1
+  maxBurstDamage: 10
+  burstHeal: 15
   burstCooldown: 10
   postHitLockTime: 0.5
   enemyLayer:
@@ -165137,6 +165187,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 1829811736}
   - {fileID: 845289137}
+  - {fileID: 764272532}
   - {fileID: 1156828982}
   - {fileID: 1042087962}
   - {fileID: 342833017}

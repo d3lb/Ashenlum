@@ -1,16 +1,20 @@
 using UnityEngine;
 using static PlayerState;
+using System.Collections;
 
 public class PlayerAbility : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private PlayerState state;
-
+    [SerializeField] private Animator animator;
+    [SerializeField] private GameObject wingBurstPrefab;
+    [SerializeField] private EffectSpawner effectSpawner;
 
     [Header("Burst Settings")]
     [SerializeField] private float burstRadius = 7f;
-    [SerializeField] private int burstDamage = 5;
+    [SerializeField] private int minBurstDamage = 1;
+    [SerializeField] private int maxBurstDamage = 10; 
     [SerializeField] private int burstHeal = 15;
     [SerializeField] private float burstCooldown = 10f;
     [SerializeField] private float postHitLockTime = 0.5f;
@@ -23,7 +27,6 @@ public class PlayerAbility : MonoBehaviour
     private float burstTimer;
     private bool isCharging;
     private float lastBurstTime;
-
     public float CooldownPercent
     {
         get
@@ -36,6 +39,7 @@ public class PlayerAbility : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        lastBurstTime = -burstCooldown;
     }
 
 
@@ -51,24 +55,13 @@ public class PlayerAbility : MonoBehaviour
         }
     }
 
-    private void TryBurst()
-    {
-
-        if (Time.time < playerHealth.LastHitTime + postHitLockTime)
-            return;
-
-
-        if (Time.time < lastBurstTime + burstCooldown)
-            return;
-        
-        DoBurst();
-        lastBurstTime = Time.time;
-    }
-
     private void DoBurst()
     {
         // heal player
         playerHealth.Heal(burstHeal);
+
+        float missingPercent = 1f - ((float)playerHealth.CurrentHP / playerHealth.MaxHP);
+        int damage = Mathf.RoundToInt(Mathf.Lerp(minBurstDamage, maxBurstDamage, missingPercent));
 
         // damage enemies in radius
         Collider2D[] hits = Physics2D.OverlapCircleAll(
@@ -79,7 +72,8 @@ public class PlayerAbility : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            hit.GetComponent<EnemyHealth>()?.TakeDamage(burstDamage, transform.position);
+            hit.GetComponent<EnemyHealth>()?.TakeDamage(damage, transform.position);
+            effectSpawner.SpawnHitEffect(hit.transform.position, false);
         }
     }
 
@@ -119,9 +113,21 @@ public class PlayerAbility : MonoBehaviour
         if (burstTimer >= burstChargeTime)
         {
             DoBurst();
+            animator.SetTrigger("BurstRelease");
+            Instantiate(wingBurstPrefab, transform.position, Quaternion.identity);
             lastBurstTime = Time.time;
-            CancelCharge(); // reset state
+            StartCoroutine(FinishBurst());
         }
+    }
+    private IEnumerator FinishBurst()
+    {
+        isCharging = false;
+
+        yield return new WaitForSeconds(0.2f);
+
+        state.IsUsingAbility = false;
+
+        burstTimer = 0f;
     }
 
     private void CancelCharge()
