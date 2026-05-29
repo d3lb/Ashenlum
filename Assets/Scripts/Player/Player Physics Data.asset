@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d485de0ab448a448b97f8eeeeb12130, type: 3}
-  m_Name: Player Data
+  m_Name: Player Physics Data
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
   gravityStrength: -47.33728
   gravityScale: 4.825411

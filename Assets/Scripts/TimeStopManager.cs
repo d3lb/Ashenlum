@@ -7,16 +7,17 @@ public class TimeManager : MonoBehaviour
 
     private Coroutine hitStopCoroutine;
 
-    private void Awake()
+    void Awake()
     {
-        // Singleton
-        if (Instance != null && Instance != this)
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(transform.root.gameObject);
+        }
+        else
         {
             Destroy(gameObject);
-            return;
         }
-
-        Instance = this;
     }
 
     public void HitStop(float duration)

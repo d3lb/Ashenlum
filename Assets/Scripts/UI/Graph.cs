@@ -16,7 +16,6 @@ public class DebugUI : MonoBehaviour
         text.text =
             "State: " + state.CurrentState + "\n" +
             "Jumps: " + player.JumpNumber + "\n" +
-            "Enemy State: " + Estate.CurrentState + "\n" +
             "Burst Cooldown: " + (int)(pAbility.CooldownPercent * 100) + "%\n" +
             "Room: " + (cameraa.CurrentRoom != null ? cameraa.CurrentRoom.name : "None"); 
             

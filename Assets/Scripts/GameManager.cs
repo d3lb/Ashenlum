@@ -5,12 +5,17 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
+    // Active Run 
+    public GameRunProfile activeRun = new GameRunProfile();
+
     // Checkpoint
     private Vector2 checkpointPosition;
     private bool hasCheckpoint;
 
     // Wall
     private HashSet<string> brokenWalls = new HashSet<string>();
+
+
 
     private void Awake()
     {
@@ -19,7 +24,7 @@ public class GameManager : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(transform.root.gameObject);
         }
         else
         {

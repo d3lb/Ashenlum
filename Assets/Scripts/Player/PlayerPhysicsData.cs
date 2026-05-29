@@ -1,7 +1,7 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Player Data")]
-public class PlayerData : ScriptableObject
+[CreateAssetMenu(menuName = "Player Physics Data")]
+public class PlayerPhysicsData : ScriptableObject
 {
     [Header("Gravity")]
     [HideInInspector] public float gravityStrength; //Downwards force (gravity) needed for the desired jumpHeight and jumpTimeToApex.
@@ -70,11 +70,7 @@ public class PlayerData : ScriptableObject
     [Range(0.01f, 0.5f)] public float jumpInputBufferTime; //Grace period after pressing jump where a jump will be automatically performed once the requirements (eg. being grounded) are met.
     [Range(0.01f, 0.5f)] public float dashInputBufferTime; //Queue a dash same as grace periods above
 
-    [Space(20)]
-    [Header("Ability Unlocks")]
-    public bool isDashUnlocked = false;
-    public bool isDoubleJumpUnlocked = false;
-    public bool isWallJumpUnlocked = false;
+
 
 
     //Unity Callback, called when the inspector updates
