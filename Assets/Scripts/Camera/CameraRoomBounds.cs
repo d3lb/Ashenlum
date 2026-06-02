@@ -35,7 +35,6 @@ public class CameraRoomBounds : MonoBehaviour
     {
         if (!other.CompareTag("Player"))
             return;
-
         cameraManager.SetRoom(this);
     }
 }

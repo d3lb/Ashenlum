@@ -1052,6 +1052,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   entranceId: Start_1
   startingRoom: {fileID: 1025502843}
+  cam: {fileID: 1299769772}
 --- !u!114 &289071729 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6813185668088363309, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}

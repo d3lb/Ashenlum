@@ -803,6 +803,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SceneEntrance
   entranceId: Right_1
   startingRoom: {fileID: 1990620846}
+  cam: {fileID: 1477394370}
 --- !u!4 &673118813
 Transform:
   m_ObjectHideFlags: 0

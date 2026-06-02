@@ -12,10 +12,6 @@ public class SceneEntrance : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
 
-        Debug.Log(
-    "Entering: " + entranceId +
-    " Room: " + startingRoom.name
-);
         var run = GameManager.Instance.activeRun;
 
         if (run.isTransitioningScenes && run.targetEntranceId == entranceId)
@@ -26,6 +22,8 @@ public class SceneEntrance : MonoBehaviour
             if (player != null)
             {
                 player.transform.position = transform.position;
+
+                CinemachineCore.Instance.GetActiveBrain(0).ManualUpdate();
 
                 if (camManager != null && startingRoom != null)
                 {

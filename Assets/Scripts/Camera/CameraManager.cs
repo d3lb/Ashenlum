@@ -29,6 +29,11 @@ public class CameraManager : MonoBehaviour
         proxyTarget = new GameObject("CameraProxy").transform;
     }
 
+    private void Start()
+    {
+        Debug.Log(cam.Follow.name);
+    }
+
     private void LateUpdate()
     {
         xAxis();
@@ -112,16 +117,18 @@ public class CameraManager : MonoBehaviour
 
     public void SetRoom(CameraRoomBounds room)
     {
-        if (currentRoom != room)
-        {
-            currentRoom = room;
-            forcingYOffset = currentRoom.ForceYOffset;
-        }
+        if (currentRoom == room)
+            return;
+
+
+        currentRoom = room;
+        forcingYOffset = currentRoom.ForceYOffset;
     }
 
     public void SnapAndHandover(CameraRoomBounds room)
     {
         SetRoom(room);
+
         StartCoroutine(HandoverRoutine());
     }
 
