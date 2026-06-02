@@ -1052,7 +1052,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   entranceId: Start_1
   startingRoom: {fileID: 1025502843}
-  cam: {fileID: 1299769772}
 --- !u!114 &289071729 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6813185668088363309, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
@@ -3029,6 +3028,10 @@ PolygonCollider2D:
       - {x: -140.11429, y: 34.039093}
       - {x: -138.7556, y: -100.056244}
       - {x: 112.85401, y: -98.756294}
+      - {x: 112.82882, y: -62.662666}
+      - {x: 99.03997, y: -56.151993}
+      - {x: 99.09876, y: -40.571747}
+      - {x: 103.74386, y: -31.66506}
       - {x: 113.75587, y: 33.997864}
       - {x: 28.63907, y: 35.882587}
   m_UseDelaunayMesh: 1
