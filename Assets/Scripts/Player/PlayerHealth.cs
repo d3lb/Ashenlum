@@ -71,10 +71,12 @@ public class PlayerHealth : MonoBehaviour
 
     private void Start()
     {
+        var run = GameManager.Instance?.activeRun;
+        if (run != null)
+            hp = run.currentHp;
+
         if (hasCheckpoint)
-        {
             transform.position = checkpointPos;
-        }
     }
 
     public void Update()

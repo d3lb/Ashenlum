@@ -11,25 +11,22 @@ public class SceneEntrance : MonoBehaviour
     private void Start()
     {
         var run = GameManager.Instance.activeRun;
-
-        if (!run.isTransitioningScenes)
-            return;
+        if (!run.isTransitioningScenes) return;
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
-
-        if (player == null)
-            return;
+        if (player == null) return;
 
         SceneEntrance[] entrances = FindObjectsByType<SceneEntrance>(FindObjectsSortMode.None);
-
         foreach (var entrance in entrances)
         {
             if (entrance.entranceId == run.targetEntranceId)
             {
                 player.transform.position = entrance.transform.position;
-                run.isTransitioningScenes = false;
                 break;
             }
         }
+
+        run.isTransitioningScenes = false;
+        StartCoroutine(SceneFader.Instance.FadeIn(0.35f));
     }
 }
