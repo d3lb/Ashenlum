@@ -7,7 +7,11 @@ public class EnemyState : MonoBehaviour
         Patrol,
         Chase,
         Attack,
-        Hit
+        Hit,
+
+
+        // Flying
+        Revcover
     }
     public EnemyStateType CurrentState;
 
