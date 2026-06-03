@@ -21,12 +21,15 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float howFar = 1f;
 
     private bool forcingYOffset;
-    private Transform proxyTarget;
 
     private void Awake()
     {
         transposer = cam.GetCinemachineComponent<CinemachineFramingTransposer>();
-        proxyTarget = new GameObject("CameraProxy").transform;
+    }
+
+    private void Start()
+    {
+        Debug.Log(cam.Follow.name);
     }
 
     private void LateUpdate()
@@ -112,35 +115,10 @@ public class CameraManager : MonoBehaviour
 
     public void SetRoom(CameraRoomBounds room)
     {
-        if (currentRoom != room)
-        {
-            currentRoom = room;
-            forcingYOffset = currentRoom.ForceYOffset;
-        }
-    }
+        if (currentRoom == room)
+            return;
 
-    public void SnapAndHandover(CameraRoomBounds room)
-    {
-        SetRoom(room);
-        StartCoroutine(HandoverRoutine());
-    }
-
-    private IEnumerator HandoverRoutine()
-    {
-        Vector3 clampedPos = player.position;
-
-        if (currentRoom.LockX)
-            clampedPos.x = Mathf.Clamp(clampedPos.x, currentRoom.MinX, currentRoom.MaxX);
-
-        if (currentRoom.LockY)
-            clampedPos.y = Mathf.Clamp(clampedPos.y, currentRoom.MinY, currentRoom.MaxY);
-
-        proxyTarget.position = clampedPos;
-
-        cam.Follow = proxyTarget;
-
-            yield return null;
-
-        cam.Follow = player;
+        currentRoom = room;
+        forcingYOffset = currentRoom.ForceYOffset;
     }
 }

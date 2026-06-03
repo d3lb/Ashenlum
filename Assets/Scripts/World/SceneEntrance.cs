@@ -8,32 +8,28 @@ public class SceneEntrance : MonoBehaviour
     [SerializeField] private string entranceId;
     [SerializeField] private CameraRoomBounds startingRoom;
 
-    private IEnumerator Start()
+    private void Start()
     {
-        yield return new WaitForEndOfFrame();
-
-        Debug.Log(
-    "Entering: " + entranceId +
-    " Room: " + startingRoom.name
-);
         var run = GameManager.Instance.activeRun;
 
-        if (run.isTransitioningScenes && run.targetEntranceId == entranceId)
+        if (!run.isTransitioningScenes)
+            return;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        if (player == null)
+            return;
+
+        SceneEntrance[] entrances = FindObjectsByType<SceneEntrance>(FindObjectsSortMode.None);
+
+        foreach (var entrance in entrances)
         {
-            GameObject player = GameObject.FindGameObjectWithTag("Player");
-            CameraManager camManager = FindObjectOfType<CameraManager>();
-
-            if (player != null)
+            if (entrance.entranceId == run.targetEntranceId)
             {
-                player.transform.position = transform.position;
-
-                if (camManager != null && startingRoom != null)
-                {
-                    camManager.SnapAndHandover(startingRoom);
-                }
+                player.transform.position = entrance.transform.position;
+                run.isTransitioningScenes = false;
+                break;
             }
-
-            run.isTransitioningScenes = false;
         }
     }
 }
