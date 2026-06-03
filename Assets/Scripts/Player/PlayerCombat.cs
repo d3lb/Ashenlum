@@ -215,6 +215,17 @@ public class PlayerCombat : MonoBehaviour
                     ApplyRecoil(attackType);
                 }
             }
+
+            PogoTarget pogoTarget = results[i].GetComponentInParent<PogoTarget>();
+
+            if (pogoTarget != null)
+            {
+                if (attackType == AttackType.Down)
+                {
+                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, pogoForce*1.5f);
+                    ApplyRecoil(attackType);
+                }
+            }
         }
 
         int groundHits = activeCollider.Overlap(gfilter, results);

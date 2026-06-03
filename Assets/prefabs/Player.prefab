@@ -770,7 +770,7 @@ MonoBehaviour:
   hitFrameTime: 0.05
   recoilForceX: 6
   recoilForceY: 3
-  pogoForce: 15
+  pogoForce: 20
   hitPauseTime: 0.05
   killPauseTime: 0.08
   hitShakeDuration: 0.04
