@@ -13,8 +13,6 @@ public class SceneFader : MonoBehaviour
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
-
             Color c = blackPanel.color;
             c.a = 0f;
             blackPanel.color = c;

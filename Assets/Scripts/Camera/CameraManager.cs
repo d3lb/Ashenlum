@@ -26,7 +26,6 @@ public class CameraManager : MonoBehaviour
     {
         transposer = cam.GetCinemachineComponent<CinemachineFramingTransposer>();
     }
-
     private void LateUpdate()
     {
         xAxis();

@@ -20,6 +20,7 @@ public class SceneTransition : MonoBehaviour
         GameManager.Instance.activeRun.isTransitioningScenes = true;
         GameManager.Instance.activeRun.currentArea = sceneToLoad;
 
+
         StartCoroutine(LoadSceneRoutine());
     }
 
