@@ -21,5 +21,5 @@ public class GameRunProfile
 
     [Header("World State")]
     public List<string> defeatedBosses = new List<string>();
-    public List<string> openedShortcuts = new List<string>();
+    public List<string> brokenWalls = new List<string>();
 }

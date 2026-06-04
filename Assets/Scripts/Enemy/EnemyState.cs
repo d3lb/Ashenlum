@@ -11,11 +11,16 @@ public class EnemyState : MonoBehaviour
 
 
         // Flying
-        Revcover
+        Recover,
+
+
+        //Death
+        Dead
     }
     public EnemyStateType CurrentState;
 
     public bool IsFacingRight;
     public bool IsKnocked;
     public bool IsAttacking;
+    public bool IsDead;
 }

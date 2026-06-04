@@ -3,7 +3,8 @@
 public class FlyingEnemyAI : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private Transform playerTransform;
+    [SerializeField] private Transform playerCheck;
+    [SerializeField] private LayerMask playerLayer;
     [SerializeField] private EnemyAnimation enemyAnimation;
 
     [Header("Patrol")]
@@ -23,6 +24,7 @@ public class FlyingEnemyAI : MonoBehaviour
     [SerializeField] private float losePlayerRadius = 9f;          // when to give up chasing
 
     [Header("Recover")]
+    [SerializeField] private Transform recoverCeiling;             // max recover Y
     [SerializeField] private float recoverSpeed = 4f;
     [SerializeField] private float recoverDistance = 3f;           // how far back it pulls away
     [SerializeField] private float recoverHeight = 2f;             // height it climbs back to
@@ -32,6 +34,7 @@ public class FlyingEnemyAI : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
 
+    private Transform playerTransform;
     private Transform currentPatrolTarget;
     private float hoverTimer;
     private float recoverTimer;
@@ -50,10 +53,13 @@ public class FlyingEnemyAI : MonoBehaviour
 
     private void Update()
     {
-        // Hit state is controlled by EnemyHealth, don't interrupt it
         if (state.CurrentState == EnemyState.EnemyStateType.Hit)
+        {
+            state.IsAttacking = false;
+            if (!state.IsKnocked)
+                rb.linearVelocity = Vector2.zero;
             return;
-
+        }
         // Attack state is controlled by FlyingEnemyAttack
         if (state.CurrentState == EnemyState.EnemyStateType.Attack)
             return;
@@ -70,7 +76,7 @@ public class FlyingEnemyAI : MonoBehaviour
                 CheckLostPlayer();
                 break;
 
-            case EnemyState.EnemyStateType.Revcover:
+            case EnemyState.EnemyStateType.Recover:
                 HandleRecover();
                 break;
         }
@@ -102,37 +108,47 @@ public class FlyingEnemyAI : MonoBehaviour
     }
 
     //  DETECTION 
-
     private void TryDetectPlayer()
     {
-        if (playerTransform == null) return;
+        Collider2D[] hits = Physics2D.OverlapCircleAll(
+            playerCheck.position,
+            detectionRadius,
+            playerLayer
+        );
 
-        float dist = Vector2.Distance(transform.position, playerTransform.position);
-        if (dist > detectionRadius) return;
+        if (hits.Length == 0) return;
+
+        Transform target = hits[0].transform;
 
         // Raycast to check line of sight
-        Vector2 dirToPlayer = (playerTransform.position - transform.position).normalized;
+        Vector2 dir = (target.position - transform.position).normalized;
+        float dist = Vector2.Distance(transform.position, target.position);
+
         RaycastHit2D hit = Physics2D.Raycast(
             transform.position,
-            dirToPlayer,
-            detectionRadius,
+            dir,
+            dist,
             obstacleMask
         );
 
-        // If raycast hits nothing (no wall in the way), player is visible
-        if (!hit.collider)
+        if (hit.collider == null)
         {
+            playerTransform = target; // lock on
             state.CurrentState = EnemyState.EnemyStateType.Chase;
         }
     }
 
     private void CheckLostPlayer()
     {
-        if (playerTransform == null) return;
+        Collider2D[] hits = Physics2D.OverlapCircleAll(
+            playerCheck.position,
+            losePlayerRadius,
+            playerLayer
+        );
 
-        float dist = Vector2.Distance(transform.position, playerTransform.position);
-        if (dist > losePlayerRadius)
+        if (hits.Length == 0)
         {
+            playerTransform = null;
             state.CurrentState = EnemyState.EnemyStateType.Patrol;
         }
     }
@@ -157,15 +173,16 @@ public class FlyingEnemyAI : MonoBehaviour
     {
         recoverTimer = 0f;
 
-        // Pull back horizontally away from player, and rise up
         float dirAway = state.IsFacingRight ? -1f : 1f;
+        float targetY = (playerTransform != null ? playerTransform.position.y : transform.position.y) + recoverHeight;
+        float maxY = recoverCeiling != null ? recoverCeiling.position.y : float.MaxValue;
+
         recoverTarget = new Vector2(
             transform.position.x + dirAway * recoverDistance,
-            (playerTransform != null ? playerTransform.position.y : transform.position.y)
-                + recoverHeight
+            Mathf.Min(targetY, maxY)
         );
 
-        state.CurrentState = EnemyState.EnemyStateType.Revcover;
+        state.CurrentState = EnemyState.EnemyStateType.Recover;
     }
 
     //  RECOVER
@@ -210,14 +227,14 @@ public class FlyingEnemyAI : MonoBehaviour
 
     private void UpdateFacing()
     {
-        if (playerTransform == null) return;
-
         if (state.CurrentState == EnemyState.EnemyStateType.Patrol)
         {
+            if (currentPatrolTarget == null) return;
             state.IsFacingRight = currentPatrolTarget.position.x > transform.position.x;
         }
         else
         {
+            if (playerTransform == null) return;
             state.IsFacingRight = playerTransform.position.x > transform.position.x;
         }
 
@@ -236,7 +253,7 @@ public class FlyingEnemyAI : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, losePlayerRadius);
 
-        // Patrol points
+        // Patrol
         if (patrolPointA != null && patrolPointB != null)
         {
             Gizmos.color = Color.cyan;

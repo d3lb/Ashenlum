@@ -395,6 +395,7 @@ Transform:
   - {fileID: 8091905308040950093}
   - {fileID: 8509443125085999004}
   - {fileID: 7389593463532307886}
+  - {fileID: 365139864949572237}
   m_Father: {fileID: 8371181828605489071}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2763450935033869626
@@ -591,6 +592,7 @@ MonoBehaviour:
   IsFacingRight: 0
   IsKnocked: 0
   IsAttacking: 0
+  IsDead: 0
 --- !u!114 &2678830298053937350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -609,7 +611,7 @@ MonoBehaviour:
   attackCooldown: 1
   attackWindup: 0.3
   attackDuration: 0.1
-  lungeForce: 7
+  lungeForce: 9
 --- !u!95 &4419327351716935001
 Animator:
   serializedVersion: 7
@@ -709,3 +711,50 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5212074110405385787}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8548157714779526001
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 365139864949572237}
+  - component: {fileID: 3533423039803968918}
+  m_Layer: 6
+  m_Name: LumenDropper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &365139864949572237
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8548157714779526001}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5212074110405385787}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3533423039803968918
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8548157714779526001}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d12aea07efbb2a4cb888605c391791d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  lumenPrefab: {fileID: 8588129626457287156, guid: 4260637ecc67b5c4cbe72fee440f1403, type: 3}
+  minDrop: 4
+  maxDrop: 6

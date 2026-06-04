@@ -13,10 +13,6 @@ public class GameManager : MonoBehaviour
     private Vector2 checkpointPosition;
     private bool hasCheckpoint;
 
-    // Wall
-    private HashSet<string> brokenWalls = new HashSet<string>();
-
-
 
     private void Awake()
     {
@@ -68,11 +64,11 @@ public class GameManager : MonoBehaviour
 
     public void RegisterBrokenWall(string wallID)
     {
-        brokenWalls.Add(wallID);
+        activeRun.brokenWalls.Add(wallID);
     }
 
     public bool IsWallBroken(string wallID)
     {
-        return brokenWalls.Contains(wallID);
+        return activeRun.brokenWalls.Contains(wallID);
     }
 }

@@ -53,7 +53,8 @@ public class EnemyHealth : MonoBehaviour
             if (knockbackTimer <= 0)
             {
                 state.IsKnocked = false;
-                rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
+                state.CurrentState = EnemyState.EnemyStateType.Patrol;
+                rb.linearVelocity = new Vector2(0f, 0f);
             }
         }
     } 
@@ -99,6 +100,13 @@ public class EnemyHealth : MonoBehaviour
     // death
     private void Die()
     {
+        GetComponentInChildren<LumenDropper>()?.Drop();
+        StartCoroutine(DestroyNextFrame());
+    }
+
+    private IEnumerator DestroyNextFrame()
+    {
+        yield return null;
         Destroy(gameObject);
     }
 

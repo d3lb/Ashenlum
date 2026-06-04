@@ -33,7 +33,6 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float attackCooldown = 0.2f;
     [SerializeField] private float attackDuration = 0.1f;
     [SerializeField] private float attackSpeed = 1f;
-    [SerializeField] private float hitFrameTime = 0.05f;
     [SerializeField] private float recoilForceX = 5f;
     [SerializeField] private float recoilForceY = 2f;
     [SerializeField] private float pogoForce = 15f;
@@ -112,7 +111,6 @@ public class PlayerCombat : MonoBehaviour
         attackDir = state.IsFacingRight ? 1 : -1;
 
         float active = attackDuration / attackSpeed;
-        float hitTime = hitFrameTime / attackSpeed;
 
         var (activeCollider, attackType) = GetAttackData();
 
@@ -140,18 +138,12 @@ public class PlayerCombat : MonoBehaviour
                 break;
         }
 
-        // WAIT UNTIL HIT FRAME
-        yield return new WaitForSeconds(hitTime);
-
         SpawnSlash(attackType);
         activeCollider.enabled = true;
 
         ProcessAttackHit(activeCollider, attackType);
 
-        yield return new WaitForSeconds(active - hitTime);
-
-
-        
+        yield return new WaitForSeconds(active);
 
         activeCollider.enabled = false;
         state.IsAttacking = false;

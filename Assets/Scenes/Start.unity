@@ -1052,17 +1052,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   entranceId: Start_1
   startingRoom: {fileID: 1025502843}
---- !u!114 &289071729 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6813185668088363309, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
-  m_PrefabInstance: {fileID: 1322230042740787295}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0400ad6791ed7744cac88788bb887eb6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
 --- !u!1 &307106748
 GameObject:
   m_ObjectHideFlags: 0
@@ -3265,6 +3254,17 @@ MonoBehaviour:
   player: {fileID: 1682832976}
   flipSpeed: 5
   howFar: 1
+--- !u!114 &1372188969 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7064324240548787501, guid: ab0ef131773127e4eb80284d60ce4655, type: 3}
+  m_PrefabInstance: {fileID: 8546681768182853198}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0400ad6791ed7744cac88788bb887eb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyState
 --- !u!1 &1390925750
 GameObject:
   m_ObjectHideFlags: 0
@@ -167804,7 +167804,7 @@ MonoBehaviour:
   text: {fileID: 2007458673}
   state: {fileID: 1682832969}
   pAbility: {fileID: 1682832966}
-  Estate: {fileID: 289071729}
+  Estate: {fileID: 1372188969}
   cameraa: {fileID: 1299769776}
 --- !u!114 &2007458673
 MonoBehaviour:
