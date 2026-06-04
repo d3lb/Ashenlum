@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class DebugUI : MonoBehaviour
 {
-    public PlayerMovement player;
-    public TextMeshProUGUI text;
+    [SerializeField] private PlayerMovement player;
+    [SerializeField] private TextMeshProUGUI text;
 
     [SerializeField] private PlayerState state;
     [SerializeField] private PlayerAbility pAbility;
@@ -17,10 +17,7 @@ public class DebugUI : MonoBehaviour
             "State: " + state.CurrentState + "\n" +
             "Jumps: " + player.JumpNumber + "\n" +
             "Burst Cooldown: " + (int)(pAbility.CooldownPercent * 100) + "%\n" +
-            "Room: " + (cameraa.CurrentRoom != null ? cameraa.CurrentRoom.name : "None") + "\n" + 
-            "Flying Enemy State: " + Estate.CurrentState; 
-            
-            
-    
+            "Room: " + (cameraa.CurrentRoom != null ? cameraa.CurrentRoom.name : "None");/* + "\n" + 
+            "Flying Enemy State: " + Estate.CurrentState; */
     }
 }

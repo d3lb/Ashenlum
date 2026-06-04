@@ -4,7 +4,6 @@ using UnityEngine.UI;
 public class HealthBar : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private Slider healthSlider;
     [SerializeField] private Slider easeHealthSlider;
     [SerializeField] private RectTransform barTransform;
@@ -13,8 +12,13 @@ public class HealthBar : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float lerpSpeed = 5f;
 
+    private PlayerHealth playerHealth;
+
+
     private void Start()
     {
+        playerHealth = FindFirstObjectByType<PlayerHealth>();
+
         healthSlider.minValue = 0f;
         healthSlider.maxValue = 1f;
 

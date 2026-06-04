@@ -74,7 +74,7 @@ public class LumenPickup : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
 
-        GameManager.Instance.activeRun.lumens += 1;
+        GameManager.Instance.AddLumens(1);
         Destroy(gameObject);
     }
 

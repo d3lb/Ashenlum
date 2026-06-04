@@ -14,7 +14,6 @@ public class LumenDropper : MonoBehaviour
         for (int i = 0; i < amount; i++)
         {
             Vector2 spawnPos = (Vector2)transform.position + Random.insideUnitCircle * 0.3f;
-            Debug.Log($"Spawning lumen at {spawnPos}, enemy was at {transform.root.position}");
             Instantiate(lumenPrefab, spawnPos, Quaternion.identity);
         }
     }

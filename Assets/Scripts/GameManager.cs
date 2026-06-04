@@ -71,4 +71,18 @@ public class GameManager : MonoBehaviour
     {
         return activeRun.brokenWalls.Contains(wallID);
     }
+
+    public System.Action<int> OnLumensChanged;
+
+    public void AddLumens(int amount)
+    {
+        activeRun.lumens += amount;
+        OnLumensChanged?.Invoke(activeRun.lumens);
+    }
+
+    public void TakeLumens(int amount)
+    {
+        activeRun.lumens -= amount;
+        OnLumensChanged?.Invoke(activeRun.lumens);
+    }
 }

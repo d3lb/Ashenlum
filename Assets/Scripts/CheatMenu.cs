@@ -96,8 +96,8 @@ public class CheatMenu : MonoBehaviour
         run.lumens = IntField("Lumens", run.lumens);
 
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("+10 Lumens")) run.lumens += 10;
-        if (GUILayout.Button("-10 Lumens")) run.lumens -= 10;
+        if (GUILayout.Button("+10 Lumens")) GameManager.Instance.AddLumens(10); ;
+        if (GUILayout.Button("-10 Lumens")) GameManager.Instance.TakeLumens(10); ;
         GUILayout.EndHorizontal();
 
         //  ABILITIES 
