@@ -16,7 +16,6 @@ public class FlyingEnemyAI : MonoBehaviour
     [Header("Chase")]
     [SerializeField] private float chaseSpeed = 3.5f;
     [SerializeField] private float hoverAbovePlayerHeight = 2.5f; // how high above player it hovers
-    [SerializeField] private float chaseReachThreshold = 0.4f;    // how close before it "arrives"
 
     [Header("Detection")]
     [SerializeField] private float detectionRadius = 6f;
@@ -79,7 +78,7 @@ public class FlyingEnemyAI : MonoBehaviour
         UpdateFacing();
     }
 
-    // ─── PATROL ───────────────────────────────────────────────────────────────
+    //  PATROL 
 
     private void HandlePatrol()
     {
@@ -102,7 +101,7 @@ public class FlyingEnemyAI : MonoBehaviour
         }
     }
 
-    // ─── DETECTION ────────────────────────────────────────────────────────────
+    //  DETECTION 
 
     private void TryDetectPlayer()
     {
@@ -138,7 +137,7 @@ public class FlyingEnemyAI : MonoBehaviour
         }
     }
 
-    // ─── CHASE ────────────────────────────────────────────────────────────────
+    //  CHASE
 
     private void HandleChase()
     {
@@ -169,7 +168,7 @@ public class FlyingEnemyAI : MonoBehaviour
         state.CurrentState = EnemyState.EnemyStateType.Revcover;
     }
 
-    // ─── RECOVER ──────────────────────────────────────────────────────────────
+    //  RECOVER
 
     private void HandleRecover()
     {
@@ -197,7 +196,7 @@ public class FlyingEnemyAI : MonoBehaviour
         }
     }
 
-    // ─── HELPERS ──────────────────────────────────────────────────────────────
+    // HELPERS
 
     private void MoveToward(Vector2 target, float speed)
     {
@@ -225,7 +224,7 @@ public class FlyingEnemyAI : MonoBehaviour
         sprite.flipX = !state.IsFacingRight;
     }
 
-    // ─── GIZMOS ───────────────────────────────────────────────────────────────
+    //  GIZMOS
 
     private void OnDrawGizmosSelected()
     {

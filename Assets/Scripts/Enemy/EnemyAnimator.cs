@@ -10,7 +10,7 @@ public class EnemyAnimation : MonoBehaviour
     private void Update()
     {
         animator.SetBool(
-            "IsWalking",
+            "IsPatroling",
             state.CurrentState ==
             EnemyState.EnemyStateType.Patrol
         );

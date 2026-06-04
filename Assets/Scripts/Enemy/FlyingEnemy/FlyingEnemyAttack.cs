@@ -60,39 +60,32 @@ public class FlyingEnemyAttack : MonoBehaviour
         state.IsAttacking = true;
         state.CurrentState = EnemyState.EnemyStateType.Attack;
 
-        // ── Windup: freeze in place and telegraph ──
         rb.linearVelocity = Vector2.zero;
         enemyAnimation.TriggerPrepare();
         yield return new WaitForSeconds(windupTime);
 
-        // ── Dive: shoot straight down ──
         enemyAnimation.TriggerAttack();
         attackCollider.enabled = true;
 
         float diveTimer = 0f;
-        bool hitSomething = false;
 
         while (diveTimer < diveDuration)
         {
             diveTimer += Time.deltaTime;
             rb.linearVelocity = new Vector2(0f, -diveSpeed);
 
-            // Stop dive if we reach or pass the player's Y position
             if (transform.position.y <= playerTransform.position.y)
             {
-                hitSomething = true;
                 break;
             }
 
             yield return null;
         }
 
-        // ── Stop momentum ──
         rb.linearVelocity = Vector2.zero;
         attackCollider.enabled = false;
         state.IsAttacking = false;
 
-        // ── Hand off to Recover ──
         flyingAI.StartRecover();
     }
 }
