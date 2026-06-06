@@ -11,23 +11,13 @@ public class SceneTransition : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!other.CompareTag("Player") || loading)
-            return;
-
+        if (!other.CompareTag("Player") || loading) return;
         loading = true;
 
-        GameManager.Instance.activeRun.targetEntranceId = targetEntranceId;
-        GameManager.Instance.activeRun.isTransitioningScenes = true;
-        GameManager.Instance.activeRun.currentArea = sceneToLoad;
+        PlayerHealth ph = other.GetComponent<PlayerHealth>();
+        if (ph != null)
+            GameManager.Instance.activeRun.currentHp = ph.CurrentHP;
 
-
-        StartCoroutine(LoadSceneRoutine());
-    }
-
-    private IEnumerator LoadSceneRoutine()
-    {
-        yield return SceneFader.Instance.FadeOut(0f);
-
-        SceneManager.LoadScene(sceneToLoad);
+        GameManager.Instance.GoToScene(sceneToLoad, targetEntranceId);
     }
 }

@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class CheckPoint : MonoBehaviour
 {
+    [SerializeField] private string checkpointEntranceId;
+
     private bool isPlayerInRange;
 
     private void Update()
@@ -37,8 +39,7 @@ public class CheckPoint : MonoBehaviour
 
     private void SaveProgress()
     {
-        GameManager.Instance
-            .SetCheckpoint(transform.position);
+        GameManager.Instance.SetCheckpoint(checkpointEntranceId);
 
         Debug.Log("Checkpoint Saved");
     }

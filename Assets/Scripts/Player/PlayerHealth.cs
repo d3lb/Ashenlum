@@ -5,11 +5,6 @@ using static PlayerState;
 
 public class PlayerHealth : MonoBehaviour
 {
-
-    public static Vector2 checkpointPos;
-    public static bool hasCheckpoint = false;
-
-
     [Header("Main Settings")]
     [SerializeField] private int hp = 100;
     [SerializeField] private int maxHp = 100;
@@ -74,9 +69,6 @@ public class PlayerHealth : MonoBehaviour
         var run = GameManager.Instance?.activeRun;
         if (run != null)
             hp = run.currentHp;
-
-        if (hasCheckpoint)
-            transform.position = checkpointPos;
     }
 
     public void Update()
@@ -135,7 +127,6 @@ public class PlayerHealth : MonoBehaviour
     private void Die()
     {
         if (state != null && state.CurrentState == PlayerStateType.Dead) return;
-
         if (state != null) state.CurrentState = PlayerStateType.Dead;
 
         if (rb != null)
@@ -144,13 +135,7 @@ public class PlayerHealth : MonoBehaviour
             rb.simulated = false;
         }
 
-        StartCoroutine(ReloadScene());
-    }
-
-    private IEnumerator ReloadScene()
-    {
-        yield return new WaitForSecondsRealtime(respawnDelay);
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        GameManager.Instance.PlayerDied(respawnDelay);
     }
 
     private void ApplyHitRecoil(Vector2 attackerPos)

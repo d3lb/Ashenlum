@@ -1,6 +1,6 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class CheatMenu : MonoBehaviour
 {
@@ -110,18 +110,8 @@ public class CheatMenu : MonoBehaviour
         //  TELEPORTATION 
         Section("Teleport");
 
-        if (run.currentArea == "Start" && GUILayout.Button("Teleport to Checkpoint"))
-        {
-            if (GameManager.Instance.HasCheckpoint())
-            {
-                if (player != null)
-                    player.transform.position = GameManager.Instance.GetCheckpointPosition();
-            }
-            else
-            {
-                Debug.Log("No checkpoint set yet.");
-            }
-        }
+        if (GUILayout.Button("Teleport To Checkpoint"))
+            GameManager.Instance.GoToCheckpoint();
 
         //  SCENE 
         Section("Scene");

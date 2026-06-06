@@ -502,7 +502,6 @@ GameObject:
   - component: {fileID: 4238832993295232617}
   - component: {fileID: 2934515355638856455}
   - component: {fileID: 3520169302900139264}
-  - component: {fileID: 8337175692021126188}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -767,7 +766,6 @@ MonoBehaviour:
   attackCooldown: 0.4
   attackDuration: 0.1
   attackSpeed: 0.8
-  hitFrameTime: 0.05
   recoilForceX: 6
   recoilForceY: 3
   pogoForce: 20
@@ -844,15 +842,3 @@ MonoBehaviour:
     m_Bits: 64
   burstChargeTime: 1
   burstSlowTime: 0.5
---- !u!114 &8337175692021126188
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8849866329559990079}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2fa8a25e2a0e1f439b87c697727f2f8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerRespawn

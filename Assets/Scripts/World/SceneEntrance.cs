@@ -8,10 +8,16 @@ public class SceneEntrance : MonoBehaviour
     [SerializeField] private string entranceId;
     [SerializeField] private CameraRoomBounds startingRoom;
 
+    public string EntranceId => entranceId;
+
     private void Start()
     {
+
         var run = GameManager.Instance.activeRun;
-        if (!run.isTransitioningScenes) return;
+
+        if (!run.isTransitioningScenes)
+            return;
+
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null) return;

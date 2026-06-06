@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,8 +11,12 @@ public class GameManager : MonoBehaviour
     public GameRunProfile activeRun = new GameRunProfile();
 
     // Checkpoint
-    private Vector2 checkpointPosition;
+    private string checkpointScene;
+    private string checkpointEntranceId;
     private bool hasCheckpoint;
+
+    private string pendingCheckpointScene;
+    private bool pendingFadeIn;
 
 
     private void Awake()
@@ -37,27 +42,100 @@ public class GameManager : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    public void GoToScene(string sceneName, string entranceId)
     {
-        activeRun.currentArea = scene.name;
+        activeRun.targetEntranceId = entranceId;
+        activeRun.isTransitioningScenes = true;
+
+        StartCoroutine(LoadSceneRoutine(sceneName));
+    }
+
+
+    private IEnumerator LoadSceneRoutine(string sceneName)
+    {
+        yield return StartCoroutine(SceneFader.Instance.FadeOut(0f));
+        pendingFadeIn = true;
+        SceneManager.LoadScene(sceneName);
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+{
+    activeRun.currentArea = scene.name;
+
+    if (scene.name == pendingCheckpointScene)
+    {
+        StartCoroutine(FinishCheckpointTeleport());
+        pendingCheckpointScene = null;
+        return;
+    }
+
+    if (pendingFadeIn)
+    {
+        pendingFadeIn = false;
+        StartCoroutine(SceneFader.Instance.FadeIn(0.4f));
+    }
+}
+
+
+
+    private IEnumerator FinishCheckpointTeleport()
+    {
+        yield return null;
+
+        GameObject player =
+            GameObject.FindGameObjectWithTag("Player");
+
+        if (player != null)
+        {
+            SceneEntrance[] entrances =
+                FindObjectsByType<SceneEntrance>(
+                    FindObjectsSortMode.None
+                );
+
+            foreach (var entrance in entrances)
+            {
+                if (entrance.EntranceId ==
+                    checkpointEntranceId)
+                {
+                    player.transform.position =
+                        entrance.transform.position;
+
+                    break;
+                }
+            }
+        }
+
+        yield return SceneFader.Instance.FadeIn(0.4f);
     }
 
     // CHECKPOINTS
 
-    public void SetCheckpoint(Vector2 pos)
+    public void SetCheckpoint(string entranceId)
     {
-        checkpointPosition = pos;
+        checkpointScene = SceneManager.GetActiveScene().name;
+        checkpointEntranceId = entranceId;
         hasCheckpoint = true;
     }
+
+    public void GoToCheckpoint()
+    {
+        if (!hasCheckpoint) return;
+
+        pendingCheckpointScene = checkpointScene;
+
+        StartCoroutine(LoadSceneRoutine(checkpointScene));
+    }
+
+    public string GetCheckpointScene() => checkpointScene;
 
     public bool HasCheckpoint()
     {
         return hasCheckpoint;
     }
 
-    public Vector2 GetCheckpointPosition()
+    public string GetCheckpointEntranceId()
     {
-        return checkpointPosition;
+        return checkpointEntranceId;
     }
 
     // WALLS
@@ -84,5 +162,22 @@ public class GameManager : MonoBehaviour
     {
         activeRun.lumens -= amount;
         OnLumensChanged?.Invoke(activeRun.lumens);
+    }
+
+    // PLAYER DEATH 
+
+    public void PlayerDied(float respawnDelay)
+    {
+        StartCoroutine(RespawnRoutine(respawnDelay));
+    }
+
+    private IEnumerator RespawnRoutine(float respawnDelay)
+    {
+        yield return new WaitForSecondsRealtime(respawnDelay);
+
+        if (hasCheckpoint)
+            GoToCheckpoint();
+        else
+            StartCoroutine(LoadSceneRoutine(SceneManager.GetActiveScene().name));
     }
 }
