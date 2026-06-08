@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour
     private string pendingCheckpointScene;
     private bool pendingFadeIn;
 
+    public System.Action OnSceneReady;
 
     private void Awake()
     {
@@ -66,6 +67,7 @@ public class GameManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         activeRun.currentArea = scene.name;
+        StartCoroutine(NotifySceneReady());
 
         if (scene.name == pendingCheckpointScene)
         {
@@ -80,7 +82,11 @@ public class GameManager : MonoBehaviour
             StartCoroutine(SceneFader.Instance.FadeIn(0.4f));
         }
     }
-
+    private IEnumerator NotifySceneReady()
+    {
+        yield return null;
+        OnSceneReady?.Invoke();
+    }
 
     // CHECKPOINTS
     public void SetCheckpoint(string entranceId)
@@ -93,6 +99,8 @@ public class GameManager : MonoBehaviour
     public void GoToCheckpoint()
     {
         if (!hasCheckpoint) return;
+
+        activeRun.currentHp = activeRun.maxHp;
 
         pendingCheckpointScene = checkpointScene;
 
@@ -177,6 +185,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+            activeRun.currentHp = activeRun.maxHp;
             StartCoroutine(LoadSceneRoutine(startingScene));
         }
     }

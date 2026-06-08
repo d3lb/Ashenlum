@@ -69,6 +69,7 @@ public class PlayerHealth : MonoBehaviour
         var run = GameManager.Instance?.activeRun;
         if (run != null)
             hp = run.currentHp;
+            run.maxHp = maxHp;
     }
 
     public void Update()

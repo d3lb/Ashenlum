@@ -8,6 +8,7 @@ public class GameRunProfile
     public string currentArea = "Start";
     public string targetEntranceId = "";
     public bool isTransitioningScenes = false;
+    public int maxHp = 100;
     public int currentHp = 100;
 
     [Header("Inventory & Upgrades")]

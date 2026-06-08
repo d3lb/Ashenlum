@@ -14,16 +14,21 @@ public class HealthBar : MonoBehaviour
 
     private PlayerHealth playerHealth;
 
-
     private void Start()
     {
+        GameManager.Instance.OnSceneReady += FindPlayer;
+        FindPlayer();
+    }
+
+    private void FindPlayer()
+    {
         playerHealth = FindFirstObjectByType<PlayerHealth>();
-
-        healthSlider.minValue = 0f;
-        healthSlider.maxValue = 1f;
-
-        easeHealthSlider.minValue = 0f;
-        easeHealthSlider.maxValue = 1f;
+        if (playerHealth != null)
+        {
+            float percent = (float)playerHealth.CurrentHP / playerHealth.MaxHP;
+            healthSlider.value = percent;
+            easeHealthSlider.value = percent;
+        }
     }
 
 
