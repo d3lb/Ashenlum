@@ -13,7 +13,7 @@ public class PlayerRespawn : MonoBehaviour
         // loading a save file or dying
         if (GameManager.Instance.HasCheckpoint())
         {
-            transform.position = GameManager.Instance.GetCheckpointPosition();
+            GameManager.Instance.GoToCheckpoint();
         }
     }
 }

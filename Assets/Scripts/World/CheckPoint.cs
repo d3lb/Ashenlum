@@ -3,6 +3,8 @@ using UnityEngine;
 public class CheckPoint : MonoBehaviour
 {
     [SerializeField] private string checkpointEntranceId;
+    public string CheckpointEntranceId => checkpointEntranceId;
+
 
     private bool isPlayerInRange;
 

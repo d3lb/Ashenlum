@@ -5,10 +5,13 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance;
 
+    public static GameManager Instance;
     // Active Run 
     public GameRunProfile activeRun = new GameRunProfile();
+
+    // Default Spawn Scene
+    private string startingScene;
 
     // Checkpoint
     private string checkpointScene;
@@ -28,6 +31,7 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(transform.root.gameObject);
 
             activeRun.currentArea = SceneManager.GetActiveScene().name;
+            startingScene = SceneManager.GetActiveScene().name;
 
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
@@ -35,6 +39,7 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
     }
 
     private void OnDestroy()
@@ -59,57 +64,25 @@ public class GameManager : MonoBehaviour
     }
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-{
-    activeRun.currentArea = scene.name;
-
-    if (scene.name == pendingCheckpointScene)
     {
-        StartCoroutine(FinishCheckpointTeleport());
-        pendingCheckpointScene = null;
-        return;
-    }
+        activeRun.currentArea = scene.name;
 
-    if (pendingFadeIn)
-    {
-        pendingFadeIn = false;
-        StartCoroutine(SceneFader.Instance.FadeIn(0.4f));
-    }
-}
-
-
-
-    private IEnumerator FinishCheckpointTeleport()
-    {
-        yield return null;
-
-        GameObject player =
-            GameObject.FindGameObjectWithTag("Player");
-
-        if (player != null)
+        if (scene.name == pendingCheckpointScene)
         {
-            SceneEntrance[] entrances =
-                FindObjectsByType<SceneEntrance>(
-                    FindObjectsSortMode.None
-                );
-
-            foreach (var entrance in entrances)
-            {
-                if (entrance.EntranceId ==
-                    checkpointEntranceId)
-                {
-                    player.transform.position =
-                        entrance.transform.position;
-
-                    break;
-                }
-            }
+            StartCoroutine(FinishCheckpointTeleport());
+            pendingCheckpointScene = null;
+            return;
         }
 
-        yield return SceneFader.Instance.FadeIn(0.4f);
+        if (pendingFadeIn)
+        {
+            pendingFadeIn = false;
+            StartCoroutine(SceneFader.Instance.FadeIn(0.4f));
+        }
     }
 
-    // CHECKPOINTS
 
+    // CHECKPOINTS
     public void SetCheckpoint(string entranceId)
     {
         checkpointScene = SceneManager.GetActiveScene().name;
@@ -124,6 +97,30 @@ public class GameManager : MonoBehaviour
         pendingCheckpointScene = checkpointScene;
 
         StartCoroutine(LoadSceneRoutine(checkpointScene));
+    }
+
+    private IEnumerator FinishCheckpointTeleport()
+    {
+        yield return null;
+
+        GameObject player = GameObject.FindGameObjectWithTag("Player");
+
+        if (player != null)
+        {
+
+            CheckPoint[] entrances = FindObjectsByType<CheckPoint>(FindObjectsSortMode.None);
+
+            foreach (var entrance in entrances)
+            {
+                if (entrance.CheckpointEntranceId == checkpointEntranceId)
+                {
+                    player.transform.position = entrance.transform.position;
+                    break;
+                }
+            }
+        }
+
+        yield return SceneFader.Instance.FadeIn(0.4f);
     }
 
     public string GetCheckpointScene() => checkpointScene;
@@ -165,7 +162,6 @@ public class GameManager : MonoBehaviour
     }
 
     // PLAYER DEATH 
-
     public void PlayerDied(float respawnDelay)
     {
         StartCoroutine(RespawnRoutine(respawnDelay));
@@ -176,8 +172,12 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSecondsRealtime(respawnDelay);
 
         if (hasCheckpoint)
+        {
             GoToCheckpoint();
+        }
         else
-            StartCoroutine(LoadSceneRoutine(SceneManager.GetActiveScene().name));
+        {
+            StartCoroutine(LoadSceneRoutine(startingScene));
+        }
     }
 }

@@ -173763,6 +173763,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Checkpoint
       objectReference: {fileID: 0}
+    - target: {fileID: 5189672387365669473, guid: 329f6c31c3953ac45ba9b1bd179f65a7, type: 3}
+      propertyPath: checkpointEntranceId
+      value: parkour_checkpoint
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

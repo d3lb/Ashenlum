@@ -8,8 +8,6 @@ public class SceneEntrance : MonoBehaviour
     [SerializeField] private string entranceId;
     [SerializeField] private CameraRoomBounds startingRoom;
 
-    public string EntranceId => entranceId;
-
     private void Start()
     {
 
@@ -33,6 +31,5 @@ public class SceneEntrance : MonoBehaviour
         }
 
         run.isTransitioningScenes = false;
-        StartCoroutine(SceneFader.Instance.FadeIn(0.35f));
     }
 }
