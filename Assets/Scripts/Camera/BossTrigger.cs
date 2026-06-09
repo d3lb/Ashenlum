@@ -21,9 +21,6 @@ public class BossTrigger : MonoBehaviour
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (activated)
-            return;
-
         if (!other.CompareTag("Player"))
             return;
 
