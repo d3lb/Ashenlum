@@ -11,14 +11,17 @@ public class EnemyAnimation : MonoBehaviour
     {
         animator.SetBool(
             "IsPatroling",
-            state.CurrentState ==
-            EnemyState.EnemyStateType.Patrol
+            state.CurrentState == EnemyState.EnemyStateType.Patrol
         );
 
         animator.SetBool(
             "IsChasing",
-            state.CurrentState ==
-            EnemyState.EnemyStateType.Chase
+            state.CurrentState == EnemyState.EnemyStateType.Chase
+        );
+
+        animator.SetBool(
+            "IsRecovering",
+            state.CurrentState == EnemyState.EnemyStateType.Recover
         );
     }
 
@@ -35,5 +38,15 @@ public class EnemyAnimation : MonoBehaviour
     public void TriggerAttack()
     {
         animator.SetTrigger("IsAttacking");
+    }
+
+    public void TriggerSlam()
+    {
+        animator.SetTrigger("Slam");
+    }
+
+    public void TriggerCharge()
+    {
+        animator.SetTrigger("Charge");
     }
 }

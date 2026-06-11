@@ -17,7 +17,7 @@ public class DebugUI : MonoBehaviour
             "State: " + state.CurrentState + "\n" +
             "Jumps: " + player.JumpNumber + "\n" +
             "Burst Cooldown: " + (int)(pAbility.CooldownPercent * 100) + "%\n" +
-            "Room: " + (cameraa.CurrentRoom != null ? cameraa.CurrentRoom.name : "None");/* + "\n" + 
-            "Flying Enemy State: " + Estate.CurrentState; */
+            "Room: " + (cameraa.CurrentRoom != null ? cameraa.CurrentRoom.name : "None") + "\n" + 
+            "Enemy State: " + Estate.CurrentState;
     }
 }

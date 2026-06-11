@@ -100,6 +100,11 @@ public class EnemyHealth : MonoBehaviour
     // death
     private void Die()
     {
+        state.IsDead = true;
+        state.CurrentState = EnemyState.EnemyStateType.Dead;
+        state.IsAttacking = false;
+        state.IsKnocked = false;
+
         GetComponentInChildren<LumenDropper>()?.Drop();
         StartCoroutine(DestroyNextFrame());
     }
