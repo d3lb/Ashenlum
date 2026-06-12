@@ -7,7 +7,9 @@ public class DashBruteAttackController : MonoBehaviour
     [SerializeField] private EnemyAnimation enemyAnimation;
     [SerializeField] private Collider2D leftMeleeHitbox;
     [SerializeField] private Collider2D rightMeleeHitbox;
-    [SerializeField] private Collider2D dashHitbox;
+    [SerializeField] private Collider2D leftDashHitbox;
+    [SerializeField] private Collider2D rightDashHitbox;
+
 
     [Header("General")]
     [SerializeField] private float globalAttackCooldown = 1f;
@@ -36,7 +38,8 @@ public class DashBruteAttackController : MonoBehaviour
 
         leftMeleeHitbox.enabled = false;
         rightMeleeHitbox.enabled = false;
-        dashHitbox.enabled = false;
+        leftDashHitbox.enabled = false;
+        rightDashHitbox.enabled = false;
     }
 
     public bool CanAttack()
@@ -113,7 +116,9 @@ public class DashBruteAttackController : MonoBehaviour
 
         enemyAnimation.TriggerAttack();
 
-        dashHitbox.enabled = true;
+        Collider2D activeHitbox = state.IsFacingRight ? rightDashHitbox : leftDashHitbox;
+
+        activeHitbox.enabled = true;
 
         float direction = state.IsFacingRight ? 1f : -1f;
         float timer = 0f;
@@ -126,7 +131,7 @@ public class DashBruteAttackController : MonoBehaviour
             yield return null;
         }
 
-        dashHitbox.enabled = false;
+        activeHitbox.enabled = false;
 
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
 
