@@ -10,6 +10,9 @@ public class DashBruteAttackController : MonoBehaviour
     [SerializeField] private Collider2D leftDashHitbox;
     [SerializeField] private Collider2D rightDashHitbox;
 
+    
+    [Header("Edges")]
+    [SerializeField] private CombatZone combatZone;
 
     [Header("General")]
     [SerializeField] private float globalAttackCooldown = 1f;
@@ -18,12 +21,15 @@ public class DashBruteAttackController : MonoBehaviour
     [Header("Melee Attack")]
     [SerializeField] private float meleeWindup = 0.25f;
     [SerializeField] private float meleeActiveTime = 0.15f;
+    [SerializeField] private float meleeLungeForce = 4f;
 
     [Header("Dash Attack")]
     [SerializeField] private float dashWindup = 0.45f;
+    [SerializeField] private float dashBackstepForce = 3f;
     [SerializeField] private float dashSpeed = 13f;
     [SerializeField] private float dashDuration = 0.45f;
     [SerializeField] private float dashEndLag = 0.25f;
+
 
     private EnemyState state;
     private Rigidbody2D rb;
@@ -92,6 +98,13 @@ public class DashBruteAttackController : MonoBehaviour
 
         Collider2D activeHitbox = state.IsFacingRight ? rightMeleeHitbox : leftMeleeHitbox;
 
+        float direction = state.IsFacingRight ? 1f : -1f;
+
+        rb.AddForce(
+            new Vector2(direction * meleeLungeForce, 0f),
+            ForceMode2D.Impulse
+        );
+
         activeHitbox.enabled = true;
 
         yield return new WaitForSeconds(meleeActiveTime);
@@ -112,6 +125,21 @@ public class DashBruteAttackController : MonoBehaviour
 
         enemyAnimation.TriggerPrepare();
 
+        float direction = state.IsFacingRight ? 1f : -1f;
+
+        float minX = Mathf.Min(combatZone.pointA.position.x, combatZone.pointB.position.x);
+        float maxX = Mathf.Max(combatZone.pointA.position.x, combatZone.pointB.position.x);
+
+        if (direction > 0f && transform.position.x > minX + 0.5f)
+        {
+            rb.AddForce(new Vector2(-direction * dashBackstepForce, 0f), ForceMode2D.Impulse);
+        }
+
+        else if (direction < 0f && transform.position.x < maxX - 0.5f)
+        {
+            rb.AddForce(new Vector2(-direction * dashBackstepForce, 0f), ForceMode2D.Impulse);
+        }
+
         yield return new WaitForSeconds(dashWindup);
 
         enemyAnimation.TriggerAttack();
@@ -120,11 +148,18 @@ public class DashBruteAttackController : MonoBehaviour
 
         activeHitbox.enabled = true;
 
-        float direction = state.IsFacingRight ? 1f : -1f;
+        float boundaryX = direction > 0f ? combatZone.pointB.position.x : combatZone.pointA.position.x;
+
         float timer = 0f;
 
         while (timer < dashDuration)
         {
+            if (direction > 0f && transform.position.x >= boundaryX)
+                break;
+
+            if (direction < 0f && transform.position.x <= boundaryX)
+                break;
+
             timer += Time.deltaTime;
             rb.linearVelocity = new Vector2(direction * dashSpeed, rb.linearVelocity.y);
 

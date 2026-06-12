@@ -10,8 +10,8 @@ public class EnemyState : MonoBehaviour
         Attack,
         Hit,
         Recover,
+        Return,
 
-        
         //Death
         Dead
     }

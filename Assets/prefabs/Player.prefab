@@ -834,7 +834,7 @@ MonoBehaviour:
   burstRadius: 7
   minBurstDamage: 1
   maxBurstDamage: 10
-  burstHeal: 15
+  burstHeal: 25
   burstCooldown: 10
   postHitLockTime: 0.5
   enemyLayer:
