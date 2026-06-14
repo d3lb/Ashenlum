@@ -278,7 +278,7 @@ GameObject:
   - component: {fileID: 8267372560368296743}
   - component: {fileID: 5600900785593360638}
   m_Layer: 0
-  m_Name: TimeStopManager
+  m_Name: TimeManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1041,6 +1041,7 @@ MonoBehaviour:
     currentArea: Cave_Entrance
     targetEntranceId: 
     isTransitioningScenes: 0
+    maxHp: 100
     currentHp: 100
     lumens: 0
     items: []
