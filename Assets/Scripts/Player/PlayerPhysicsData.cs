@@ -41,11 +41,16 @@ public class PlayerPhysicsData : ScriptableObject
     public float jumpHangMaxSpeedMult;
 
     [Header("Wall Jump")]
-    public Vector2 wallJumpForce; //The actual force (this time set by us) applied to the player when wall jumping.
+    public Vector2 wallJumpForce; //The actual force
     [Space(5)]
     [Range(0f, 1f)] public float wallJumpRunLerp; //Reduces the effect of player's movement while wall jumping.
     [Range(0f, 1.5f)] public float wallJumpTime; //Time after wall jumping the player's movement is slowed for.
-    public bool doTurnOnWallJump; //Player will rotate to face wall jumping direction
+    public float wallJumpRegrabDelay;
+
+    [Header("Wall Jump Return Assist")]
+    public float wallJumpReturnWindow;
+    public float wallJumpReturnSpeed;
+    public float wallJumpReturnMinY;
 
     [Space(20)]
 

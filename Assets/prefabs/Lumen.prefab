@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5017706196404575277}
   - component: {fileID: 5212528688731780953}
   - component: {fileID: -6885892327463885996}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Lumen
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -157,7 +157,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 4096
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
