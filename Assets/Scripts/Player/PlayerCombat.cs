@@ -58,10 +58,12 @@ public class PlayerCombat : MonoBehaviour
     private ContactFilter2D filter;
     private ContactFilter2D gfilter;
     private Collider2D[] results = new Collider2D[10];
+
+
     private HashSet<EnemyHealth> hitEnemies = new HashSet<EnemyHealth>();
     private HashSet<BreakableWall> hitWalls = new HashSet<BreakableWall>();
     private HashSet<Spike> hitSpikes = new HashSet<Spike>();
-
+    private HashSet<BreakableMoneyBox> hitMoneyBoxes = new HashSet<BreakableMoneyBox>();
 
     private AttackType currentAttackType;
     private int attackDir;
@@ -122,6 +124,7 @@ public class PlayerCombat : MonoBehaviour
         hitEnemies.Clear();
         hitWalls.Clear();
         hitSpikes.Clear();
+        hitMoneyBoxes.Clear();
 
         switch (health.CurrentStabilityState)
         {
@@ -214,8 +217,24 @@ public class PlayerCombat : MonoBehaviour
             {
                 if (attackType == AttackType.Down)
                 {
-                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, pogoForce*1.5f);
+                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, pogoForce*2f);
                     ApplyRecoil(attackType);
+                }
+            }
+
+            BreakableMoneyBox moneyBox = results[i].GetComponentInParent<BreakableMoneyBox>();
+
+            if (moneyBox != null && !hitMoneyBoxes.Contains(moneyBox))
+            {
+                hitMoneyBoxes.Add(moneyBox);
+                bool isBroken = moneyBox.TakeDamage(damage, transform.position);
+
+                if (!recoilApplied)
+                {
+                    TimeManager.Instance.HitStop(isBroken ? killPauseTime : hitPauseTime);
+                    ShakeHit(isBroken);
+                    ApplyRecoil(attackType);
+                    recoilApplied = true;
                 }
             }
         }
