@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d485de0ab448a448b97f8eeeeb12130, type: 3}
   m_Name: Player Physics Data
   m_EditorClassIdentifier: Assembly-CSharp::PlayerData
-  gravityStrength: -47.33728
-  gravityScale: 4.825411
+  gravityStrength: -49.704147
+  gravityScale: 5.0666814
   fallGravityMult: 1
   maxFallSpeed: 20
   runMaxSpeed: 13
@@ -25,9 +25,9 @@ MonoBehaviour:
   deccelInAir: 1
   doConserveMomentum: 1
   jumpAmount: 2
-  jumpHeight: 10
+  jumpHeight: 10.5
   jumpTimeToApex: 0.65
-  jumpForce: 30.769232
+  jumpForce: 32.307693
   jumpHangGravityMult: 1
   jumpHangTimeThreshold: 1
   jumpHangAccelerationMult: 1
