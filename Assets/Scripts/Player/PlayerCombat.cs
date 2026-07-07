@@ -29,16 +29,20 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private int highDamage = 2;
     [SerializeField] private int midDamage = 3;
     [SerializeField] private int lowDamage = 5;
-
+    [Space(2)]
     [SerializeField] private float attackCooldown = 0.2f;
     [SerializeField] private float attackDuration = 0.1f;
     [SerializeField] private float attackSpeed = 1f;
+    [Space(2)]
     [SerializeField] private float recoilForceX = 5f;
     [SerializeField] private float recoilForceY = 2f;
     [SerializeField] private float pogoForce = 15f;
+    [Space(2)]
     [SerializeField] private float hitPauseTime = 0.04f;
     [SerializeField] private float killPauseTime = 0.08f;
-
+    [Space(2)]
+    [SerializeField] private float pogoTargetForce = 3f;
+    
     [Header("Camera Shake")]
     [SerializeField] private float hitShakeDuration = 0.04f;
     [SerializeField] private float hitShakeAmplitude = 2f;
@@ -62,7 +66,6 @@ public class PlayerCombat : MonoBehaviour
 
     private HashSet<EnemyHealth> hitEnemies = new HashSet<EnemyHealth>();
     private HashSet<BreakableWall> hitWalls = new HashSet<BreakableWall>();
-    private HashSet<Spike> hitSpikes = new HashSet<Spike>();
     private HashSet<BreakableMoneyBox> hitMoneyBoxes = new HashSet<BreakableMoneyBox>();
 
     private AttackType currentAttackType;
@@ -123,7 +126,6 @@ public class PlayerCombat : MonoBehaviour
 
         hitEnemies.Clear();
         hitWalls.Clear();
-        hitSpikes.Clear();
         hitMoneyBoxes.Clear();
 
         switch (health.CurrentStabilityState)
@@ -201,12 +203,6 @@ public class PlayerCombat : MonoBehaviour
             {
                 if (attackType == AttackType.Down)
                 {
-                    rb.linearVelocity =
-                        new Vector2(
-                            rb.linearVelocity.x,
-                            pogoForce
-                        );
-
                     ApplyRecoil(attackType);
                 }
             }
@@ -217,8 +213,13 @@ public class PlayerCombat : MonoBehaviour
             {
                 if (attackType == AttackType.Down)
                 {
-                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, pogoForce*2f);
-                    ApplyRecoil(attackType);
+                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, pogoForce * pogoTargetForce);
+                    recoilApplied = true;
+                }
+                else if (attackType == AttackType.Side)
+                {
+                    rb.linearVelocity = new Vector2(pogoForce * pogoTargetForce * attackDir * -1, rb.linearVelocity.y);
+                    recoilApplied = true;
                 }
             }
 

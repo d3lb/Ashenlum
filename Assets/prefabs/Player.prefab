@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 1402707006561818089}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2, y: 0, z: 0}
+  m_LocalPosition: {x: 2.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -79,11 +79,9 @@ PolygonCollider2D:
   m_Points:
     m_Paths:
     - - {x: 1.2382269, y: 0.73508644}
-      - {x: -0.37566662, y: 0.916769}
-      - {x: -1.134428, y: 0.97482157}
-      - {x: -1.2172232, y: 0.76082206}
-      - {x: -1.4956179, y: 0.014949322}
-      - {x: -1.1563993, y: -0.98318136}
+      - {x: -2.134428, y: 0.97482157}
+      - {x: -2.4956179, y: 0.014949322}
+      - {x: -2.1563993, y: -0.98318136}
       - {x: 1.267611, y: -0.7247484}
       - {x: 1.5593529, y: -0.019739687}
   m_UseDelaunayMesh: 1
@@ -175,7 +173,7 @@ Transform:
   m_GameObject: {fileID: 3108454791319333249}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2, y: 0, z: 0}
+  m_LocalPosition: {x: -2.5, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -228,9 +226,9 @@ PolygonCollider2D:
   m_Points:
     m_Paths:
     - - {x: -1.2496963, y: 0.83344626}
-      - {x: 1.1902528, y: 1.0173304}
-      - {x: 1.5131927, y: 0.0021908283}
-      - {x: 1.2440195, y: -0.9811754}
+      - {x: 2.1902528, y: 1.0173304}
+      - {x: 2.5131927, y: 0.0021908283}
+      - {x: 2.2440195, y: -0.9811754}
       - {x: -1.2782655, y: -0.7684424}
       - {x: -1.5776162, y: 0.030424058}
   m_UseDelaunayMesh: 1
@@ -260,7 +258,7 @@ Transform:
   m_GameObject: {fileID: 3283158103008956885}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: -2, z: 0}
+  m_LocalPosition: {x: -0, y: -2.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -313,9 +311,9 @@ PolygonCollider2D:
   m_Points:
     m_Paths:
     - - {x: 0.84966564, y: -0.7325659}
-      - {x: 1.0188351, y: 1.2783628}
-      - {x: 0.012843132, y: 1.5307074}
-      - {x: -1.0075916, y: 1.2481971}
+      - {x: 1.0188351, y: 2.2783628}
+      - {x: 0.012843132, y: 2.5307074}
+      - {x: -1.0075916, y: 2.248197}
       - {x: -0.8612013, y: -0.64955807}
       - {x: -0.0044755936, y: -0.98687744}
   m_UseDelaunayMesh: 1
@@ -345,7 +343,7 @@ Transform:
   m_GameObject: {fileID: 4137605228188745039}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: 0, y: 2.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -398,9 +396,9 @@ PolygonCollider2D:
   m_Points:
     m_Paths:
     - - {x: 0.84896183, y: 0.7984799}
-      - {x: 0.96652126, y: -1.1714492}
-      - {x: 0.02428341, y: -1.4527211}
-      - {x: -0.9986323, y: -1.1748097}
+      - {x: 0.96652126, y: -2.1714492}
+      - {x: 0.02428341, y: -2.452721}
+      - {x: -0.9986323, y: -2.1748097}
       - {x: -0.8904381, y: 0.795401}
       - {x: 0.042459965, y: 1.0021286}
   m_UseDelaunayMesh: 1
@@ -771,6 +769,7 @@ MonoBehaviour:
   pogoForce: 20
   hitPauseTime: 0.05
   killPauseTime: 0.08
+  pogoTargetForce: 1.5
   hitShakeDuration: 0.04
   hitShakeAmplitude: 2
   hitShakeFrequency: 2
