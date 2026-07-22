@@ -6,6 +6,10 @@ public class CameraRoomBounds : MonoBehaviour
     [Header("Refrences")]
     [SerializeField] private CameraManager cameraManager;
 
+    [Header("Look")]
+    [SerializeField] private bool allowLookUp;
+    [SerializeField] private bool allowLookDown;
+
     [Header("Settings")]
     [SerializeField] private bool forceYOffset;
     [SerializeField] private float trackedYOffset;
@@ -22,8 +26,13 @@ public class CameraRoomBounds : MonoBehaviour
 
     // Exposed room settings for use in camera manager
     public float TrackedYOffset => trackedYOffset;
+
+    public bool AllowLookUp => allowLookUp;
+    public bool AllowLookDown => allowLookDown;
+
     public bool ForceYOffset => forceYOffset;
     public bool LockX => lockX;
+
     public float MinX => minX;
     public float MaxX => maxX;
 
