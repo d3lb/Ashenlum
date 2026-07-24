@@ -2,7 +2,6 @@ using UnityEngine;
 using Cinemachine;
 using System.Collections;
 using static PlayerState;
-using Unity.VisualScripting;
 
 [DefaultExecutionOrder(100)]
 public class CameraManager : MonoBehaviour
@@ -20,12 +19,24 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private float flipSpeed = 5f;
     [SerializeField] private float howFar = 1f;
 
+    [Header("X Offset Settings")]
+    private float yOffsetSpeed = 7f;
+
+    [Header("Look Up/Down Settings")]
+    private float lookDistance = 6f;
+    private float lookSnapSpeed = 40f;
+
+    private float lookOffsetY;
     private bool forcingYOffset;
 
+    private float currentLookSpeed;
+    private float yVelocity;
+    private float lookVelocity;
     private void Awake()
     {
         transposer = cam.GetCinemachineComponent<CinemachineFramingTransposer>();
     }
+
     private void LateUpdate()
     {
         xAxis();
@@ -42,13 +53,12 @@ public class CameraManager : MonoBehaviour
 
         offset.x = Mathf.Lerp(offset.x, desiredOffsetX, tempFlipSpeed * Time.deltaTime);
 
-        float playerX = player.position.x;
         bool edgeLocked = false;
-
         if (currentRoom.LockX)
         {
-            if (playerX >= currentRoom.MaxX) edgeLocked = true;
-            if (playerX <= currentRoom.MinX) edgeLocked = true;
+            float playerX = player.position.x;
+            if (playerX >= currentRoom.MaxX || playerX <= currentRoom.MinX)
+                edgeLocked = true;
         }
 
         if (edgeLocked)
@@ -70,29 +80,33 @@ public class CameraManager : MonoBehaviour
         if (currentRoom == null) return;
 
         Vector3 offset = transposer.m_TrackedObjectOffset;
+        float roomY = currentRoom.TrackedYOffset;
 
         if (forcingYOffset)
         {
-            offset.y = Mathf.Lerp(offset.y, currentRoom.TrackedYOffset, 5f * Time.deltaTime);
+            offset.y = Mathf.SmoothDamp(offset.y, roomY, ref yVelocity, 1f / yOffsetSpeed);
             transposer.m_TrackedObjectOffset = offset;
-
             transposer.m_SoftZoneHeight = 2f;
             transposer.m_DeadZoneHeight = 0f;
 
-            if (Mathf.Abs(offset.y - currentRoom.TrackedYOffset) > 0.05f) return;
+            if (Mathf.Abs(offset.y - roomY) > 0.05f)
+                return;
+
             forcingYOffset = false;
         }
 
-        offset.y = Mathf.Lerp(offset.y, currentRoom.TrackedYOffset, 5f * Time.deltaTime);
+        float baseY = Mathf.SmoothDamp(offset.y, roomY, ref yVelocity, 1f / yOffsetSpeed);
+
+        float targetY = roomY + lookOffsetY;
+        offset.y = Mathf.SmoothDamp(baseY, targetY, ref lookVelocity, 1f / currentLookSpeed);
         transposer.m_TrackedObjectOffset = offset;
 
-        float playerY = player.position.y;
         bool edgeLocked = false;
-
         if (currentRoom.LockY)
         {
-            if (playerY >= currentRoom.MaxY) edgeLocked = true;
-            if (playerY <= currentRoom.MinY) edgeLocked = true;
+            float playerY = player.position.y;
+            if (playerY >= currentRoom.MaxY || playerY <= currentRoom.MinY)
+                edgeLocked = true;
         }
 
         if (edgeLocked)
@@ -109,10 +123,12 @@ public class CameraManager : MonoBehaviour
 
     public void SetRoom(CameraRoomBounds room)
     {
-        if (currentRoom == room)
-            return;
-
+        if (currentRoom == room) return;
         currentRoom = room;
-        forcingYOffset = currentRoom.ForceYOffset;
+        forcingYOffset = true;
     }
+
+    public void LookUp() { lookOffsetY = lookDistance; currentLookSpeed = lookSnapSpeed; lookVelocity = 0f; }
+    public void LookDown() { lookOffsetY = -lookDistance; currentLookSpeed = lookSnapSpeed; lookVelocity = 0f; }
+    public void ResetLook() { lookOffsetY = 0f; currentLookSpeed = lookSnapSpeed; }
 }

@@ -11,7 +11,6 @@ public class CameraRoomBounds : MonoBehaviour
     [SerializeField] private bool allowLookDown;
 
     [Header("Settings")]
-    [SerializeField] private bool forceYOffset;
     [SerializeField] private float trackedYOffset;
 
     [Header("X Lock")]
@@ -30,7 +29,6 @@ public class CameraRoomBounds : MonoBehaviour
     public bool AllowLookUp => allowLookUp;
     public bool AllowLookDown => allowLookDown;
 
-    public bool ForceYOffset => forceYOffset;
     public bool LockX => lockX;
 
     public float MinX => minX;

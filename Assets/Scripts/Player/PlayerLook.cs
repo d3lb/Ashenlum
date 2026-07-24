@@ -2,35 +2,50 @@ using UnityEngine;
 
 public class PlayerLook : MonoBehaviour
 {
-    private CameraManager cameraManager;
     private PlayerState state;
+    private PlayerInput input;
+    private CameraManager cameraManager;
 
-    private CameraRoomBounds currentRoom;
+    private float idleTimer;
+    private float lookActivateDelay = 0.5f;
 
     private void Awake()
     {
-        cameraManager = FindFirstObjectByType<CameraManager>();
         state = GetComponent<PlayerState>();
+        input = GetComponent<PlayerInput>();
+        cameraManager = FindFirstObjectByType<CameraManager>();
     }
 
     private void Update()
     {
         if (state.CurrentState != PlayerState.PlayerStateType.Idle)
+        {
+            idleTimer = 0f;
+            cameraManager.ResetLook();
+            return;
+        }
+
+        idleTimer += Time.deltaTime;
+
+        if (idleTimer < lookActivateDelay)
             return;
 
-        if (Input.GetButtonDown("AimUp") && currentRoom != null && currentRoom.allowLookUp)
+        CameraRoomBounds room = cameraManager.CurrentRoom;
+
+        if (room == null)
+            return;
+
+        if (input.LookUpHeld && room.AllowLookUp)
         {
             cameraManager.LookUp();
         }
-
-        if (Input.GetButtonDown("AimDown") && currentRoom != null && currentRoom.allowLookDown)
+        else if (input.LookDownHeld && room.AllowLookDown)
         {
             cameraManager.LookDown();
         }
-    }
-
-    public void SetCurrentRoom(CameraRoomBounds room)
-    {
-        currentRoom = room;
+        else
+        {
+            cameraManager.ResetLook();
+        }
     }
 }

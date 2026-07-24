@@ -2,40 +2,34 @@ using UnityEngine;
 
 public class CheckPoint : MonoBehaviour
 {
+    private PlayerInput input;
     [SerializeField] private string checkpointEntranceId;
     public string CheckpointEntranceId => checkpointEntranceId;
-
-
     private bool isPlayerInRange;
 
     private void Update()
     {
-        if (
-            isPlayerInRange &&
-            Input.GetKeyDown(KeyCode.E)
-        )
+        if (isPlayerInRange && input.InteractPressed)
         {
             SaveProgress();
         }
     }
 
-    private void OnTriggerEnter2D(
-        Collider2D other
-    )
+    private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
+            input = other.GetComponent<PlayerInput>();
             isPlayerInRange = true;
         }
     }
 
-    private void OnTriggerExit2D(
-        Collider2D other
-    )
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
             isPlayerInRange = false;
+            input = null;
         }
     }
 

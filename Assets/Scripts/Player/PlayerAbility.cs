@@ -10,6 +10,7 @@ public class PlayerAbility : MonoBehaviour
     [SerializeField] private Animator animator;
     [SerializeField] private GameObject wingBurstPrefab;
     [SerializeField] private EffectSpawner effectSpawner;
+    private PlayerInput input;
 
     [Header("Burst Settings")]
     [SerializeField] private float burstRadius = 7f;
@@ -39,13 +40,14 @@ public class PlayerAbility : MonoBehaviour
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        input = GetComponent<PlayerInput>();
         lastBurstTime = -burstCooldown;
     }
 
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.F))
+        if (input.HealAbilityHeld)
         {
             StartOrContinueCharge();
         }

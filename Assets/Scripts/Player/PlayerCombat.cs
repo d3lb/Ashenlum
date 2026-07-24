@@ -9,6 +9,7 @@ public class PlayerCombat : MonoBehaviour
 {
     [Header("References")]
     private Rigidbody2D rb;
+    private PlayerInput input;
     [SerializeField] private PlayerMovement movement;
     [SerializeField] private PlayerState state;
     [SerializeField] private PlayerHealth health;
@@ -23,6 +24,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private Transform attackPointDown;
     [SerializeField] private GameObject slashPrefab;
     [SerializeField] private EffectSpawner effectSpawner;
+
 
     [Header("Settings")]
     private int damage = 2;
@@ -88,6 +90,7 @@ public class PlayerCombat : MonoBehaviour
         gfilter.useTriggers = false;
 
         rb = GetComponent<Rigidbody2D>();
+        input = GetComponent<PlayerInput>();
     }
 
     private enum AttackType
@@ -99,11 +102,9 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-
-
         float cooldown = attackCooldown / attackSpeed;
 
-        if (Input.GetMouseButtonDown(0) && Time.time >= lastAttackTime + cooldown && !state.IsBusy)
+        if (input.AttackPressed && Time.time >= lastAttackTime + cooldown && !state.IsBusy)
         {
             lastAttackTime = Time.time;
             StartCoroutine(DoAttack());

@@ -16,6 +16,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerState state;
     private int facingDir;
 
+    //Player Input
+    private PlayerInput input;
+
     //Timers
     public float LastOnGroundTime { get; private set; }
     public float LastOnWallTime { get; private set; }
@@ -69,6 +72,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         Sprite = GetComponent<SpriteRenderer>();
+        input = GetComponent<PlayerInput>();
     }
     private void Start()
     {
@@ -94,37 +98,39 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region INPUT
-        moveInput.x = Input.GetAxisRaw("Horizontal");
-        moveInput.y = Input.GetAxisRaw("Vertical");
+
+        moveInput = input.Movement;
 
         // Check If player should be facing left or right
         if (moveInput.x != 0 && !state.IsBusy)
         {
-            facingDir = (moveInput.x > 0) ? 1 : -1;
+            facingDir = moveInput.x > 0 ? 1 : -1;
             state.IsFacingRight = facingDir == 1;
         }
-            Sprite.flipX = facingDir == -1;
+
+        Sprite.flipX = facingDir == -1;
 
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (input.JumpPressed)
         {
             LastPressedJumpTime = physicsData.jumpInputBufferTime;
         }
-        else if (Input.GetKeyUp(KeyCode.Space))
+
+        if (input.JumpReleased)
         {
-            // Cancel the jump buffer if released early
             LastPressedJumpTime = 0;
 
             if (state.CurrentState == PlayerStateType.Jump)
                 StartCoroutine(CutJump());
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (input.DashPressed)
         {
             LastPressedDashTime = physicsData.dashInputBufferTime;
         }
 
         state.IsGrounded = LastOnGroundTime > 0f;
+
         #endregion
 
         #region COLLISION CHECKS
