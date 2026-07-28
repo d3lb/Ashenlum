@@ -4,9 +4,10 @@ public class PauseManager : MonoBehaviour
 {
     public static PauseManager Instance;
 
+    private LumenUI lumenUI;
     private GameObject pausePanel;
-    private bool paused;
 
+    private bool paused;
     public bool IsPaused => paused;
 
     private void Awake()
@@ -28,6 +29,11 @@ public class PauseManager : MonoBehaviour
         pausePanel.SetActive(false);
         paused = false;
         Time.timeScale = 1f;
+    }
+
+    public void RegisterLumenUI(LumenUI ui)
+    {
+        lumenUI = ui;
     }
 
     private void Update()
@@ -52,6 +58,9 @@ public class PauseManager : MonoBehaviour
 
         paused = true;
         pausePanel.SetActive(true);
+
+        lumenUI?.Show();
+
         Time.timeScale = 0f;
     }
 
@@ -62,6 +71,7 @@ public class PauseManager : MonoBehaviour
         if (pausePanel != null)
             pausePanel.SetActive(false);
 
+        lumenUI?.Hide();
         Time.timeScale = 1f;
     }
 

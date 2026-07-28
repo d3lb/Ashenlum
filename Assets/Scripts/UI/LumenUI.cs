@@ -16,15 +16,17 @@ public class LumenUI : MonoBehaviour
 
     private Coroutine currentRoutine;
 
+    private void Awake()
+    {
+        PauseManager.Instance.RegisterLumenUI(this);
+    }
     private void Start()
     {
         lumenText.text = GameManager.Instance.CurrentLumens.ToString();
+
         canvasGroup.alpha = 1f;
 
-        if (currentRoutine != null)
-            StopCoroutine(currentRoutine);
-
-        currentRoutine = StartCoroutine(Hide());
+        currentRoutine = StartCoroutine(Fade(1f, 0f, fadeOutDuration));
     }
 
     private void OnEnable()
@@ -49,30 +51,29 @@ public class LumenUI : MonoBehaviour
         currentRoutine = StartCoroutine(ShowThenHide());
     }
 
-    private IEnumerator ShowThenHide()
+    public IEnumerator ShowThenHide()
     {
-        // Fade in
         yield return StartCoroutine(Fade(0f, 1f, fadeInDuration));
 
-        // Hold
         yield return new WaitForSeconds(showDuration);
 
-        // Fade out
         yield return StartCoroutine(Fade(1f, 0f, fadeOutDuration));
     }
 
-    private IEnumerator Hide()
+    public void Hide()
     {
-        // Hold
-        yield return new WaitForSeconds(showDuration);
+        if (currentRoutine != null)
+            StopCoroutine(currentRoutine);
 
-        // Fade out
-        yield return StartCoroutine(Fade(1f, 0f, fadeOutDuration));
+        currentRoutine = StartCoroutine(Fade(1f, 0f, fadeOutDuration));
     }
 
-    private IEnumerator Show()
+    public void Show()
     {
-        yield return StartCoroutine(Fade(1f, 1f, fadeInDuration));
+        if (currentRoutine != null)
+            StopCoroutine(currentRoutine);
+
+        canvasGroup.alpha = 1f;
     }
 
     private IEnumerator Fade(float from, float to, float duration)
@@ -81,7 +82,7 @@ public class LumenUI : MonoBehaviour
         canvasGroup.alpha = from;
         while (timer < duration)
         {
-            timer += Time.deltaTime;
+            timer += Time.unscaledDeltaTime;
             canvasGroup.alpha = Mathf.Lerp(from, to, timer / duration);
             yield return null;
         }
