@@ -3,6 +3,7 @@ using System.Collections;
 
 public class EnemyHealth : MonoBehaviour
 {
+    [SerializeField] private GameObject corpsePrefab;
     [SerializeField] private Material whiteFlashMat;
     [Space(5)]
 
@@ -28,7 +29,10 @@ public class EnemyHealth : MonoBehaviour
     private SpriteRenderer sprite;
     private EnemyState state;
 
-    private Coroutine flashCoroutine; 
+    private Coroutine flashCoroutine;
+
+
+    private Vector2 lastHitDirection;
 
     private void Awake()
     {
@@ -39,6 +43,9 @@ public class EnemyHealth : MonoBehaviour
     }
     public void Update()
     {
+        if (state.IsDead)
+            return;
+
         if (isInvincible)
         {
             iFrameTimer -= Time.deltaTime;
@@ -71,9 +78,8 @@ public class EnemyHealth : MonoBehaviour
         // Knockback
         if (knockbackable)
         {
-            Vector2 dir = (transform.position - (Vector3)attackerPos).normalized;
-
-            rb.AddForce(dir * knockbackStrength, ForceMode2D.Impulse);
+            lastHitDirection = (transform.position - (Vector3)attackerPos).normalized;
+            rb.AddForce(lastHitDirection * knockbackStrength, ForceMode2D.Impulse);
 
             knockbackTimer = knockbackTime;
             state.CurrentState = EnemyState.EnemyStateType.Hit;
@@ -100,20 +106,22 @@ public class EnemyHealth : MonoBehaviour
     // death
     private void Die()
     {
-        state.IsDead = true;
-        state.CurrentState = EnemyState.EnemyStateType.Dead;
-        state.IsAttacking = false;
-        state.IsKnocked = false;
-
         GetComponentInChildren<LumenDropper>()?.Drop();
-        StartCoroutine(DestroyNextFrame());
-    }
 
-    private IEnumerator DestroyNextFrame()
-    {
-        yield return null;
+        if (corpsePrefab != null)
+        {
+            GameObject corpse = Instantiate(
+                corpsePrefab,
+                transform.position,
+                transform.rotation
+            );
+
+            corpse.GetComponent<Corpse>()?.Pop(lastHitDirection);
+        }
+
         Destroy(gameObject);
     }
+
 
 
     // white flash when hit

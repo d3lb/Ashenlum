@@ -500,7 +500,7 @@ BoxCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 192
+    m_Bits: 4288
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -569,6 +569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5e4f26f599200b4b99b40ffe8029a50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  corpsePrefab: {fileID: 529880344268797859, guid: 8dbb5a04b35044246b27a8d7696a5d1f, type: 3}
   whiteFlashMat: {fileID: 2100000, guid: 9659d46c6a5fa964d8b670eeede936f7, type: 2}
   hp: 6
   knockbackable: 1
