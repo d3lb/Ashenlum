@@ -16,6 +16,7 @@ public class SceneFader : MonoBehaviour
             Color c = blackPanel.color;
             c.a = 0f;
             blackPanel.color = c;
+
         }
         else
         {

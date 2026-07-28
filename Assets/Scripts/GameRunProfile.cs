@@ -11,6 +11,12 @@ public class GameRunProfile
     public int maxHp = 100;
     public int currentHp = 100;
 
+    [Header("Checkpoint Status")]
+    public List<string> openedCheckpoints = new List<string>();
+    public bool hasCheckpoint;
+    public string checkpointScene;
+    public string checkpointEntranceId;
+
     [Header("Inventory & Upgrades")]
     public int lumens = 0;
     public List<string> items = new List<string>();

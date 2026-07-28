@@ -11,17 +11,16 @@ public class GameManager : MonoBehaviour
     public GameRunProfile activeRun = new GameRunProfile();
 
     // Default Spawn Scene
-    private string startingScene;
+    private string startingScene = "Start";
 
-    // Checkpoint
-    private string checkpointScene;
-    private string checkpointEntranceId;
-    private bool hasCheckpoint;
-
+    // Pending Transitions
     private string pendingCheckpointScene;
     private bool pendingFadeIn;
 
     public System.Action OnSceneReady;
+
+    public int CurrentLumens => activeRun.lumens;
+
 
     private void Awake()
     {
@@ -32,7 +31,6 @@ public class GameManager : MonoBehaviour
             DontDestroyOnLoad(transform.root.gameObject);
 
             activeRun.currentArea = SceneManager.GetActiveScene().name;
-            startingScene = SceneManager.GetActiveScene().name;
 
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
@@ -46,6 +44,13 @@ public class GameManager : MonoBehaviour
     private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    public void StartNewGame()
+    {
+        activeRun = new GameRunProfile();
+
+        GoToScene(startingScene, "");
     }
 
     public void GoToScene(string sceneName, string entranceId)
@@ -91,20 +96,21 @@ public class GameManager : MonoBehaviour
     // CHECKPOINTS
     public void SetCheckpoint(string entranceId)
     {
-        checkpointScene = SceneManager.GetActiveScene().name;
-        checkpointEntranceId = entranceId;
-        hasCheckpoint = true;
+        activeRun.checkpointScene = SceneManager.GetActiveScene().name;
+        activeRun.checkpointEntranceId = entranceId;
+        activeRun.hasCheckpoint = true;
     }
 
     public void GoToCheckpoint()
     {
-        if (!hasCheckpoint) return;
+        if (!activeRun.hasCheckpoint)
+            return;
 
         activeRun.currentHp = activeRun.maxHp;
 
-        pendingCheckpointScene = checkpointScene;
+        pendingCheckpointScene = activeRun.checkpointScene;
 
-        StartCoroutine(LoadSceneRoutine(checkpointScene));
+        StartCoroutine(LoadSceneRoutine(activeRun.checkpointScene));
     }
 
     private IEnumerator FinishCheckpointTeleport()
@@ -120,7 +126,7 @@ public class GameManager : MonoBehaviour
 
             foreach (var entrance in entrances)
             {
-                if (entrance.CheckpointEntranceId == checkpointEntranceId)
+                if (entrance.CheckpointEntranceId == activeRun.checkpointEntranceId)
                 {
                     player.transform.position = entrance.transform.position;
                     break;
@@ -131,16 +137,15 @@ public class GameManager : MonoBehaviour
         yield return SceneFader.Instance.FadeIn(0.4f);
     }
 
-    public string GetCheckpointScene() => checkpointScene;
 
     public bool HasCheckpoint()
     {
-        return hasCheckpoint;
+        return activeRun.hasCheckpoint;
     }
 
     public string GetCheckpointEntranceId()
     {
-        return checkpointEntranceId;
+        return activeRun.checkpointEntranceId;
     }
 
     // WALLS
@@ -179,7 +184,7 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSecondsRealtime(respawnDelay);
 
-        if (hasCheckpoint)
+        if (activeRun.hasCheckpoint)
         {
             GoToCheckpoint();
         }

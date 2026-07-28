@@ -16,8 +16,19 @@ public class HealthBar : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnSceneReady += FindPlayer;
         FindPlayer();
+    }
+
+    private void OnEnable()
+    {
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnSceneReady += FindPlayer;
+    }
+
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnSceneReady -= FindPlayer;
     }
 
     private void FindPlayer()
@@ -30,10 +41,11 @@ public class HealthBar : MonoBehaviour
             easeHealthSlider.value = percent;
         }
     }
-
-
     private void Update()
     {
+        if (playerHealth == null)
+            return;
+
         float percent = (float)playerHealth.CurrentHP / playerHealth.MaxHP;
 
         healthSlider.value = percent;

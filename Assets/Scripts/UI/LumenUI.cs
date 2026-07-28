@@ -18,9 +18,25 @@ public class LumenUI : MonoBehaviour
 
     private void Start()
     {
+        lumenText.text = GameManager.Instance.CurrentLumens.ToString();
         canvasGroup.alpha = 1f;
-        StartCoroutine(Hide());
-        GameManager.Instance.OnLumensChanged += OnLumensChanged;
+
+        if (currentRoutine != null)
+            StopCoroutine(currentRoutine);
+
+        currentRoutine = StartCoroutine(Hide());
+    }
+
+    private void OnEnable()
+    {
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnLumensChanged += OnLumensChanged;
+    }
+
+    private void OnDisable()
+    {
+        if (GameManager.Instance != null)
+            GameManager.Instance.OnLumensChanged -= OnLumensChanged;
     }
 
     private void OnLumensChanged(int amount)
@@ -29,6 +45,7 @@ public class LumenUI : MonoBehaviour
 
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
+
         currentRoutine = StartCoroutine(ShowThenHide());
     }
 
@@ -55,8 +72,7 @@ public class LumenUI : MonoBehaviour
 
     private IEnumerator Show()
     {
-        // Fade in
-        yield return StartCoroutine(Fade(0f, 1f, fadeInDuration));
+        yield return StartCoroutine(Fade(1f, 1f, fadeInDuration));
     }
 
     private IEnumerator Fade(float from, float to, float duration)
