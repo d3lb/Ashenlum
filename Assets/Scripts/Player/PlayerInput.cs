@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
+    public bool IsPaused => PauseManager.Instance != null && PauseManager.Instance.IsPaused; 
+    
     public Vector2 Movement { get; private set; }
 
     public bool JumpPressed { get; private set; }
@@ -20,6 +22,34 @@ public class PlayerInput : MonoBehaviour
     public bool LookDownHeld { get; private set; }
 
     private void Update()
+    {
+        if (IsPaused)
+        {
+            Movement = Vector2.zero;
+
+            JumpPressed = false;
+            JumpReleased = false;
+
+            DashPressed = false;
+
+            AttackPressed = false;
+            AbilityPressed = false;
+            HealAbilityHeld = false;
+
+            HealPressed = false;
+            InteractPressed = false;
+
+            LookUpHeld = false;
+            LookDownHeld = false;
+
+            return;
+        }
+
+        ReadInput();
+    }
+
+
+    private void ReadInput()
     {
         Movement = new Vector2(
             Input.GetAxisRaw("Horizontal"),
