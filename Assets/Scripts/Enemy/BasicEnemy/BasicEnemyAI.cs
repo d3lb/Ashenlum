@@ -5,6 +5,7 @@ using UnityEngine;
 public class BasicEnemyAI : MonoBehaviour
 {
     [Header("Refrences")]
+    [SerializeField] private CombatZone combatZone;
     [SerializeField] private Transform playerCheck;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private LayerMask sightBlockLayer;
@@ -25,7 +26,6 @@ public class BasicEnemyAI : MonoBehaviour
     private Rigidbody2D rb;
     private SpriteRenderer sprite;
     private EnemyState state;
-    private EnemyHealth health;
 
     private Transform currentTarget;
     private Transform patrolTarget;
@@ -37,72 +37,83 @@ public class BasicEnemyAI : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
         state = GetComponent<EnemyState>();
-        health = GetComponent<EnemyHealth>();
         patrolTarget = pointB;
     }
 
     void Update()
     {
+        if (state.IsDead)
+            return;
+
         if (state.CurrentState == EnemyState.EnemyStateType.Hit
             && state.IsKnocked)
         {
             return;
         }
 
-        Collider2D[] playerInSight =
-            Physics2D.OverlapCircleAll(
-                playerCheck.position,
-                playerCheckRange,
-                playerLayer
-            );
-
-        if (playerInSight.Length > 0 && HasLineOfSight(playerInSight[0].transform))
+        if (currentTarget != null && !IsInsideCombatArea(currentTarget.position.x))
         {
-            currentTarget = playerInSight[0].transform;
+            currentTarget = null;
+            loseTargetTimer = 0f;
+            state.CurrentState = EnemyState.EnemyStateType.Patrol;
+            return;
+        }
 
-            loseTargetTimer = loseTargetTime;
+        Collider2D[] playerInSight = Physics2D.OverlapCircleAll( playerCheck.position, playerCheckRange, playerLayer);
 
-            float distance =
-                Vector2.Distance(
+        if (playerInSight.Length > 0)
+        {
+            Transform target = playerInSight[0].transform;
+
+            if (HasLineOfSight(target) &&
+                IsInsideCombatArea(target.position.x))
+            {
+                currentTarget = target;
+
+                loseTargetTimer = loseTargetTime;
+
+                float distance = Vector2.Distance(
                     transform.position,
                     currentTarget.position
                 );
 
-            if (distance > playerStopCheckRange)
-                state.CurrentState = EnemyState.EnemyStateType.Chase;
-            else
-                state.CurrentState = EnemyState.EnemyStateType.Attack;
+                if (distance > playerStopCheckRange)
+                    state.CurrentState = EnemyState.EnemyStateType.Chase;
+                else
+                    state.CurrentState = EnemyState.EnemyStateType.Attack;
+
+                return;
+            }
+        }
+
+        // No valid target found
+        if (loseTargetTimer > 0f)
+        {
+            loseTargetTimer -= Time.deltaTime;
+
+            if (currentTarget != null)
+            {
+                float distance = Vector2.Distance(
+                    transform.position,
+                    currentTarget.position
+                );
+
+                if (distance > playerStopCheckRange)
+                    state.CurrentState = EnemyState.EnemyStateType.Chase;
+                else
+                    state.CurrentState = EnemyState.EnemyStateType.Attack;
+            }
         }
         else
         {
-            if (loseTargetTimer > 0f)
-            {
-                loseTargetTimer -= Time.deltaTime;
-
-                if (currentTarget != null)
-                {
-                    float distance =
-                        Vector2.Distance(
-                            transform.position,
-                            currentTarget.position
-                        );
-
-                    if (distance > playerStopCheckRange)
-                        state.CurrentState = EnemyState.EnemyStateType.Chase;
-                    else
-                        state.CurrentState = EnemyState.EnemyStateType.Attack;
-                }
-            }
-            else
-            {
-                currentTarget = null;
-                state.CurrentState = EnemyState.EnemyStateType.Patrol;
-            }
+            currentTarget = null;
+            state.CurrentState = EnemyState.EnemyStateType.Patrol;
         }
     }
 
     private void FixedUpdate()
     {
+        if (state.IsDead) return;
 
         if (state.CurrentState == EnemyState.EnemyStateType.Hit)
             return;
@@ -213,28 +224,38 @@ public class BasicEnemyAI : MonoBehaviour
     private bool HasLineOfSight(Transform target)
     {
         Vector2 origin = transform.position;
-        Vector2 dir =
-            (target.position - transform.position).normalized;
+        Vector2 dir = (target.position - transform.position).normalized;
 
-        float distance =
-            Vector2.Distance(
-                transform.position,
-                target.position
-            );
+        float distance = Vector2.Distance(transform.position, target.position);
 
-        RaycastHit2D hit =
-            Physics2D.Raycast(
-                origin,
-                dir,
-                distance,
-                sightBlockLayer
-            );
+        RaycastHit2D hit = Physics2D.Raycast(origin, dir, distance, sightBlockLayer);
 
         return hit.collider == null;
     }
 
-    void OnDrawGizmosSelected()
+    private bool IsInsideCombatArea(float x)
     {
-        Gizmos.DrawWireSphere(playerCheck.position, playerCheckRange);
+        if (combatZone == null)
+            return true;
+
+        float minX = Mathf.Min(combatZone.pointA.position.x, combatZone.pointB.position.x);
+        float maxX = Mathf.Max(combatZone.pointA.position.x, combatZone.pointB.position.x);
+
+        return x >= minX && x <= maxX;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (playerCheck != null)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawWireSphere(playerCheck.position, playerCheckRange);
+        }
+
+        if (combatZone != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(combatZone.pointA.position, combatZone.pointB.position);
+        }
     }
 }

@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1696531601168122611}
   - component: {fileID: 3742727622774428068}
   - component: {fileID: 2562981115312474469}
+  - component: {fileID: 6867321521882681751}
   m_Layer: 10
   m_Name: MoneyBox
   m_TagString: Untagged
@@ -115,6 +116,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2, y: 3}
   m_EdgeRadius: 0
+--- !u!114 &6867321521882681751
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3799649504890417776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fb3e32a5c94db5488fad0a6cdd6a035, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PersistentObject
+  id: 
+  persistenceType: 2
 --- !u!1 &8452703229383682545
 GameObject:
   m_ObjectHideFlags: 0

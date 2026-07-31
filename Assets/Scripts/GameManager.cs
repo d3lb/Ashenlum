@@ -111,6 +111,8 @@ public class GameManager : MonoBehaviour
 
         pendingCheckpointScene = activeRun.checkpointScene;
 
+        activeRun.temporaryRemoved.Clear();
+
         StartCoroutine(LoadSceneRoutine(activeRun.checkpointScene));
     }
 
@@ -178,6 +180,8 @@ public class GameManager : MonoBehaviour
     // PLAYER DEATH 
     public void PlayerDied(float respawnDelay)
     {
+        activeRun.temporaryRemoved.Clear();
+
         StartCoroutine(RespawnRoutine(respawnDelay));
     }
 

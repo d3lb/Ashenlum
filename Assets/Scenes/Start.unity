@@ -1136,9 +1136,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 895291164967240146, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -4.722351
+      objectReference: {fileID: 0}
+    - target: {fileID: 982870465959313793, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 9.31
+      objectReference: {fileID: 0}
+    - target: {fileID: 3760554564414085222, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -7.29
+      objectReference: {fileID: 0}
     - target: {fileID: 5624135775749805519, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_Name
       value: Kiwi (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: id
+      value: kiwi_6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6106696457269589702, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 5.327648
       objectReference: {fileID: 0}
     - target: {fileID: 8371181828605489071, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1889,9 +1909,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 982870465959313793, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 28.34
+      objectReference: {fileID: 0}
+    - target: {fileID: 3760554564414085222, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -10.17
+      objectReference: {fileID: 0}
     - target: {fileID: 5624135775749805519, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_Name
       value: Kiwi (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: id
+      value: kiwi_1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: persistenceType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8371181828605489071, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2040,9 +2076,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 982870465959313793, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 27.327648
+      objectReference: {fileID: 0}
+    - target: {fileID: 3760554564414085222, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -27.52
+      objectReference: {fileID: 0}
     - target: {fileID: 5624135775749805519, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_Name
       value: Kiwi (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: id
+      value: kiwi_5
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: persistenceType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8371181828605489071, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2097,9 +2149,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 982870465959313793, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 13.327648
+      objectReference: {fileID: 0}
+    - target: {fileID: 3760554564414085222, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -13.42
+      objectReference: {fileID: 0}
     - target: {fileID: 5624135775749805519, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_Name
       value: Kiwi (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: id
+      value: kiwi_4
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: persistenceType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8371181828605489071, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -183351,13 +183419,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 982870465959313793, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 11.02
+      objectReference: {fileID: 0}
+    - target: {fileID: 3760554564414085222, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -7.5
+      objectReference: {fileID: 0}
     - target: {fileID: 5624135775749805519, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_Name
       value: Kiwi (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: id
+      value: kiwi_3
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: persistenceType
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8371181828605489071, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -30.73
+      value: -33.730003
       objectReference: {fileID: 0}
     - target: {fileID: 8371181828605489071, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_LocalPosition.y
@@ -183541,9 +183625,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 982870465959313793, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 12.72
+      objectReference: {fileID: 0}
+    - target: {fileID: 3760554564414085222, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -25.74
+      objectReference: {fileID: 0}
     - target: {fileID: 5624135775749805519, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_Name
       value: Kiwi (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: id
+      value: kiwi_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: persistenceType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8371181828605489071, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -184433,6 +184533,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 256638289901855234, guid: ab0ef131773127e4eb80284d60ce4655, type: 3}
+      propertyPath: id
+      value: F_1
+      objectReference: {fileID: 0}
     - target: {fileID: 776976924769977772, guid: ab0ef131773127e4eb80284d60ce4655, type: 3}
       propertyPath: m_LocalPosition.x
       value: -81.55118
@@ -184490,9 +184594,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 982870465959313793, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 11.327648
+      objectReference: {fileID: 0}
+    - target: {fileID: 3760554564414085222, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -19.722351
+      objectReference: {fileID: 0}
     - target: {fileID: 5624135775749805519, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_Name
       value: Kiwi
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: id
+      value: kiwi_0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5850155692116594479, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
+      propertyPath: persistenceType
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8371181828605489071, guid: 701e3f495353a064c97c7a260cfc85c5, type: 3}
       propertyPath: m_LocalPosition.x
@@ -184550,6 +184670,10 @@ PrefabInstance:
     - target: {fileID: 289140071784360349, guid: c9c8c9e9b61498b46bd9d22fbe97c51d, type: 3}
       propertyPath: m_Name
       value: D
+      objectReference: {fileID: 0}
+    - target: {fileID: 4106488171868644726, guid: c9c8c9e9b61498b46bd9d22fbe97c51d, type: 3}
+      propertyPath: id
+      value: D_0
       objectReference: {fileID: 0}
     - target: {fileID: 7194476720859255230, guid: c9c8c9e9b61498b46bd9d22fbe97c51d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -184720,6 +184844,10 @@ PrefabInstance:
     - target: {fileID: 3799649504890417776, guid: d842aec60f549424ca1cc6199e9eb3a6, type: 3}
       propertyPath: m_Name
       value: MoneyBox
+      objectReference: {fileID: 0}
+    - target: {fileID: 6867321521882681751, guid: d842aec60f549424ca1cc6199e9eb3a6, type: 3}
+      propertyPath: id
+      value: Moneybox_0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -184904,6 +185032,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 256638289901855234, guid: ab0ef131773127e4eb80284d60ce4655, type: 3}
+      propertyPath: id
+      value: F_0
+      objectReference: {fileID: 0}
     - target: {fileID: 776976924769977772, guid: ab0ef131773127e4eb80284d60ce4655, type: 3}
       propertyPath: m_LocalPosition.x
       value: 61.48

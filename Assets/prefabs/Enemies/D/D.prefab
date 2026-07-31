@@ -510,6 +510,7 @@ GameObject:
   - component: {fileID: 5627500749433690634}
   - component: {fileID: 2300690402280496685}
   - component: {fileID: 4554686220874391066}
+  - component: {fileID: 4106488171868644726}
   m_Layer: 0
   m_Name: Dasher
   m_TagString: Untagged
@@ -684,6 +685,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5e4f26f599200b4b99b40ffe8029a50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  corpsePrefab: {fileID: 0}
   whiteFlashMat: {fileID: 2100000, guid: 9659d46c6a5fa964d8b670eeede936f7, type: 2}
   hp: 15
   knockbackable: 0
@@ -814,6 +816,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   pointA: {fileID: 8475743493656087321}
   pointB: {fileID: 7644703001478055288}
+--- !u!114 &4106488171868644726
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3955865010041457732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fb3e32a5c94db5488fad0a6cdd6a035, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PersistentObject
+  id: 
+  persistenceType: 1
 --- !u!1 &4930242848396050520
 GameObject:
   m_ObjectHideFlags: 0

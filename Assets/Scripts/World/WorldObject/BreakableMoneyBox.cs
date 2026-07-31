@@ -4,6 +4,7 @@ using System.Collections;
 public class BreakableMoneyBox : MonoBehaviour
 {
     [Header("References")]
+    private PersistentObject persistentObject;
     [SerializeField] private SpriteRenderer sprite;
     [SerializeField] private Collider2D boxCollider;
     [SerializeField] private LumenDropper lumenDropper;
@@ -24,6 +25,18 @@ public class BreakableMoneyBox : MonoBehaviour
     {
         hp = maxHp;
         if (sprite != null) originalColor = sprite.color;
+        persistentObject = GetComponent<PersistentObject>();
+    }
+
+    private void Start()
+    {
+        if (persistentObject == null)
+            return;
+
+        if (GameManager.Instance.activeRun.permanentRemoved.Contains(persistentObject.Id))
+        {
+            Destroy(gameObject);
+        }
     }
 
     public bool TakeDamage(int damage, Vector2 attackerPosition)
@@ -57,6 +70,7 @@ public class BreakableMoneyBox : MonoBehaviour
     {
         isBroken = true;
 
+        GameManager.Instance.activeRun.permanentRemoved.Add(persistentObject.Id);
         if (boxCollider != null) boxCollider.enabled = false;
         if (sprite != null) sprite.color = hitColor;
 

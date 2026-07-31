@@ -162,6 +162,7 @@ GameObject:
   - component: {fileID: 8224065377358211043}
   - component: {fileID: 4341366705973640733}
   - component: {fileID: 208653159590792753}
+  - component: {fileID: 256638289901855234}
   m_Layer: 6
   m_Name: Flying
   m_TagString: Untagged
@@ -286,6 +287,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5e4f26f599200b4b99b40ffe8029a50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
+  corpsePrefab: {fileID: 0}
   whiteFlashMat: {fileID: 2100000, guid: 9659d46c6a5fa964d8b670eeede936f7, type: 2}
   hp: 4
   knockbackable: 1
@@ -447,6 +449,20 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &256638289901855234
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3589807533845772263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fb3e32a5c94db5488fad0a6cdd6a035, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PersistentObject
+  id: 
+  persistenceType: 1
 --- !u!1 &3693705834592393537
 GameObject:
   m_ObjectHideFlags: 0

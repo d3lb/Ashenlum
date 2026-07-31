@@ -3,6 +3,8 @@ using System.Collections;
 
 public class EnemyHealth : MonoBehaviour
 {
+    private PersistentObject persistentObject;
+
     [SerializeField] private GameObject corpsePrefab;
     [SerializeField] private Material whiteFlashMat;
     [Space(5)]
@@ -33,14 +35,29 @@ public class EnemyHealth : MonoBehaviour
 
 
     private Vector2 lastHitDirection;
-
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         state = GetComponent<EnemyState>();
         sprite = GetComponent<SpriteRenderer>();
         mat = sprite.material = new Material(sprite.material);
+        persistentObject = GetComponent<PersistentObject>();
     }
+
+    private void Start()
+    {
+        if (persistentObject == null)
+            return;
+
+        GameRunProfile run = GameManager.Instance.activeRun;
+
+        if (run.temporaryRemoved.Contains(persistentObject.Id) ||
+            run.permanentRemoved.Contains(persistentObject.Id))
+        {
+            Destroy(gameObject);
+        }
+    }
+
     public void Update()
     {
         if (state.IsDead)
@@ -120,6 +137,20 @@ public class EnemyHealth : MonoBehaviour
         }
 
         Destroy(gameObject);
+
+        if (persistentObject != null)
+        {
+            switch (persistentObject.PersistenceType)
+            {
+                case PersistenceType.Temporary:
+                    GameManager.Instance.activeRun.temporaryRemoved.Add(persistentObject.Id);
+                    break;
+
+                case PersistenceType.Permanent:
+                    GameManager.Instance.activeRun.permanentRemoved.Add(persistentObject.Id);
+                    break;
+            }
+        }
     }
 
 

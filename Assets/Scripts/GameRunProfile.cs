@@ -12,14 +12,14 @@ public class GameRunProfile
     public int currentHp = 100;
 
     [Header("Checkpoint Status")]
-    public List<string> openedCheckpoints = new List<string>();
+    public HashSet<string> openedCheckpoints = new();
     public bool hasCheckpoint;
     public string checkpointScene;
     public string checkpointEntranceId;
 
     [Header("Inventory & Upgrades")]
     public int lumens = 0;
-    public List<string> items = new List<string>();
+    public HashSet<string> items = new();
 
     [Header("Ability Unlocks")]
     public bool isDashUnlocked = false;
@@ -27,6 +27,8 @@ public class GameRunProfile
     public bool isWallJumpUnlocked = false;
 
     [Header("World State")]
-    public List<string> defeatedBosses = new List<string>();
-    public List<string> brokenWalls = new List<string>();
+    public HashSet<string> defeatedBosses = new();
+    public HashSet<string> brokenWalls = new();
+    public HashSet<string> temporaryRemoved = new();
+    public HashSet<string> permanentRemoved = new();
 }
