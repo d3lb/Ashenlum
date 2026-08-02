@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BreakableWall : MonoBehaviour
+public class BreakableWall : MonoBehaviour, IDamageable
 {
     [SerializeField] private string wallID;
 
@@ -17,7 +17,7 @@ public class BreakableWall : MonoBehaviour
         }
     }
 
-    public bool TakeDamage()
+    public bool TakeDamage(int damage, Vector2 attackerPos)
     {
         hitsToBreak--;
 

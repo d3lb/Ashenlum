@@ -3,7 +3,7 @@ using UnityEngine;
 public class BossTrigger : MonoBehaviour
 {
     [SerializeField] private CameraSwitcher cameraSwitcher;
-
+    [SerializeField] private SecretaryBirdBrain boss;
     private bool activated;
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -15,6 +15,7 @@ public class BossTrigger : MonoBehaviour
             return;
 
         activated = true;
+        boss.Activate();
 
         cameraSwitcher.SwitchToBossCam();
     }

@@ -66,9 +66,7 @@ public class PlayerCombat : MonoBehaviour
     private Collider2D[] results = new Collider2D[10];
 
 
-    private HashSet<EnemyHealth> hitEnemies = new HashSet<EnemyHealth>();
-    private HashSet<BreakableWall> hitWalls = new HashSet<BreakableWall>();
-    private HashSet<BreakableMoneyBox> hitMoneyBoxes = new HashSet<BreakableMoneyBox>();
+    private HashSet<IDamageable> hitDamageables = new();
 
     private AttackType currentAttackType;
     private int attackDir;
@@ -125,9 +123,7 @@ public class PlayerCombat : MonoBehaviour
         state.IsAttacking = true;
         state.CurrentState = GetStateFromAttack(attackType);
 
-        hitEnemies.Clear();
-        hitWalls.Clear();
-        hitMoneyBoxes.Clear();
+        hitDamageables.Clear();
 
         switch (health.CurrentStabilityState)
         {
@@ -167,75 +163,26 @@ public class PlayerCombat : MonoBehaviour
             if (results[i].transform.root == transform)
                 continue;
 
-            EnemyHealth enemy = results[i].attachedRigidbody?.GetComponent<EnemyHealth>();
+            IDamageable damageable = results[i].GetComponentInParent<IDamageable>();
 
-            if (enemy != null && !hitEnemies.Contains(enemy))
+            if (damageable != null && !hitDamageables.Contains(damageable))
             {
-                hitEnemies.Add(enemy);
-                bool isDead = enemy.TakeDamage(damage, transform.position);
+                hitDamageables.Add(damageable);
 
-                effectSpawner.SpawnHitEffect(enemy.transform.position, attackType != AttackType.Side);
+                bool destroyed = damageable.TakeDamage( damage, transform.position  );
+
+                Transform hitTransform = ((MonoBehaviour)damageable).transform;
+
+                effectSpawner.SpawnHitEffect( hitTransform.position, attackType != AttackType.Side  );
 
                 if (!recoilApplied)
                 {
-                    TimeManager.Instance.HitStop(isDead ? killPauseTime : hitPauseTime);
-                    ShakeHit(isDead);
+                    TimeManager.Instance.HitStop(  destroyed ? killPauseTime : hitPauseTime );
+
+                    ShakeHit(destroyed);
+
                     ApplyRecoil(attackType);
-                    recoilApplied = true;
-                }
-            }
-            BreakableWall wall = results[i].GetComponent<BreakableWall>();
 
-            if (wall != null && !hitWalls.Contains(wall))
-            {
-                hitWalls.Add(wall);
-                bool isBroken = wall.TakeDamage();
-
-                if (!recoilApplied)
-                {
-                    TimeManager.Instance.HitStop(isBroken ? killPauseTime : hitPauseTime);
-                    ShakeHit(isBroken);
-                }
-            }
-
-            Spike spike = results[i].GetComponentInParent<Spike>();
-
-            if (spike != null)
-            {
-                if (attackType == AttackType.Down)
-                {
-                    ApplyRecoil(attackType);
-                }
-            }
-
-            PogoTarget pogoTarget = results[i].GetComponentInParent<PogoTarget>();
-
-            if (pogoTarget != null)
-            {
-                if (attackType == AttackType.Down)
-                {
-                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, pogoForce * pogoTargetForce);
-                    recoilApplied = true;
-                }
-                else if (attackType == AttackType.Side)
-                {
-                    rb.linearVelocity = new Vector2(pogoForce * pogoTargetForce * attackDir * -1, rb.linearVelocity.y);
-                    recoilApplied = true;
-                }
-            }
-
-            BreakableMoneyBox moneyBox = results[i].GetComponentInParent<BreakableMoneyBox>();
-
-            if (moneyBox != null && !hitMoneyBoxes.Contains(moneyBox))
-            {
-                hitMoneyBoxes.Add(moneyBox);
-                bool isBroken = moneyBox.TakeDamage(damage, transform.position);
-
-                if (!recoilApplied)
-                {
-                    TimeManager.Instance.HitStop(isBroken ? killPauseTime : hitPauseTime);
-                    ShakeHit(isBroken);
-                    ApplyRecoil(attackType);
                     recoilApplied = true;
                 }
             }

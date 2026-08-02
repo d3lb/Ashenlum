@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class BreakableMoneyBox : MonoBehaviour
+public class BreakableMoneyBox : MonoBehaviour, IDamageable
 {
     [Header("References")]
     private PersistentObject persistentObject;
