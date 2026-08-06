@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// Owns the hitbox GameObjects. Each hitbox object should carry your existing
+/// EnemyHitbox component - this class only turns them on and off.
+/// </summary>
 public class SecretaryBirdAttackController : MonoBehaviour
 {
     [SerializeField] private SecretaryBirdState state;
@@ -8,42 +12,34 @@ public class SecretaryBirdAttackController : MonoBehaviour
     [SerializeField] private GameObject dashHitboxLeft;
     [SerializeField] private GameObject dashHitboxRight;
 
-    [Header("Dive")]
+    [Header("Dive / Slam")]
     [SerializeField] private GameObject diveHitbox;
 
-    private void Awake()
-    {
-        DisableAllHitboxes();
-    }
+    private void Awake() => DisableAllHitboxes();
 
     public void EnableDashHitbox()
     {
-        if (state.IsFacingRight)
-            dashHitboxRight.SetActive(true);
-        else
-            dashHitboxLeft.SetActive(true);
+        Set(state.IsFacingRight ? dashHitboxRight : dashHitboxLeft, true);
+        Set(state.IsFacingRight ? dashHitboxLeft  : dashHitboxRight, false);
     }
 
     public void DisableDashHitbox()
     {
-        dashHitboxLeft.SetActive(false);
-        dashHitboxRight.SetActive(false);
+        Set(dashHitboxLeft, false);
+        Set(dashHitboxRight, false);
     }
 
-    public void EnableDiveHitbox()
-    {
-        diveHitbox.SetActive(true);
-    }
-
-    public void DisableDiveHitbox()
-    {
-        diveHitbox.SetActive(false);
-    }
+    public void EnableDiveHitbox()  => Set(diveHitbox, true);
+    public void DisableDiveHitbox() => Set(diveHitbox, false);
 
     public void DisableAllHitboxes()
     {
-        dashHitboxLeft.SetActive(false);
-        dashHitboxRight.SetActive(false);
-        diveHitbox.SetActive(false);
+        DisableDashHitbox();
+        DisableDiveHitbox();
+    }
+
+    private static void Set(GameObject go, bool on)
+    {
+        if (go != null && go.activeSelf != on) go.SetActive(on);
     }
 }

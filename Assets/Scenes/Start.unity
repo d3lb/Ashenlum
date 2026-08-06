@@ -4073,6 +4073,226 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 17.328682, y: 19.136051}
   m_EdgeRadius: 0
+--- !u!1 &1492645125
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1492645126}
+  - component: {fileID: 1492645128}
+  - component: {fileID: 1492645127}
+  m_Layer: 0
+  m_Name: Telegrapher
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1492645126
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1492645125}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 8.251999, y: 12.143875, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1993792061}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1492645127
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1492645125}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3a07a13ca9420d4a923dc696c63b0a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdTelegraph
+  line: {fileID: 1492645128}
+  dangerColor:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  safeColor:
+    serializedVersion: 2
+    key0: {r: 1, g: 1, b: 1, a: 1}
+    key1: {r: 1, g: 1, b: 1, a: 1}
+    key2: {r: 0, g: 0, b: 0, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 65535
+    ctime2: 0
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 2
+    m_NumAlphaKeys: 2
+  width: 0.22
+  overshoot: 3
+  fadeOutFraction: 0.35
+  marker: {fileID: 0}
+--- !u!120 &1492645128
+LineRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1492645125}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_Positions:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 1}
+  m_Parameters:
+    serializedVersion: 3
+    widthMultiplier: 1
+    widthCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    colorGradient:
+      serializedVersion: 2
+      key0: {r: 1, g: 1, b: 1, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 65535
+      atime2: 0
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_ColorSpace: -1
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 2
+    numCornerVertices: 0
+    numCapVertices: 0
+    alignment: 0
+    textureMode: 0
+    textureScale: {x: 1, y: 1}
+    shadowBias: 0.5
+    generateLightingData: 0
+  m_UseWorldSpace: 1
+  m_Loop: 0
+  m_ApplyActiveColorSpace: 1
 --- !u!1 &1495427397
 GameObject:
   m_ObjectHideFlags: 0
@@ -184539,6 +184759,7 @@ GameObject:
   - component: {fileID: 1891242590}
   - component: {fileID: 1891242589}
   - component: {fileID: 1891242588}
+  - component: {fileID: 1891242591}
   m_Layer: 0
   m_Name: BossRoom
   m_TagString: Untagged
@@ -184559,7 +184780,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   cameraSwitcher: {fileID: 174973607}
-  boss: {fileID: 1993792067}
+  boss: {fileID: 1993792081}
 --- !u!61 &1891242589
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -184621,6 +184842,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1891242591
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1891242587}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78c5cb271929ffb48acbd0b00efb0548, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdArena
+  areaCenter: {x: 0.9, y: -2.4}
+  areaSize: {x: 35.7, y: 19}
+  wallInset: 0.8
+  floorInset: 0.6
+  ceilingInset: 0.6
 --- !u!1 &1915556258
 GameObject:
   m_ObjectHideFlags: 0
@@ -184783,17 +185021,21 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1993792061}
-  - component: {fileID: 1993792071}
   - component: {fileID: 1993792065}
   - component: {fileID: 1993792070}
-  - component: {fileID: 1993792064}
-  - component: {fileID: 1993792072}
-  - component: {fileID: 1993792063}
-  - component: {fileID: 1993792062}
-  - component: {fileID: 1993792067}
-  - component: {fileID: 1993792066}
   - component: {fileID: 1993792069}
+  - component: {fileID: 1993792083}
+  - component: {fileID: 1993792082}
+  - component: {fileID: 1993792081}
+  - component: {fileID: 1993792080}
+  - component: {fileID: 1993792079}
+  - component: {fileID: 1993792078}
+  - component: {fileID: 1993792077}
+  - component: {fileID: 1993792075}
+  - component: {fileID: 1993792074}
   - component: {fileID: 1993792073}
+  - component: {fileID: 1993792072}
+  - component: {fileID: 1993792084}
   m_Layer: 6
   m_Name: BossBody
   m_TagString: Untagged
@@ -184815,66 +185057,12 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1401186091}
+  - {fileID: 1492645126}
   - {fileID: 215064025}
   - {fileID: 136876231}
   - {fileID: 591997046}
   m_Father: {fileID: 1826437960}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1993792062
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993792060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f0168c3cffa04194db796295073e4076, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  movement: {fileID: 1993792063}
-  state: {fileID: 1993792064}
---- !u!114 &1993792063
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993792060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6653c98b38873ef4681c636a53b5395a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  rb: {fileID: 1993792065}
-  state: {fileID: 1993792064}
-  attackController: {fileID: 1993792066}
-  dashSpeed: 20
-  dashPrepareTime: 0.35
-  dashRecoveryTime: 0.25
-  flyHeight: 5
-  flySpeed: 10
-  flyPause: 0.2
-  diveSpeed: 22
-  diveRecoveryTime: 0.3
---- !u!114 &1993792064
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993792060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8871ce21e0c6b20488710f37a66dcd3d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  CurrentState: 0
-  IsDead: 0
-  IsAttacking: 0
-  IsRecovering: 0
-  IsKnocked: 0
-  IsFacingRight: 1
 --- !u!50 &1993792065
 Rigidbody2D:
   serializedVersion: 5
@@ -184902,38 +185090,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &1993792066
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993792060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 420c14c233d7fb846807e127ea951a46, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  state: {fileID: 1993792064}
-  dashHitboxLeft: {fileID: 215064024}
-  dashHitboxRight: {fileID: 136876230}
-  diveHitbox: {fileID: 591997045}
---- !u!114 &1993792067
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993792060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d67d079f4d6deb64aa4abbe91c11560c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  state: {fileID: 1993792064}
-  movement: {fileID: 1993792063}
-  player: {fileID: 1993792061}
-  meleeRange: 3
 --- !u!114 &1993792069
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -184997,66 +185153,169 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 4, y: 4}
   m_EdgeRadius: 0
---- !u!212 &1993792071
-SpriteRenderer:
-  serializedVersion: 2
+--- !u!114 &1993792072
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1993792060}
   m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: bb511f362fe3afa4aa48f354608def73, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
---- !u!114 &1993792072
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 492ca23a6eb3f294fb6d4d467cc875a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdFeatherVolley
+  weight: 1
+  minPhase: 2
+  minRange: 0
+  maxRange: 6
+  recovery: 0.6
+  timeout: 6
+  repositionSpeed: 52
+  repositionTelegraph: 0.16
+  maxExtraRepositions: 2
+  extraRepositionChance: 0.45
+  hopHeightRange: {x: 0.05, y: 0.85}
+  hopPause: 0.1
+  perchHeight: 0.7
+  fanTime: 0.5
+  featherPrefab: {fileID: 0}
+  firePoint: {fileID: 0}
+  featherCount: 5
+  spreadAngle: 55
+  featherSpeed: 16
+  guaranteeGap: 1
+  volleys: 1
+  betweenVolleys: 0.35
+--- !u!114 &1993792073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8280fd87df5527c4680572884d78ea84, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdStomp
+  weight: 2
+  minPhase: 2
+  minRange: 0
+  maxRange: 999
+  recovery: 1.2
+  timeout: 6
+  repositionSpeed: 52
+  repositionTelegraph: 0.16
+  maxExtraRepositions: 2
+  extraRepositionChance: 0.45
+  hopHeightRange: {x: 0.05, y: 0.85}
+  hopPause: 0.1
+  riseHeight: 0.9
+  hangTime: 0.12
+  telegraphTime: 0.25
+  markTime: 0.3
+  slamSpeed: 50
+  slamGravity: 4
+  shockwavePrefab: {fileID: 0}
+  shockwaveYOffset: 0.4
+  bothDirections: 1
+  pogoTarget: {fileID: 0}
+  buriedTime: 0.9
+--- !u!114 &1993792074
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fe28a88483f1af4ca886ee8f57ea862, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdDive
+  weight: 2
+  minPhase: 1
+  minRange: 4
+  maxRange: 999
+  recovery: 1
+  timeout: 6
+  repositionSpeed: 52
+  repositionTelegraph: 0.16
+  maxExtraRepositions: 2
+  extraRepositionChance: 0.45
+  hopHeightRange: {x: 0.05, y: 0.85}
+  hopPause: 0.1
+  perchHeight: 0.85
+  aimPause: 0.1
+  telegraphTime: 0.4
+  diveSpeed: 40
+  diveGravity: 1.5
+--- !u!114 &1993792075
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6be62a22ee8ebd409db0a59f713e78b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdWallDash
+  weight: 2
+  minPhase: 3
+  minRange: 0
+  maxRange: 999
+  recovery: 0.5
+  timeout: 6
+  repositionSpeed: 52
+  repositionTelegraph: 0.16
+  maxExtraRepositions: 2
+  extraRepositionChance: 0.45
+  hopHeightRange: {x: 0.05, y: 0.85}
+  hopPause: 0.1
+  perchHeight: 0.05
+  perchPause: 0.1
+  telegraphTime: 0.45
+  chainTelegraphScale: 0.35
+  dashSpeed: 34
+  dashes: 3
+  betweenDashes: 0.12
+  aimAtPlayer: 0
+--- !u!114 &1993792077
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e6be62a22ee8ebd409db0a59f713e78b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdWallDash
+  weight: 3
+  minPhase: 1
+  minRange: 0
+  maxRange: 999
+  recovery: 0.7
+  timeout: 6
+  repositionSpeed: 52
+  repositionTelegraph: 0.16
+  maxExtraRepositions: 2
+  extraRepositionChance: 0.45
+  hopHeightRange: {x: 0.05, y: 0.85}
+  hopPause: 0.1
+  perchHeight: 0.05
+  perchPause: 0.1
+  telegraphTime: 0.45
+  chainTelegraphScale: 0.35
+  dashSpeed: 34
+  dashes: 1
+  betweenDashes: 0.12
+  aimAtPlayer: 0
+--- !u!114 &1993792078
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -185067,11 +185326,16 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9e72f10332e1346479b2f1d7c6e736ba, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
-  hp: 100
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdHealth
+  maxHp: 30
   hitFlashTime: 0.15
   iFrameTime: 0.1
---- !u!114 &1993792073
+  deathDelay: 1.2
+  deathEffect: {fileID: 0}
+  state: {fileID: 1993792082}
+  brain: {fileID: 1993792081}
+  sprite: {fileID: 1401186092}
+--- !u!114 &1993792079
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -185080,9 +185344,159 @@ MonoBehaviour:
   m_GameObject: {fileID: 1993792060}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9c060f89eca7da549821c68870e79d9b, type: 3}
+  m_Script: {fileID: 11500000, guid: f0168c3cffa04194db796295073e4076, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: '::'
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdCollision
+  movement: {fileID: 1993792080}
+--- !u!114 &1993792080
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6653c98b38873ef4681c636a53b5395a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdMovement
+  rb: {fileID: 1993792065}
+  state: {fileID: 1993792082}
+  arena: {fileID: 1891242591}
+  dashSpeedCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1.7
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.17000306
+      value: 1.2628632
+      inSlope: -1.016613
+      outSlope: -1.016613
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.12356322
+    - serializedVersion: 3
+      time: 0.60834044
+      value: 0.917865
+      inSlope: -0.55384666
+      outSlope: -0.55384666
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.36111116
+    - serializedVersion: 3
+      time: 1
+      value: 0.8
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  anticipationTime: 0.06
+  anticipationDistance: 0.45
+  impactHitStop: 0.045
+  impactShakeDuration: 0.12
+  impactShakeAmplitude: 2.5
+  impactShakeFrequency: 3
+  impactLayers:
+    serializedVersion: 2
+    m_Bits: 8
+  impactFacing: 0.35
+  impactGrace: 0.06
+  defaultGravity: 3
+  logDashEnd: 0
+--- !u!114 &1993792081
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d67d079f4d6deb64aa4abbe91c11560c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdBrain
+  state: {fileID: 1993792082}
+  move: {fileID: 1993792080}
+  hitboxes: {fileID: 1993792083}
+  telegraph: {fileID: 1492645127}
+  health: {fileID: 1993792078}
+  player: {fileID: 0}
+  phase2At: 0.66
+  phase3At: 0.33
+  recoveryScale:
+  - 1
+  - 0.75
+  - 0.55
+  idleBeat: 0.2
+  logAttacks: 1
+--- !u!114 &1993792082
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8871ce21e0c6b20488710f37a66dcd3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdState
+  CurrentState: 0
+  IsDead: 0
+  IsFacingRight: 1
+  Phase: 1
+  flipRoot: {fileID: 1401186091}
+  artFacesRight: 1
+--- !u!114 &1993792083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 420c14c233d7fb846807e127ea951a46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdAttackController
+  state: {fileID: 1993792082}
+  dashHitboxLeft: {fileID: 215064024}
+  dashHitboxRight: {fileID: 136876230}
+  diveHitbox: {fileID: 591997045}
+--- !u!114 &1993792084
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 305248b5d1d63a04092a4d4361a81905, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdDebugHUD
+  brain: {fileID: 1993792081}
+  state: {fileID: 1993792082}
+  health: {fileID: 1993792078}
+  show: 1
+  screenPos: {x: 12, y: 188.5}
+  fontSize: 16
+  showWorldLabel: 1
 --- !u!4 &2032945938 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5566485649379924750, guid: 51dbf75e026df9b4fbb46b7d11dc989e, type: 3}
