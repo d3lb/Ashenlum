@@ -1,10 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// Health, i-frames, hit flash, and the death handoff.
-/// Exposes Normalized so the brain can drive phases off it.
-/// </summary>
+
 public class SecretaryBirdHealth : MonoBehaviour, IDamageable
 {
     [Header("Health")]
@@ -86,7 +83,6 @@ public class SecretaryBirdHealth : MonoBehaviour, IDamageable
     {
         state.IsDead = true;
 
-        // Stop the fight FIRST so no coroutine is mid-dash when the object goes away.
         if (brain != null) brain.Deactivate();
 
         state.CurrentState = SecretaryBirdState.BossStateType.Dead;
@@ -96,7 +92,6 @@ public class SecretaryBirdHealth : MonoBehaviour, IDamageable
 
         OnDied?.Invoke();
 
-        // TODO: death animation, unlock arena, drop reward, persist "boss defeated"
         yield return new WaitForSeconds(deathDelay);
 
         Destroy(gameObject);

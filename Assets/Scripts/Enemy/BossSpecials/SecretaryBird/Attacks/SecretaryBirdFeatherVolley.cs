@@ -1,16 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// The pace-breaker. The boss STAYS on the wall and throws a fan of feathers.
-///
-/// Every other move closes distance; this one refuses to. It forces a positional problem
-/// and makes the player walk into range on their own terms, which resets the fight's
-/// rhythm and stops the dash loop becoming hypnotic.
-///
-/// One projectile in the fan is deliberately omitted so a safe slot always exists.
-/// Unavoidable spreads are noise; a spread with a findable gap is a skill test.
-/// </summary>
 public class SecretaryBirdFeatherVolley : SecretaryBirdAttack
 {
     [Header("Perch")]
@@ -24,7 +14,6 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack
     [SerializeField] private Transform firePoint;
     [SerializeField, Range(2, 9)] private int featherCount = 5;
     [SerializeField] private float spreadAngle = 55f;
-    [SerializeField] private float featherSpeed = 16f;
 
     [Header("Fairness")]
     [Tooltip("Skip one feather so a guaranteed safe slot always exists. Keep this ON.")]
@@ -41,8 +30,11 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack
         yield return MoveToWall(player, perchHeight);
         state.FaceTowards(player.position.x);
 
+        // No line. The wind-up pose is the whole tell - a spread does not travel along a
+        // single path, so a line would promise something the attack does not do.
         Vector2 aim = player.position;
-        yield return ShowPath(aim, fanTime);
+        state.CurrentState = SecretaryBirdState.BossStateType.Windup;
+        yield return move.Hold(fanTime);
 
         for (int v = 0; v < volleys; v++)
         {
@@ -74,8 +66,9 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack
                                       Mathf.Sin(angle * Mathf.Deg2Rad));
 
             GameObject go = Instantiate(featherPrefab, origin, Quaternion.Euler(0f, 0f, angle));
+            // Speed comes from the Feather prefab. One source of truth.
             SecretaryBirdProjectile p = go.GetComponent<SecretaryBirdProjectile>();
-            if (p != null) p.Launch(dir, featherSpeed);
+            if (p != null) p.Launch(dir);
         }
     }
 }

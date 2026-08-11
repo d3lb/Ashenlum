@@ -1,17 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// Movement primitives only. Knows nothing about attacks, hitboxes, phases or what comes next.
-///
-/// There is ONE way this boss travels: Dash(). Attacking, repositioning, rising for a stomp -
-/// all of it is the same explosive blink. That is deliberate. A boss that glides to its perch
-/// and then dashes at you reads as two different creatures.
-///
-/// IMPORTANT: every method here is an IEnumerator meant to be consumed with
-/// `yield return move.Xxx(...)` and NEVER with StartCoroutine, so the brain's watchdog can
-/// abort an entire attack - movement included - with a single StopCoroutine.
-/// </summary>
 public class SecretaryBirdMovement : MonoBehaviour
 {
     [Header("References")]
@@ -20,36 +9,26 @@ public class SecretaryBirdMovement : MonoBehaviour
     [SerializeField] private SecretaryBirdArena arena;
 
     [Header("Dash feel")]
-    [Tooltip("Speed multiplier across the dash (0 = launch, 1 = arrival). The whole 'blink' " +
-             "read comes from this being high and front-loaded - flat = a slide, not a strike.")]
     [SerializeField] private AnimationCurve dashSpeedCurve = new AnimationCurve(
         new Keyframe(0f, 1.7f),
         new Keyframe(0.12f, 1.25f),
         new Keyframe(0.7f, 0.95f),
         new Keyframe(1f, 0.8f));
 
-    [Tooltip("Tiny counter-movement before the launch. This is the single biggest reason " +
-             "a fast move reads as explosive instead of as teleporting. Keep it under 0.08s.")]
     [SerializeField] private float anticipationTime = 0.06f;
     [SerializeField] private float anticipationDistance = 0.45f;
 
     [Header("Impact feedback")]
-    [Tooltip("Hitstop when the dash slams into geometry. Sells the speed more than the speed does.")]
     [SerializeField] private float impactHitStop = 0.045f;
     [SerializeField] private float impactShakeDuration = 0.12f;
     [SerializeField] private float impactShakeAmplitude = 2.5f;
     [SerializeField] private float impactShakeFrequency = 3f;
 
     [Header("Impact detection")]
-    [Tooltip("Layers that can end a dash. Ground/walls only - NOT the player.")]
     [SerializeField] private LayerMask impactLayers;
 
-    [Tooltip("How head-on a contact must be to count. 0 = ANY touch ends the dash, which means " +
-             "the floor under a low dash and the wall you launched from both stop it instantly.")]
     [SerializeField, Range(0f, 0.95f)] private float impactFacing = 0.35f;
 
-    [Tooltip("Contacts during the first moments of a dash are ignored, so kicking off a wall " +
-             "you are already resting against cannot end the dash on frame one.")]
     [SerializeField] private float impactGrace = 0.06f;
 
     [Header("Defaults")]
@@ -74,14 +53,6 @@ public class SecretaryBirdMovement : MonoBehaviour
         state = GetComponent<SecretaryBirdState>();
     }
 
-    /// <summary>
-    /// Called by SecretaryBirdCollision on Enter and Stay.
-    ///
-    /// The direction test is the important part. The boss perches ON a wall, so it is in
-    /// continuous contact the instant a dash begins - an unfiltered "did I touch anything"
-    /// check ends every dash immediately. A contact only counts if its surface normal
-    /// opposes the direction of travel.
-    /// </summary>
     public void ReportImpact(Collision2D c)
     {
         if (!dashing) return;
@@ -115,16 +86,6 @@ public class SecretaryBirdMovement : MonoBehaviour
         if (arena != null) rb.position = arena.Clamp(rb.position);
     }
 
-    /// <summary>
-    /// The one and only way this boss moves. Anticipate, blink, slam.
-    ///
-    /// Ends on arrival, on a head-on impact, or on timeout - three independent exits, so it
-    /// cannot hang the way a single WaitUntil could.
-    ///
-    /// arcGravity > 0 gives the dive its weight. Gravity is integrated by hand here rather
-    /// than left to the rigidbody, because the speed curve has to stay authoritative over
-    /// the along-dash component.
-    /// </summary>
     public IEnumerator Dash(Vector2 target, float speed, float arcGravity = 0f,
                             float maxTime = 2f, float arriveDist = 0.35f,
                             bool anticipate = true, bool feedbackOnImpact = true)
@@ -132,13 +93,23 @@ public class SecretaryBirdMovement : MonoBehaviour
         var wait = new WaitForFixedUpdate();
 
         Vector2 start = rb.position;
+
+        // Already there. Without this the pull-back fires with a meaningless direction and
+        // the boss launches somewhere arbitrary instead of doing nothing.
+        if (Vector2.Distance(start, target) <= arriveDist)
+        {
+            Stop();
+            rb.gravityScale = 0f;
+            yield return wait;
+            yield break;
+        }
+
         Vector2 dir = (target - start).normalized;
-        if (dir == Vector2.zero) dir = state.IsFacingRight ? Vector2.right : Vector2.left;
 
         state.SetFacing(dir.x >= 0f);
         rb.gravityScale = 0f;
 
-        // --- Anticipation: a short pull-back AGAINST the dash direction. ---
+        //  Anticipation: a short pull-back AGAINST the dash direction. 
         if (anticipate && anticipationTime > 0f && anticipationDistance > 0f)
         {
             Vector2 back = start - dir * anticipationDistance;
@@ -151,7 +122,7 @@ public class SecretaryBirdMovement : MonoBehaviour
             }
         }
 
-        // --- Launch ---
+        //  Launch 
         impacted = false;
         dashing = true;
         dashDir = dir;
@@ -190,10 +161,6 @@ public class SecretaryBirdMovement : MonoBehaviour
             CameraShake.Instance.Shake(impactShakeDuration, impactShakeAmplitude, impactShakeFrequency);
     }
 
-    /// <summary>
-    /// Non-explosive glide. Only for things that are meant to look weightless - it is NOT
-    /// used for perching any more, because perching is a dash like everything else.
-    /// </summary>
     public IEnumerator Glide(Vector2 target, float speed, float arriveDist = 0.1f, float maxTime = 3f)
     {
         state.CurrentState = SecretaryBirdState.BossStateType.Reposition;
@@ -212,7 +179,6 @@ public class SecretaryBirdMovement : MonoBehaviour
         yield return wait;
     }
 
-    /// <summary>Hover in place. Gravity off so the beat reads as a deliberate pause.</summary>
     public IEnumerator Hold(float seconds)
     {
         Stop();

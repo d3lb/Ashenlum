@@ -1,9 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Owns the hitbox GameObjects. Each hitbox object should carry your existing
-/// EnemyHitbox component - this class only turns them on and off.
-/// </summary>
 public class SecretaryBirdAttackController : MonoBehaviour
 {
     [SerializeField] private SecretaryBirdState state;

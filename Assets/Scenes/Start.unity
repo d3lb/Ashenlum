@@ -486,7 +486,7 @@ BoxCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -845,7 +845,7 @@ BoxCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -2089,7 +2089,7 @@ BoxCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 8
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2
@@ -2103,7 +2103,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -4119,10 +4119,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdTelegraph
   line: {fileID: 1492645128}
-  dangerColor:
+  color:
     serializedVersion: 2
-    key0: {r: 1, g: 1, b: 1, a: 1}
-    key1: {r: 1, g: 1, b: 1, a: 1}
+    key0: {r: 0.5283019, g: 0, b: 0, a: 1}
+    key1: {r: 1, g: 0, b: 0, a: 1}
     key2: {r: 0, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
@@ -4149,40 +4149,9 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  safeColor:
-    serializedVersion: 2
-    key0: {r: 1, g: 1, b: 1, a: 1}
-    key1: {r: 1, g: 1, b: 1, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
-    key3: {r: 0, g: 0, b: 0, a: 0}
-    key4: {r: 0, g: 0, b: 0, a: 0}
-    key5: {r: 0, g: 0, b: 0, a: 0}
-    key6: {r: 0, g: 0, b: 0, a: 0}
-    key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65535
-    ctime2: 0
-    ctime3: 0
-    ctime4: 0
-    ctime5: 0
-    ctime6: 0
-    ctime7: 0
-    atime0: 0
-    atime1: 65535
-    atime2: 0
-    atime3: 0
-    atime4: 0
-    atime5: 0
-    atime6: 0
-    atime7: 0
-    m_Mode: 0
-    m_ColorSpace: -1
-    m_NumColorKeys: 2
-    m_NumAlphaKeys: 2
-  width: 0.22
+  width: 0.1
   overshoot: 3
   fadeOutFraction: 0.35
-  marker: {fileID: 0}
 --- !u!120 &1492645128
 LineRenderer:
   serializedVersion: 3
@@ -4209,7 +4178,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: ccb297bc483a687458f6aab9a88058bd, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -4230,7 +4199,7 @@ LineRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: -1
   m_MaskInteraction: 0
   m_Positions:
   - {x: 0, y: 0, z: 0}
@@ -4243,7 +4212,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0.5141243
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -4255,7 +4224,7 @@ LineRenderer:
       m_RotationOrder: 4
     colorGradient:
       serializedVersion: 2
-      key0: {r: 1, g: 1, b: 1, a: 1}
+      key0: {r: 1, g: 0, b: 0, a: 1}
       key1: {r: 1, g: 1, b: 1, a: 1}
       key2: {r: 0, g: 0, b: 0, a: 0}
       key3: {r: 0, g: 0, b: 0, a: 0}
@@ -4280,7 +4249,7 @@ LineRenderer:
       atime6: 0
       atime7: 0
       m_Mode: 0
-      m_ColorSpace: -1
+      m_ColorSpace: 0
       m_NumColorKeys: 2
       m_NumAlphaKeys: 2
     numCornerVertices: 0
@@ -184539,7 +184508,7 @@ Transform:
   m_GameObject: {fileID: 1826437959}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 79.1, y: -76.7, z: 0}
+  m_LocalPosition: {x: 96, y: -78, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -185031,7 +185000,6 @@ GameObject:
   - component: {fileID: 1993792079}
   - component: {fileID: 1993792078}
   - component: {fileID: 1993792077}
-  - component: {fileID: 1993792075}
   - component: {fileID: 1993792074}
   - component: {fileID: 1993792073}
   - component: {fileID: 1993792072}
@@ -185165,10 +185133,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 492ca23a6eb3f294fb6d4d467cc875a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdFeatherVolley
+  label: 
   weight: 1
-  minPhase: 2
-  minRange: 0
-  maxRange: 6
+  minPhase: 3
   recovery: 0.6
   timeout: 6
   repositionSpeed: 52
@@ -185177,13 +185144,13 @@ MonoBehaviour:
   extraRepositionChance: 0.45
   hopHeightRange: {x: 0.05, y: 0.85}
   hopPause: 0.1
+  splitHeight: 0.5
   perchHeight: 0.7
   fanTime: 0.5
-  featherPrefab: {fileID: 0}
-  firePoint: {fileID: 0}
+  featherPrefab: {fileID: 978507571446376150, guid: daa2b9b7fcf7e84419813aad62bf6dc9, type: 3}
+  firePoint: {fileID: 1993792061}
   featherCount: 5
   spreadAngle: 55
-  featherSpeed: 16
   guaranteeGap: 1
   volleys: 1
   betweenVolleys: 0.35
@@ -185199,10 +185166,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8280fd87df5527c4680572884d78ea84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdStomp
+  label: 
   weight: 2
   minPhase: 2
-  minRange: 0
-  maxRange: 999
   recovery: 1.2
   timeout: 6
   repositionSpeed: 52
@@ -185211,16 +185177,16 @@ MonoBehaviour:
   extraRepositionChance: 0.45
   hopHeightRange: {x: 0.05, y: 0.85}
   hopPause: 0.1
+  splitHeight: 0.5
   riseHeight: 0.9
   hangTime: 0.12
   telegraphTime: 0.25
   markTime: 0.3
   slamSpeed: 50
   slamGravity: 4
-  shockwavePrefab: {fileID: 0}
+  shockwavePrefab: {fileID: 6458713581402932592, guid: 9053d69f8f7ac7146a8426133a6da079, type: 3}
   shockwaveYOffset: 0.4
   bothDirections: 1
-  pogoTarget: {fileID: 0}
   buriedTime: 0.9
 --- !u!114 &1993792074
 MonoBehaviour:
@@ -185234,10 +185200,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5fe28a88483f1af4ca886ee8f57ea862, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdDive
+  label: 
   weight: 2
   minPhase: 1
-  minRange: 4
-  maxRange: 999
   recovery: 1
   timeout: 6
   repositionSpeed: 52
@@ -185246,43 +185211,12 @@ MonoBehaviour:
   extraRepositionChance: 0.45
   hopHeightRange: {x: 0.05, y: 0.85}
   hopPause: 0.1
+  splitHeight: 0.5
   perchHeight: 0.85
   aimPause: 0.1
   telegraphTime: 0.4
-  diveSpeed: 40
+  diveSpeed: 52
   diveGravity: 1.5
---- !u!114 &1993792075
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1993792060}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6be62a22ee8ebd409db0a59f713e78b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdWallDash
-  weight: 2
-  minPhase: 3
-  minRange: 0
-  maxRange: 999
-  recovery: 0.5
-  timeout: 6
-  repositionSpeed: 52
-  repositionTelegraph: 0.16
-  maxExtraRepositions: 2
-  extraRepositionChance: 0.45
-  hopHeightRange: {x: 0.05, y: 0.85}
-  hopPause: 0.1
-  perchHeight: 0.05
-  perchPause: 0.1
-  telegraphTime: 0.45
-  chainTelegraphScale: 0.35
-  dashSpeed: 34
-  dashes: 3
-  betweenDashes: 0.12
-  aimAtPlayer: 0
 --- !u!114 &1993792077
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185295,10 +185229,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6be62a22ee8ebd409db0a59f713e78b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdWallDash
+  label: Low Dash
   weight: 3
   minPhase: 1
-  minRange: 0
-  maxRange: 999
   recovery: 0.7
   timeout: 6
   repositionSpeed: 52
@@ -185307,11 +185240,12 @@ MonoBehaviour:
   extraRepositionChance: 0.45
   hopHeightRange: {x: 0.05, y: 0.85}
   hopPause: 0.1
+  splitHeight: 0.5
   perchHeight: 0.05
   perchPause: 0.1
   telegraphTime: 0.45
   chainTelegraphScale: 0.35
-  dashSpeed: 34
+  dashSpeed: 50
   dashes: 1
   betweenDashes: 0.12
   aimAtPlayer: 0
@@ -185327,7 +185261,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e72f10332e1346479b2f1d7c6e736ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdHealth
-  maxHp: 30
+  maxHp: 10
   hitFlashTime: 0.15
   iFrameTime: 0.1
   deathDelay: 1.2
@@ -185435,7 +185369,7 @@ MonoBehaviour:
   hitboxes: {fileID: 1993792083}
   telegraph: {fileID: 1492645127}
   health: {fileID: 1993792078}
-  player: {fileID: 0}
+  player: {fileID: 1682832976}
   phase2At: 0.66
   phase3At: 0.33
   recoveryScale:
@@ -185443,7 +185377,12 @@ MonoBehaviour:
   - 0.75
   - 0.55
   idleBeat: 0.2
-  logAttacks: 1
+  introDelay: 3
+  waitForCue: 0
+  onIntro:
+    m_PersistentCalls:
+      m_Calls: []
+  logAttacks: 0
 --- !u!114 &1993792082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -185493,7 +185432,7 @@ MonoBehaviour:
   brain: {fileID: 1993792081}
   state: {fileID: 1993792082}
   health: {fileID: 1993792078}
-  show: 1
+  show: 0
   screenPos: {x: 12, y: 188.5}
   fontSize: 16
   showWorldLabel: 1

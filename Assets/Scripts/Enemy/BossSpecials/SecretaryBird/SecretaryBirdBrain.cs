@@ -2,17 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Owns the fight loop, every state transition, and every cleanup.
-///
-/// The old brain polled a state flag in Update and let each attack transition itself out.
-/// That meant every attack was a place the exit contract could break - and one of them did,
-/// freezing the fight permanently. Here the loop is a single coroutine with a fixed shape:
-///
-///     Idle -> Choose -> [attack, watchdogged] -> forced cleanup -> Recover -> Idle
-///
-/// An attack physically cannot strand the boss, because it is never asked to end anything.
-/// </summary>
 [RequireComponent(typeof(SecretaryBirdState))]
 public class SecretaryBirdBrain : MonoBehaviour
 {
@@ -34,6 +23,16 @@ public class SecretaryBirdBrain : MonoBehaviour
     [Tooltip("Breath between attacks. Keep small - this boss should feel relentless.")]
     [SerializeField] private float idleBeat = 0.2f;
 
+    [Header("Intro")]
+    [Tooltip("Quiet beat after the player enters, before the first attack. The room has to " +
+             "read as a boss arena before it starts being one.")]
+    [SerializeField] private float introDelay = 2f;
+    [Tooltip("Ignore introDelay and wait for FinishIntro() instead. Use this once there is " +
+             "dialogue or a stand-up animation to drive it - call FinishIntro() when it ends.")]
+    [SerializeField] private bool waitForCue;
+    [Tooltip("Fires the moment the arena is entered. Hook dialogue, camera, music, animation.")]
+    [SerializeField] private UnityEngine.Events.UnityEvent onIntro;
+
     [Header("Debug")]
     [Tooltip("Prints every attack as it starts. For a live on-screen readout instead, "
              + "add SecretaryBirdDebugHUD to the boss.")]
@@ -48,11 +47,11 @@ public class SecretaryBirdBrain : MonoBehaviour
     private Coroutine actRoutine;
     private bool actDone;
     private bool active;
+    private bool introCued;
     private SecretaryBirdAttack current;
 
     public bool Active => active;
 
-    /// <summary>What is running right now. Read by SecretaryBirdDebugHUD.</summary>
     public SecretaryBirdAttack CurrentAttack => current;
 
     private void Awake()
@@ -76,8 +75,27 @@ public class SecretaryBirdBrain : MonoBehaviour
     {
         if (active || state.IsDead) return;
         active = true;
-        state.CurrentState = SecretaryBirdState.BossStateType.Idle;
-        loop = StartCoroutine(FightLoop());
+        loop = StartCoroutine(Begin());
+    }
+
+    /// <summary>Call from a dialogue box or animation event when waitForCue is on.</summary>
+    public void FinishIntro() => introCued = true;
+
+    private IEnumerator Begin()
+    {
+        state.CurrentState = SecretaryBirdState.BossStateType.Intro;
+        CleanUp();
+
+        introCued = false;
+        onIntro?.Invoke();
+
+        if (waitForCue)
+            yield return new WaitUntil(() => introCued);
+        else if (introDelay > 0f)
+            yield return new WaitForSeconds(introDelay);
+
+        // Nested, not StartCoroutine - Deactivate's StopCoroutine(loop) must still reach it.
+        yield return FightLoop();
     }
 
     public void Deactivate()
@@ -146,9 +164,6 @@ public class SecretaryBirdBrain : MonoBehaviour
 
     private IEnumerator Wrap(IEnumerator inner)
     {
-        // `yield return inner` - NOT StartCoroutine(inner). This keeps every nested
-        // movement and telegraph step inside THIS coroutine, so the StopCoroutine above
-        // tears down the entire chain rather than orphaning half of it.
         yield return inner;
         actDone = true;
     }
@@ -173,7 +188,7 @@ public class SecretaryBirdBrain : MonoBehaviour
         if (p != state.Phase)
         {
             state.Phase = p;
-            bag.Clear(); // reshuffle so newly unlocked moves enter rotation immediately
+            bag.Clear();
         }
     }
 
@@ -183,40 +198,25 @@ public class SecretaryBirdBrain : MonoBehaviour
         return recoveryScale[Mathf.Clamp(state.Phase - 1, 0, recoveryScale.Length - 1)];
     }
 
-    /// <summary>
-    /// Shuffle bag, not Random.Range. Guarantees the player sees the whole moveset before
-    /// anything repeats, and makes frequency tuning trivial (weight 2 = two copies).
-    ///
-    /// On top of that: the same attack NEVER runs twice in a row. Nudging the rolled index
-    /// was not enough - a weighted move has several copies in the bag, so the neighbour is
-    /// often the same attack again. Every copy of the previous move is excluded up front.
-    /// </summary>
     private SecretaryBirdAttack Draw()
     {
-        float dist = Vector2.Distance(transform.position, player.position);
-
         for (int i = bag.Count - 1; i >= 0; i--)
-            if (!bag[i].CanUse(dist, state.Phase)) bag.RemoveAt(i);
+            if (!bag[i].CanUse(state.Phase)) bag.RemoveAt(i);
 
-        if (bag.Count == 0) Refill(dist);
+        if (bag.Count == 0) Refill();
         if (bag.Count == 0) return null;
 
         candidates.Clear();
         for (int i = 0; i < bag.Count; i++)
             if (bag[i] != last) candidates.Add(i);
 
-        // Bag is nothing but copies of the last move - refill and try once more before
-        // accepting a repeat.
         if (candidates.Count == 0)
         {
-            Refill(dist);
+            Refill();
             for (int i = 0; i < bag.Count; i++)
                 if (bag[i] != last) candidates.Add(i);
         }
 
-        // Genuinely only one legal move right now (usually phase 1 with a range filter
-        // active). A repeat is unavoidable - if you see this a lot, the phase needs
-        // another attack in it.
         if (candidates.Count == 0)
             for (int i = 0; i < bag.Count; i++) candidates.Add(i);
 
@@ -227,12 +227,12 @@ public class SecretaryBirdBrain : MonoBehaviour
         return chosen;
     }
 
-    private void Refill(float dist)
+    private void Refill()
     {
         bag.Clear();
         foreach (SecretaryBirdAttack a in pool)
         {
-            if (!a.CanUse(dist, state.Phase)) continue;
+            if (!a.CanUse(state.Phase)) continue;
             for (int i = 0; i < a.Weight; i++) bag.Add(a);
         }
     }

@@ -42,8 +42,6 @@ public class PlayerCombat : MonoBehaviour
     [Space(2)]
     [SerializeField] private float hitPauseTime = 0.04f;
     [SerializeField] private float killPauseTime = 0.08f;
-    [Space(2)]
-    [SerializeField] private float pogoTargetForce = 3f;
     
     [Header("Camera Shake")]
     [SerializeField] private float hitShakeDuration = 0.04f;

@@ -1,13 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// Claim a high perch, flash a locked diagonal, blink into the floor.
-///
-/// The answer is "move sideways", not "jump" - a third distinct verb. The line is captured
-/// once at the moment of commit, so stepping off it always works. That is what makes a
-/// dive at this speed dodgeable rather than a coin flip.
-/// </summary>
 public class SecretaryBirdDive : SecretaryBirdAttack
 {
     [Header("Perch")]
@@ -20,9 +13,9 @@ public class SecretaryBirdDive : SecretaryBirdAttack
 
     [Header("Dive")]
     [SerializeField] private float diveSpeed = 56f;
-    [Tooltip("Slight gravity so the dive arcs and reads as weight, not as a laser.")]
-    [SerializeField] private float diveGravity = 1.2f;
-
+    [Tooltip("Keep at 0. Any arc curves the path BELOW the straight line the telegraph drew, " +
+             "so he clips the floor early and lands short of the player - and the line lies.")]
+    [SerializeField] private float diveGravity = 0f;
     public override string DisplayName => "Dive";
 
     public override IEnumerator Act(Transform player)
@@ -31,13 +24,21 @@ public class SecretaryBirdDive : SecretaryBirdAttack
         state.FaceTowards(player.position.x);
         yield return move.Hold(aimPause);
 
-        // Lock on to where they are RIGHT NOW, then commit. No further tracking.
-        Vector2 locked = new Vector2(Arena.ClampX(player.position.x), Arena.FloorY);
-        yield return ShowPath(locked, telegraphTime);
+        // Always the floor beneath them, never their airborne position. A bird that dives to
+        // head height and stops mid-air reads as a glitch, and it lets a jumping player bait
+        // the dive upward and land behind it for free.
+        Vector2 target = new Vector2(Arena.ClampX(player.position.x), Arena.FloorY);
+        yield return ShowPath(target, telegraphTime);
 
         state.CurrentState = SecretaryBirdState.BossStateType.Attacking;
-        hitboxes.EnableDiveHitbox();
-        yield return move.Dash(locked, diveSpeed, diveGravity);
-        hitboxes.DisableDiveHitbox();
+
+        // The SIDE hitbox, not the dive one. The line runs from the centre of a big box to
+        // the player, so the box floor-clips before its centre ever arrives - a hitbox under
+        // the body always lands short. The side box leads the travel direction and connects.
+        // Facing must be set before enabling, because EnableDashHitbox reads it.
+        state.SetFacing(target.x > move.Position.x);
+        hitboxes.EnableDashHitbox();
+        yield return move.Dash(target, diveSpeed, diveGravity);
+        hitboxes.DisableDashHitbox();
     }
 }

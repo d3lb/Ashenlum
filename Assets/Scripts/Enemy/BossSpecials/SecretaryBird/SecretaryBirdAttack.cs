@@ -14,12 +14,12 @@ using UnityEngine;
 public abstract class SecretaryBirdAttack : MonoBehaviour
 {
     [Header("Selection")]
+    [Tooltip("Shown in the debug HUD. Use it to tell two components of the same type apart.")]
+    [SerializeField] private string label = "";
     [Tooltip("Copies placed in the shuffle bag. 2 = shows up twice as often as a 1.")]
     [SerializeField] private int weight = 1;
     [Tooltip("Phase this move unlocks in. Phase 1 = full health.")]
     [SerializeField] private int minPhase = 1;
-    [SerializeField] private float minRange = 0f;
-    [SerializeField] private float maxRange = 999f;
 
     [Header("Windows")]
     [Tooltip("Punish window handed to the player afterwards. THE difficulty dial.")]
@@ -45,10 +45,18 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
     [Tooltip("Beat on each feint perch. Long enough to bait a dodge, short enough to stay scary.")]
     [SerializeField] private float hopPause = 0.1f;
 
+    [Header("Wall choice")]
+    [Tooltip("Line that splits the room. BELOW it a crossing travels at player height and " +
+             "cannot be dodged, so the wall is picked to move AWAY from the player. ABOVE it " +
+             "a crossing passes over their head harmlessly, so he just takes the far wall " +
+             "from himself and the feint gets its full range back.")]
+    [SerializeField, Range(0f, 1f)] private float splitHeight = 0.5f;
+
     public int Weight     => Mathf.Max(1, weight);
     public float Recovery => recovery;
     public float Timeout  => timeout;
-    public virtual string DisplayName => GetType().Name;
+    public virtual string DisplayName =>
+        string.IsNullOrWhiteSpace(label) ? GetType().Name : label;
 
     protected SecretaryBirdState state;
     protected SecretaryBirdMovement move;
@@ -67,10 +75,7 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
         telegraph = GetComponentInChildren<SecretaryBirdTelegraph>(true);
     }
 
-    public virtual bool CanUse(float distanceToPlayer, int phase)
-        => phase >= minPhase
-        && distanceToPlayer >= minRange
-        && distanceToPlayer <= maxRange;
+    public virtual bool CanUse(int phase) => phase >= minPhase;
 
     public abstract IEnumerator Act(Transform player);
 
@@ -86,13 +91,20 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
         yield return move.Dash(target, repositionSpeed);
     }
 
+    /// <summary>Below the split line, a horizontal crossing travels through player space.</summary>
+    protected bool InLowerHalf => Arena.HeightTOf(move.Position.y) < splitHeight;
+
+    /// <summary>
+    /// Low  -> the wall furthest from the PLAYER, so the blink moves away from them.
+    /// High -> the wall furthest from the BOSS, so every hop is a real crossing.
+    /// </summary>
+    private int TargetWall(Transform player)
+        => InLowerHalf ? Arena.FurthestWallFrom(player.position) : -CurrentSide;
+
     /// <summary>
     /// Take a wall perch, optionally after 1-2 feint hops.
     ///
-    /// The wall is chosen HERE and only here, and it is always the wall the player is
-    /// furthest from - re-evaluated on every single hop. So if the player runs across the
-    /// arena mid-feint, the boss follows to the other side. No attack gets a say in this,
-    /// which means no attack can accidentally perch on top of the player.
+    /// Wall choice is never the attack's business - it is decided here, by altitude.
     /// </summary>
     protected IEnumerator MoveToWall(Transform player, float heightT)
     {
@@ -105,16 +117,31 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
 
         for (int i = 0; i < hops; i++)
         {
-            yield return PerchOnFurthestWall(player, Random.Range(hopHeightRange.x, hopHeightRange.y));
+            yield return FeintHop(player);
             yield return move.Hold(hopPause);
         }
 
-        yield return PerchOnFurthestWall(player, heightT);
+        yield return PerchOn(TargetWall(player), heightT);
     }
 
-    private IEnumerator PerchOnFurthestWall(Transform player, float heightT)
+    private IEnumerator FeintHop(Transform player)
     {
-        int side = Arena.FurthestWallFrom(player.position);
+        int side = TargetWall(player);
+        float height = RandomHopHeight();
+
+        // Low, and the safe wall is the one he is already on. There is no safe horizontal
+        // move from here, so he climbs instead of stuttering in place - which also lifts him
+        // above the split line, where the next hop becomes a free crossing over the player.
+        if (InLowerHalf && side == CurrentSide)
+            height = Mathf.Max(height, Random.Range(splitHeight + 0.1f, hopHeightRange.y));
+
+        yield return PerchOn(side, height);
+    }
+
+    private float RandomHopHeight() => Random.Range(hopHeightRange.x, hopHeightRange.y);
+
+    private IEnumerator PerchOn(int side, float heightT)
+    {
         yield return BlinkTo(Arena.Perch(side, heightT));
         state.SetFacing(side < 0);
     }
