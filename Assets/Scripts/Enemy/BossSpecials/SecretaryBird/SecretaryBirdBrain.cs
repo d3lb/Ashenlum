@@ -16,12 +16,10 @@ public class SecretaryBirdBrain : MonoBehaviour
     [Header("Phases (fraction of max health)")]
     [SerializeField] private float phase2At = 0.66f;
     [SerializeField] private float phase3At = 0.33f;
-    [Tooltip("Recovery multiplier per phase. Lower = smaller punish window = harder.")]
-    [SerializeField] private float[] recoveryScale = { 1f, 0.75f, 0.55f };
 
     [Header("Pacing")]
-    [Tooltip("Breath between attacks. Keep small - this boss should feel relentless.")]
-    [SerializeField] private float idleBeat = 0.2f;
+    [Tooltip("Per-phase tuning. Leave empty to auto-find it on this GameObject.")]
+    [SerializeField] private SecretaryBirdPacing pacing;
 
     [Header("Intro")]
     [Tooltip("Quiet beat after the player enters, before the first attack. The room has to " +
@@ -61,6 +59,7 @@ public class SecretaryBirdBrain : MonoBehaviour
         if (hitboxes == null)  hitboxes  = GetComponent<SecretaryBirdAttackController>();
         if (telegraph == null) telegraph = GetComponentInChildren<SecretaryBirdTelegraph>(true);
         if (health == null)    health    = GetComponent<SecretaryBirdHealth>();
+        if (pacing == null)    pacing    = GetComponent<SecretaryBirdPacing>();
 
         GetComponents(pool);
 
@@ -116,11 +115,12 @@ public class SecretaryBirdBrain : MonoBehaviour
         while (active && !state.IsDead)
         {
             state.CurrentState = SecretaryBirdState.BossStateType.Idle;
-            yield return new WaitForSeconds(idleBeat);
+
+            // Phase before the beat, so a phase change shortens the very next gap.
+            UpdatePhase();
+            yield return new WaitForSeconds(Pace.idleBeat);
 
             if (player == null) { yield return null; continue; }
-
-            UpdatePhase();
 
             state.CurrentState = SecretaryBirdState.BossStateType.Choosing;
             SecretaryBirdAttack attack = Draw();
@@ -137,7 +137,7 @@ public class SecretaryBirdBrain : MonoBehaviour
             state.CurrentState = SecretaryBirdState.BossStateType.Recover;
             move.Stop();
             move.ResetGravity();
-            yield return new WaitForSeconds(attack.Recovery * RecoveryScale());
+            yield return new WaitForSeconds(attack.Recovery * Pace.recoveryScale);
         }
     }
 
@@ -192,11 +192,9 @@ public class SecretaryBirdBrain : MonoBehaviour
         }
     }
 
-    private float RecoveryScale()
-    {
-        if (recoveryScale == null || recoveryScale.Length == 0) return 1f;
-        return recoveryScale[Mathf.Clamp(state.Phase - 1, 0, recoveryScale.Length - 1)];
-    }
+    private static readonly PhaseTuning fallbackPace = new PhaseTuning();
+
+    private PhaseTuning Pace => pacing != null ? pacing.For(state.Phase) : fallbackPace;
 
     private SecretaryBirdAttack Draw()
     {

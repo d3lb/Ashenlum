@@ -37,7 +37,7 @@ public class SecretaryBirdWallDash : SecretaryBirdAttack
             state.CurrentState = SecretaryBirdState.BossStateType.Attacking;
             state.SetFacing(to.x > from.x);
             hitboxes.EnableDashHitbox();
-            yield return move.Dash(to, dashSpeed);
+            yield return move.Dash(to, Speed(dashSpeed));
             hitboxes.DisableDashHitbox();
 
             side = -side;

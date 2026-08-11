@@ -38,7 +38,7 @@ public class SecretaryBirdDive : SecretaryBirdAttack
         // Facing must be set before enabling, because EnableDashHitbox reads it.
         state.SetFacing(target.x > move.Position.x);
         hitboxes.EnableDashHitbox();
-        yield return move.Dash(target, diveSpeed, diveGravity);
+        yield return move.Dash(target, Speed(diveSpeed), diveGravity);
         hitboxes.DisableDashHitbox();
     }
 }

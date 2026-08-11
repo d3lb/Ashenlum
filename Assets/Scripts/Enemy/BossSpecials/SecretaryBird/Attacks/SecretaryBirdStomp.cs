@@ -38,11 +38,11 @@ public class SecretaryBirdStomp : SecretaryBirdAttack
         Vector2 target = new Vector2(move.Position.x, Arena.FloorY);
         yield return ShowPath(target, telegraphTime);
 
-        yield return move.Hold(markTime);
+        yield return move.Hold(markTime * Pace.telegraphScale);
 
         state.CurrentState = SecretaryBirdState.BossStateType.Attacking;
         hitboxes.EnableDiveHitbox();
-        yield return move.Dash(target, slamSpeed, slamGravity, 1.5f);
+        yield return move.Dash(target, Speed(slamSpeed), slamGravity, 1.5f);
         hitboxes.DisableDiveHitbox();
 
         SpawnShockwaves();

@@ -185003,7 +185003,9 @@ GameObject:
   - component: {fileID: 1993792074}
   - component: {fileID: 1993792073}
   - component: {fileID: 1993792072}
+  - component: {fileID: 1993792086}
   - component: {fileID: 1993792084}
+  - component: {fileID: 1993792085}
   m_Layer: 6
   m_Name: BossBody
   m_TagString: Untagged
@@ -185133,15 +185135,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 492ca23a6eb3f294fb6d4d467cc875a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdFeatherVolley
-  label: 
+  label: Stage 2 Feather Volley
   weight: 1
-  minPhase: 3
+  minPhase: 2
   recovery: 0.6
   timeout: 6
   repositionSpeed: 52
   repositionTelegraph: 0.16
-  maxExtraRepositions: 2
-  extraRepositionChance: 0.45
   hopHeightRange: {x: 0.05, y: 0.85}
   hopPause: 0.1
   splitHeight: 0.5
@@ -185173,8 +185173,6 @@ MonoBehaviour:
   timeout: 6
   repositionSpeed: 52
   repositionTelegraph: 0.16
-  maxExtraRepositions: 2
-  extraRepositionChance: 0.45
   hopHeightRange: {x: 0.05, y: 0.85}
   hopPause: 0.1
   splitHeight: 0.5
@@ -185201,14 +185199,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdDive
   label: 
-  weight: 2
+  weight: 3
   minPhase: 1
   recovery: 1
   timeout: 6
   repositionSpeed: 52
   repositionTelegraph: 0.16
-  maxExtraRepositions: 2
-  extraRepositionChance: 0.45
   hopHeightRange: {x: 0.05, y: 0.85}
   hopPause: 0.1
   splitHeight: 0.5
@@ -185230,14 +185226,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdWallDash
   label: Low Dash
-  weight: 3
+  weight: 2
   minPhase: 1
   recovery: 0.7
   timeout: 6
   repositionSpeed: 52
   repositionTelegraph: 0.16
-  maxExtraRepositions: 2
-  extraRepositionChance: 0.45
   hopHeightRange: {x: 0.05, y: 0.85}
   hopPause: 0.1
   splitHeight: 0.5
@@ -185261,7 +185255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e72f10332e1346479b2f1d7c6e736ba, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdHealth
-  maxHp: 10
+  maxHp: 100
   hitFlashTime: 0.15
   iFrameTime: 0.1
   deathDelay: 1.2
@@ -185372,11 +185366,7 @@ MonoBehaviour:
   player: {fileID: 1682832976}
   phase2At: 0.66
   phase3At: 0.33
-  recoveryScale:
-  - 1
-  - 0.75
-  - 0.55
-  idleBeat: 0.2
+  pacing: {fileID: 0}
   introDelay: 3
   waitForCue: 0
   onIntro:
@@ -185436,6 +185426,71 @@ MonoBehaviour:
   screenPos: {x: 12, y: 188.5}
   fontSize: 16
   showWorldLabel: 1
+--- !u!114 &1993792085
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58af712c19ec6e94ea5b2ac32ef98d85, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdPacing
+  phases:
+  - name: 1 - Teach
+    idleBeat: 0.9
+    telegraphScale: 1.4
+    recoveryScale: 1
+    speedScale: 0.9
+    maxFeints: 0
+    feintChance: 0
+  - name: 2 - Press
+    idleBeat: 0.6
+    telegraphScale: 1
+    recoveryScale: 0.8
+    speedScale: 1
+    maxFeints: 1
+    feintChance: 0.4
+  - name: 3 - Panic
+    idleBeat: 0.3
+    telegraphScale: 0.8
+    recoveryScale: 0.6
+    speedScale: 1.1
+    maxFeints: 2
+    feintChance: 0.6
+--- !u!114 &1993792086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 492ca23a6eb3f294fb6d4d467cc875a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdFeatherVolley
+  label: Stage 3 Feather Volley
+  weight: 1
+  minPhase: 3
+  recovery: 0.4
+  timeout: 6
+  repositionSpeed: 52
+  repositionTelegraph: 0.16
+  hopHeightRange: {x: 0.05, y: 0.85}
+  hopPause: 0.1
+  splitHeight: 0.5
+  perchHeight: 0.7
+  fanTime: 0.5
+  featherPrefab: {fileID: 978507571446376150, guid: daa2b9b7fcf7e84419813aad62bf6dc9, type: 3}
+  firePoint: {fileID: 1993792061}
+  featherCount: 5
+  spreadAngle: 55
+  guaranteeGap: 1
+  volleys: 2
+  betweenVolleys: 0.35
 --- !u!4 &2032945938 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5566485649379924750, guid: 51dbf75e026df9b4fbb46b7d11dc989e, type: 3}

@@ -1,55 +1,28 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// One attack = one component on the boss GameObject.
-///
-/// CONTRACT - an attack may NOT:
-///   - set CurrentState to Idle or Recover     (the brain owns the loop)
-///   - decide what happens next                (the brain owns selection)
-///   - call StartCoroutine                     (use `yield return Something()` so the
-///                                              brain's watchdog can kill the chain)
-///   - choose which wall to perch on           (MoveToWall owns that, always)
-/// </summary>
+
 public abstract class SecretaryBirdAttack : MonoBehaviour
 {
     [Header("Selection")]
-    [Tooltip("Shown in the debug HUD. Use it to tell two components of the same type apart.")]
     [SerializeField] private string label = "";
-    [Tooltip("Copies placed in the shuffle bag. 2 = shows up twice as often as a 1.")]
     [SerializeField] private int weight = 1;
-    [Tooltip("Phase this move unlocks in. Phase 1 = full health.")]
     [SerializeField] private int minPhase = 1;
 
     [Header("Windows")]
-    [Tooltip("Punish window handed to the player afterwards. THE difficulty dial.")]
     [SerializeField] private float recovery = 0.6f;
-    [Tooltip("Hard cap. The brain aborts and cleans up if the attack runs longer.")]
     [SerializeField] private float timeout = 8f;
 
     [Header("Reposition")]
-    [Tooltip("Flying to a perch is a DASH - same speed, same blink, same anticipation. " +
-             "Only the line colour and the dead hitbox say it is not a strike.")]
     [SerializeField] private float repositionSpeed = 52f;
     [SerializeField] private float repositionTelegraph = 0.16f;
 
     [Header("Reposition feint")]
-    [Tooltip("Extra wall-to-wall hops before the real perch. Each arrival LOOKS like the " +
-             "commit, so the player cannot count on the first landing being the attack. " +
-             "This is the fake-out, expressed as movement rather than as a separate move.")]
-    [SerializeField, Range(0, 2)] private int maxExtraRepositions = 2;
-    [Tooltip("Rolled per hop, so 2 hops is rarer than 1.")]
-    [SerializeField, Range(0f, 1f)] private float extraRepositionChance = 0.45f;
-    [Tooltip("Heights the feint hops pick from. The real perch always uses the attack's own height.")]
+
     [SerializeField] private Vector2 hopHeightRange = new Vector2(0.05f, 0.85f);
-    [Tooltip("Beat on each feint perch. Long enough to bait a dodge, short enough to stay scary.")]
     [SerializeField] private float hopPause = 0.1f;
 
     [Header("Wall choice")]
-    [Tooltip("Line that splits the room. BELOW it a crossing travels at player height and " +
-             "cannot be dodged, so the wall is picked to move AWAY from the player. ABOVE it " +
-             "a crossing passes over their head harmlessly, so he just takes the far wall " +
-             "from himself and the feint gets its full range back.")]
     [SerializeField, Range(0f, 1f)] private float splitHeight = 0.5f;
 
     public int Weight     => Mathf.Max(1, weight);
@@ -62,7 +35,16 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
     protected SecretaryBirdMovement move;
     protected SecretaryBirdAttackController hitboxes;
     protected SecretaryBirdTelegraph telegraph;
+    protected SecretaryBirdPacing pacing;
     protected SecretaryBirdArena Arena => move.Arena;
+
+    private static readonly PhaseTuning fallbackPace = new PhaseTuning();
+
+    /// <summary>Tuning for the phase the fight is currently in.</summary>
+    protected PhaseTuning Pace => pacing != null ? pacing.For(state.Phase) : fallbackPace;
+
+    /// <summary>Apply the phase's speed scaling. Every dash in every attack goes through this.</summary>
+    protected float Speed(float baseSpeed) => baseSpeed * Pace.speedScale;
 
     /// <summary>Which wall the boss is currently on. +1 right, -1 left.</summary>
     protected int CurrentSide => Arena.SideOf(move.Position.x);
@@ -72,6 +54,7 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
         state     = GetComponent<SecretaryBirdState>();
         move      = GetComponent<SecretaryBirdMovement>();
         hitboxes  = GetComponent<SecretaryBirdAttackController>();
+        pacing    = GetComponent<SecretaryBirdPacing>();
         telegraph = GetComponentInChildren<SecretaryBirdTelegraph>(true);
     }
 
@@ -86,9 +69,10 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
         hitboxes.DisableAllHitboxes();
 
         if (telegraph != null && repositionTelegraph > 0f)
-            yield return telegraph.Flash(move.Position, target, repositionTelegraph, danger);
+            yield return telegraph.Flash(move.Position, target,
+                                         repositionTelegraph * Pace.telegraphScale, danger);
 
-        yield return move.Dash(target, repositionSpeed);
+        yield return move.Dash(target, Speed(repositionSpeed));
     }
 
     /// <summary>Below the split line, a horizontal crossing travels through player space.</summary>
@@ -108,10 +92,12 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
     /// </summary>
     protected IEnumerator MoveToWall(Transform player, float heightT)
     {
+        // Feint count comes from the phase, not the attack. Phase 1 has none - the honest
+        // move has to be learned before a lie about it can mean anything.
         int hops = 0;
-        for (int i = 0; i < maxExtraRepositions; i++)
+        for (int i = 0; i < Pace.maxFeints; i++)
         {
-            if (Random.value > extraRepositionChance) break;
+            if (Random.value > Pace.feintChance) break;
             hops++;
         }
 
@@ -146,10 +132,15 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
         state.SetFacing(side < 0);
     }
 
-    /// <summary>Static flash from wherever the boss is now to wherever it has committed to go.</summary>
+    /// <summary>
+    /// Static flash from wherever the boss is now to wherever it has committed to go.
+    /// Duration is scaled by the phase, so every attack gets longer warning early on
+    /// without any attack needing to know phases exist.
+    /// </summary>
     protected IEnumerator ShowPath(Vector2 to, float duration, bool danger = true)
     {
         state.CurrentState = SecretaryBirdState.BossStateType.Windup;
+        duration *= Pace.telegraphScale;
 
         if (telegraph == null)
         {
