@@ -23,7 +23,10 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
-        if (IsPaused)
+        // Dialogue and the inventory screen freeze the player exactly like pausing
+        // does. Advancing lines still works: DialogueManager reads the E key
+        // directly, and InventoryUI reads its hotkey directly, not through here.
+        if (IsPaused || DialogueManager.IsDialogueActive || InventoryUI.IsOpen)
         {
             Movement = Vector2.zero;
 
