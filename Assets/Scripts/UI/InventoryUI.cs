@@ -74,7 +74,7 @@ public class InventoryUI : MonoBehaviour
     {
         if (!IsOpen) return;
         IsOpen = false;
-        Time.timeScale = 1f;
+        TimeManager.Release(this);
     }
 
     private void Update()
@@ -104,7 +104,7 @@ public class InventoryUI : MonoBehaviour
         if (inventoryPanel != null) inventoryPanel.SetActive(true);
 
         Refresh();
-        Time.timeScale = 0f;
+        TimeManager.Freeze(this);
     }
 
     public void Close()
@@ -114,7 +114,7 @@ public class InventoryUI : MonoBehaviour
         IsOpen = false;
         if (inventoryPanel != null) inventoryPanel.SetActive(false);
 
-        Time.timeScale = 1f;
+        TimeManager.Release(this);
     }
 
     public void Toggle()

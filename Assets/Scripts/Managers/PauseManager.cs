@@ -28,7 +28,7 @@ public class PauseManager : MonoBehaviour
         pausePanel = menu;
         pausePanel.SetActive(false);
         paused = false;
-        Time.timeScale = 1f;
+        TimeManager.Release(this);
     }
 
     public void RegisterLumenUI(LumenUI ui)
@@ -66,7 +66,7 @@ public class PauseManager : MonoBehaviour
 
         lumenUI?.Show();
 
-        Time.timeScale = 0f;
+        TimeManager.Freeze(this);
     }
 
     public void Resume()
@@ -77,12 +77,12 @@ public class PauseManager : MonoBehaviour
             pausePanel.SetActive(false);
 
         lumenUI?.Hide();
-        Time.timeScale = 1f;
+        TimeManager.Release(this);
     }
 
     public void ExitToMenu()
     {
-        Time.timeScale = 1f;
+        TimeManager.ReleaseAll();
         GameManager.Instance.GoToScene("MainMenu", "");
     }
 }

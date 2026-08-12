@@ -72,7 +72,7 @@ public class GameManager : MonoBehaviour
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         activeRun.currentArea = scene.name;
-        Time.timeScale = 1f;
+        TimeManager.ReleaseAll();
         StartCoroutine(NotifySceneReady());
 
         if (scene.name == pendingCheckpointScene)

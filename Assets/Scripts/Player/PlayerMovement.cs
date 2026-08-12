@@ -329,9 +329,14 @@ public class PlayerMovement : MonoBehaviour
 
     private IEnumerator PerformSleep(float duration)
     {
-        Time.timeScale = 0;
+        TimeManager.Freeze(this);
         yield return new WaitForSecondsRealtime(duration);
-        Time.timeScale = 1;
+        TimeManager.Release(this);
+    }
+
+    private void OnDisable()
+    {
+        TimeManager.Release(this);
     }
     #endregion
 

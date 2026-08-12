@@ -223,6 +223,8 @@ public class PlayerCombat : MonoBehaviour
     // shake screen
     private void ShakeHit(bool isKill)
     {
+        if (CameraShakeManager.Instance == null) return;
+
         if (isKill)
         {
             CameraShakeManager.Instance.Shake(killShakeDuration, killShakeAmplitude, killShakeFrequency);
