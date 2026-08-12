@@ -98,7 +98,7 @@ public class PlayerHealth : MonoBehaviour
         iFrameTimer = iFrameTime;
 
         if (TimeManager.Instance != null) TimeManager.Instance.HitStop(damagedPauseTime);
-        if (CameraShake.Instance != null) CameraShake.Instance.Shake(hitShakeDuration, hitShakeAmplitude, hitShakeFrequency);
+        if (CameraShakeManager.Instance != null) CameraShakeManager.Instance.Shake(hitShakeDuration, hitShakeAmplitude, hitShakeFrequency);
 
         ApplyHitRecoil(attackerPos);
 
