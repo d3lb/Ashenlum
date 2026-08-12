@@ -8,14 +8,12 @@ public class SecretaryBirdDive : SecretaryBirdAttack
     [SerializeField] private float aimPause = 0.1f;
 
     [Header("Telegraph")]
-    [Tooltip("The locked line IS the dodge window. Never set it to zero.")]
     [SerializeField] private float telegraphTime = 0.4f;
 
     [Header("Dive")]
     [SerializeField] private float diveSpeed = 56f;
-    [Tooltip("Keep at 0. Any arc curves the path BELOW the straight line the telegraph drew, " +
-             "so he clips the floor early and lands short of the player - and the line lies.")]
     [SerializeField] private float diveGravity = 0f;
+
     public override string DisplayName => "Dive";
 
     public override IEnumerator Act(Transform player)

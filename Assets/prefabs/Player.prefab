@@ -850,13 +850,12 @@ MonoBehaviour:
   lowDamage: 5
   attackCooldown: 0.4
   attackDuration: 0.1
-  attackSpeed: 0.8
+  attackSpeed: 1
   recoilForceX: 6
   recoilForceY: 3
   pogoForce: 20
   hitPauseTime: 0.05
   killPauseTime: 0.08
-  pogoTargetForce: 1.5
   hitShakeDuration: 0.04
   hitShakeAmplitude: 2
   hitShakeFrequency: 2

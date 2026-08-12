@@ -1,14 +1,9 @@
 using UnityEngine;
 
-/// <summary>
-/// Ground wave from the stomp. Damage comes from your existing EnemyHitbox component
-/// on the prefab; this just drives it along the floor and despawns it at the walls.
-/// </summary>
 public class SecretaryBirdShockwave : MonoBehaviour
 {
     [SerializeField] private float speed = 12f;
     [SerializeField] private float lifetime = 4f;
-    [Tooltip("Optional: fade/shrink over its life so it reads as losing energy.")]
     [SerializeField] private bool shrinkOverLife = true;
 
     private int dir = 1;

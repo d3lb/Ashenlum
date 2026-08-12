@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-
 public class SecretaryBirdHealth : MonoBehaviour, IDamageable
 {
     [Header("Health")]
@@ -32,7 +31,6 @@ public class SecretaryBirdHealth : MonoBehaviour, IDamageable
     public int MaxHP => maxHp;
     public float Normalized => maxHp <= 0 ? 0f : Mathf.Clamp01((float)hp / maxHp);
 
-    /// <summary>Hook the health bar / arena door / reward to these.</summary>
     public System.Action<float> OnHealthChanged;
     public System.Action OnDied;
 

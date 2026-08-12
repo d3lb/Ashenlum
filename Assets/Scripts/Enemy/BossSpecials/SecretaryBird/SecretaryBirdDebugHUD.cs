@@ -1,14 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// Drop this on the boss while tuning. It answers "what is he doing right now" without
-/// making you read the Console. Delete or disable it for a build.
-///
-/// Reading it: "Wall Dash (low)" crossing the arena and missing you is the honest dash
-/// doing its job. "Fake Dash" is the one that flashes low then goes over your head.
-/// If those two look the same on screen, that is a tuning problem, not a naming one -
-/// widen the gap between feintHeight and perchHeight.
-/// </summary>
 public class SecretaryBirdDebugHUD : MonoBehaviour
 {
     [SerializeField] private SecretaryBirdBrain brain;
@@ -19,7 +10,6 @@ public class SecretaryBirdDebugHUD : MonoBehaviour
     [SerializeField] private bool show = true;
     [SerializeField] private Vector2 screenPos = new Vector2(12f, 12f);
     [SerializeField] private int fontSize = 16;
-    [Tooltip("Also floats the attack name above the boss in the Scene/Game view.")]
     [SerializeField] private bool showWorldLabel = true;
 
     private GUIStyle style;

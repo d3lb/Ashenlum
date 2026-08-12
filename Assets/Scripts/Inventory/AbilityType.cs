@@ -1,7 +1,6 @@
 // Every unlockable traversal/combat ability in the game.
-// Dash, DoubleJump and WallJump are mirrored onto the legacy bools in
-// GameRunProfile because PlayerMovement reads those directly — see
-// InventoryManager.UnlockAbility.
+// Unlock state lives on GameRunProfile — see IsAbilityUnlocked / SetAbilityUnlocked.
+// This enum only exists so UI can ask about an ability without hard-coding a field name.
 public enum AbilityType
 {
     Dash,

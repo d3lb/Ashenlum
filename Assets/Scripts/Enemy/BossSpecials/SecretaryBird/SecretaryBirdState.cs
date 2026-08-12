@@ -22,7 +22,6 @@ public class SecretaryBirdState : MonoBehaviour
     public int Phase = 1;
 
     [Header("Flip")]
-    [Tooltip("Usually the sprite child. Leave empty if the animator handles flipping.")]
     [SerializeField] private Transform flipRoot;
     [SerializeField] private bool artFacesRight = true;
 

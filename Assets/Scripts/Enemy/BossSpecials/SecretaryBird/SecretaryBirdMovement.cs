@@ -53,6 +53,8 @@ public class SecretaryBirdMovement : MonoBehaviour
         state = GetComponent<SecretaryBirdState>();
     }
 
+    // The normal test is not optional: the boss perches ON a wall, so an unfiltered
+    // "did I touch anything" check ends every dash on frame one.
     public void ReportImpact(Collision2D c)
     {
         if (!dashing) return;

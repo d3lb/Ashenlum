@@ -16,7 +16,6 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack
     [SerializeField] private float spreadAngle = 55f;
 
     [Header("Fairness")]
-    [Tooltip("Skip one feather so a guaranteed safe slot always exists. Keep this ON.")]
     [SerializeField] private bool guaranteeGap = true;
 
     [Header("Repeat")]

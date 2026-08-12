@@ -18,22 +18,14 @@ public class SecretaryBirdBrain : MonoBehaviour
     [SerializeField] private float phase3At = 0.33f;
 
     [Header("Pacing")]
-    [Tooltip("Per-phase tuning. Leave empty to auto-find it on this GameObject.")]
     [SerializeField] private SecretaryBirdPacing pacing;
 
     [Header("Intro")]
-    [Tooltip("Quiet beat after the player enters, before the first attack. The room has to " +
-             "read as a boss arena before it starts being one.")]
     [SerializeField] private float introDelay = 2f;
-    [Tooltip("Ignore introDelay and wait for FinishIntro() instead. Use this once there is " +
-             "dialogue or a stand-up animation to drive it - call FinishIntro() when it ends.")]
     [SerializeField] private bool waitForCue;
-    [Tooltip("Fires the moment the arena is entered. Hook dialogue, camera, music, animation.")]
     [SerializeField] private UnityEngine.Events.UnityEvent onIntro;
 
     [Header("Debug")]
-    [Tooltip("Prints every attack as it starts. For a live on-screen readout instead, "
-             + "add SecretaryBirdDebugHUD to the boss.")]
     [SerializeField] private bool logAttacks;
 
     private readonly List<SecretaryBirdAttack> pool = new List<SecretaryBirdAttack>();
@@ -77,7 +69,6 @@ public class SecretaryBirdBrain : MonoBehaviour
         loop = StartCoroutine(Begin());
     }
 
-    /// <summary>Call from a dialogue box or animation event when waitForCue is on.</summary>
     public void FinishIntro() => introCued = true;
 
     private IEnumerator Begin()

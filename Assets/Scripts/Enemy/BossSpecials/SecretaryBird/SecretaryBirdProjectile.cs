@@ -15,8 +15,6 @@ public class SecretaryBirdProjectile : MonoBehaviour
 
     [Header("On hitting ground")]
     [SerializeField] private LayerMask groundLayers;
-    [Tooltip("How far past the surface it buries itself, so it reads as stuck IN the floor " +
-             "rather than balanced on top of it.")]
     [SerializeField] private float embedDepth = 0.15f;
     [SerializeField] private float stuckLifetime = 3f;
     [SerializeField] private float fadeOutTime = 0.5f;
@@ -48,7 +46,8 @@ public class SecretaryBirdProjectile : MonoBehaviour
         Vector2 from = transform.position;
         Vector2 step = velocity * Time.deltaTime;
 
-
+        // Raycast, not triggers: Unity 2D skips collider pairs where neither side has a
+        // Rigidbody2D, so OnTriggerEnter2D never fires for this against static ground.
         if (step.sqrMagnitude > 0.0000001f)
         {
             RaycastHit2D hit = Physics2D.Raycast(from, step.normalized, step.magnitude, groundLayers);

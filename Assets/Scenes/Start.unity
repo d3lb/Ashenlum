@@ -4167,7 +4167,7 @@ MonoBehaviour:
     m_ColorSpace: -1
     m_NumColorKeys: 2
     m_NumAlphaKeys: 2
-  width: 0.1
+  width: 0.2
   overshoot: 3
   fadeOutFraction: 0.35
 --- !u!120 &1492645128
@@ -4230,7 +4230,7 @@ LineRenderer:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.5141243
+        value: 0.7016243
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -185037,6 +185037,7 @@ GameObject:
   - component: {fileID: 1993792086}
   - component: {fileID: 1993792084}
   - component: {fileID: 1993792085}
+  - component: {fileID: 1993792087}
   m_Layer: 6
   m_Name: BossBody
   m_TagString: Untagged
@@ -185522,6 +185523,20 @@ MonoBehaviour:
   guaranteeGap: 1
   volleys: 2
   betweenVolleys: 0.35
+--- !u!114 &1993792087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1993792060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0b26acac912f304d8a4a052b8a1d851, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SecretaryBirdBodyDamage
+  state: {fileID: 1993792082}
+  bodyHitbox: {fileID: 1993792069}
 --- !u!4 &2032945938 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5566485649379924750, guid: 51dbf75e026df9b4fbb46b7d11dc989e, type: 3}

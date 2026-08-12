@@ -1,12 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// One tuning block per phase. The whole difficulty curve lives here.
-///
-/// Note what does NOT ramp much: speed. Pace is the space around a strike, not the strike
-/// itself - a slower blink reads as a weak boss, not a fair one. What grows across phases
-/// is how OFTEN he attacks, how little warning he gives, and how unpredictable he is.
-/// </summary>
 [System.Serializable]
 public class PhaseTuning
 {

@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 
-
 public abstract class SecretaryBirdAttack : MonoBehaviour
 {
     [Header("Selection")]
@@ -18,7 +17,6 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
     [SerializeField] private float repositionTelegraph = 0.16f;
 
     [Header("Reposition feint")]
-
     [SerializeField] private Vector2 hopHeightRange = new Vector2(0.05f, 0.85f);
     [SerializeField] private float hopPause = 0.1f;
 
@@ -40,13 +38,10 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
 
     private static readonly PhaseTuning fallbackPace = new PhaseTuning();
 
-    /// <summary>Tuning for the phase the fight is currently in.</summary>
     protected PhaseTuning Pace => pacing != null ? pacing.For(state.Phase) : fallbackPace;
 
-    /// <summary>Apply the phase's speed scaling. Every dash in every attack goes through this.</summary>
     protected float Speed(float baseSpeed) => baseSpeed * Pace.speedScale;
 
-    /// <summary>Which wall the boss is currently on. +1 right, -1 left.</summary>
     protected int CurrentSide => Arena.SideOf(move.Position.x);
 
     protected virtual void Awake()
@@ -60,9 +55,10 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
 
     public virtual bool CanUse(int phase) => phase >= minPhase;
 
+    // Act must use `yield return Something()`, never StartCoroutine, or the brain's
+    // watchdog can only kill half the chain when an attack times out.
     public abstract IEnumerator Act(Transform player);
 
-    /// <summary>Telegraphed, non-damaging blink. Safe-coloured line by default.</summary>
     protected IEnumerator BlinkTo(Vector2 target, bool danger = false)
     {
         state.CurrentState = SecretaryBirdState.BossStateType.Reposition;
@@ -75,21 +71,11 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
         yield return move.Dash(target, Speed(repositionSpeed));
     }
 
-    /// <summary>Below the split line, a horizontal crossing travels through player space.</summary>
     protected bool InLowerHalf => Arena.HeightTOf(move.Position.y) < splitHeight;
 
-    /// <summary>
-    /// Low  -> the wall furthest from the PLAYER, so the blink moves away from them.
-    /// High -> the wall furthest from the BOSS, so every hop is a real crossing.
-    /// </summary>
     private int TargetWall(Transform player)
         => InLowerHalf ? Arena.FurthestWallFrom(player.position) : -CurrentSide;
 
-    /// <summary>
-    /// Take a wall perch, optionally after 1-2 feint hops.
-    ///
-    /// Wall choice is never the attack's business - it is decided here, by altitude.
-    /// </summary>
     protected IEnumerator MoveToWall(Transform player, float heightT)
     {
         // Feint count comes from the phase, not the attack. Phase 1 has none - the honest
@@ -132,11 +118,6 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
         state.SetFacing(side < 0);
     }
 
-    /// <summary>
-    /// Static flash from wherever the boss is now to wherever it has committed to go.
-    /// Duration is scaled by the phase, so every attack gets longer warning early on
-    /// without any attack needing to know phases exist.
-    /// </summary>
     protected IEnumerator ShowPath(Vector2 to, float duration, bool danger = true)
     {
         state.CurrentState = SecretaryBirdState.BossStateType.Windup;

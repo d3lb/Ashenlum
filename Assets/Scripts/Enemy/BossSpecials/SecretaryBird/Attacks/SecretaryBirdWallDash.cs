@@ -4,7 +4,6 @@ using UnityEngine;
 public class SecretaryBirdWallDash : SecretaryBirdAttack
 {
     [Header("Perch")]
-    [Tooltip("0 = floor, 1 = ceiling.")]
     [SerializeField, Range(0f, 1f)] private float perchHeight = 0.05f;
     [SerializeField] private float perchPause = 0.08f;
 

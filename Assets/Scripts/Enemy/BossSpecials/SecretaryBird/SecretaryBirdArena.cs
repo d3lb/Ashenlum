@@ -1,13 +1,5 @@
 using UnityEngine;
 
-/// <summary>
-/// The static room the boss fights in. Put this on an empty GameObject in the arena
-/// and size the rect with the gizmo.
-///
-/// Everything the boss does - perching, dashing, clamping, choosing a wall - is expressed
-/// in terms of this rect. That means NO raycasting and NO runtime wall detection anywhere
-/// in the fight. Since the room never changes, the walls are just two numbers.
-/// </summary>
 public class SecretaryBirdArena : MonoBehaviour
 {
     [Header("Bounds (offset from this transform)")]
@@ -15,7 +7,6 @@ public class SecretaryBirdArena : MonoBehaviour
     [SerializeField] private Vector2 areaSize = new Vector2(24f, 12f);
 
     [Header("Insets")]
-    [Tooltip("How far off the wall surface the boss perches.")]
     [SerializeField] private float wallInset = 0.8f;
     [SerializeField] private float floorInset = 0.6f;
     [SerializeField] private float ceilingInset = 0.6f;
@@ -30,14 +21,8 @@ public class SecretaryBirdArena : MonoBehaviour
     public float CenterX => (LeftX + RightX) * 0.5f;
     public float Width   => RightX - LeftX;
 
-    /// <summary>+1 = right wall, -1 = left wall.</summary>
     public int SideOf(float x) => x >= CenterX ? 1 : -1;
 
-    /// <summary>
-    /// The wall the player is furthest from. This is the default anchor for every
-    /// wall attack: it maximises the boss's runway AND the player's reaction time,
-    /// so a very fast dash still reads as fair.
-    /// </summary>
     public int FurthestWallFrom(Vector2 p)
     {
         float toLeft  = Mathf.Abs(p.x - LeftX);
@@ -49,7 +34,6 @@ public class SecretaryBirdArena : MonoBehaviour
 
     public float WallX(int side) => side > 0 ? RightX : LeftX;
 
-    /// <summary>heightT: 0 = floor, 1 = ceiling.</summary>
     public Vector2 Perch(int side, float heightT)
         => new Vector2(WallX(side), Mathf.Lerp(FloorY, CeilY, Mathf.Clamp01(heightT)));
 

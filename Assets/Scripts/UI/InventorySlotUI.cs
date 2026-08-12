@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// One cell in the inventory grid. Purely presentational — it never reads the
-// InventoryManager itself, it just renders whatever InventoryUI hands it.
+// One cell in the inventory grid. Purely presentational — it owns no state and
+// looks nothing up, it just renders whatever InventoryUI hands it.
 public class InventorySlotUI : MonoBehaviour
 {
     [Header("References")]

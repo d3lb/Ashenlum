@@ -1,17 +1,9 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Toggles the inventory screen, freezes the game while it's open, and mirrors
-// InventoryManager's data into the visual grid.
-//
-// The slot cells are spawned from a prefab at Start (slotGridParent should carry
-// a GridLayoutGroup, which handles all the positioning), then simply refreshed
-// whenever the data changes.
 public class InventoryUI : MonoBehaviour
 {
-    // Static so PlayerInput / PauseManager can gate on it with no reference.
     public static bool IsOpen { get; private set; }
 
     [Header("Hotkeys")]
@@ -20,28 +12,28 @@ public class InventoryUI : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private GameObject      inventoryPanel;
-    [Tooltip("The object carrying the GridLayoutGroup. Slot prefabs are spawned as its children.")]
     [SerializeField] private Transform       slotGridParent;
     [SerializeField] private InventorySlotUI slotPrefab;
-    [SerializeField] private TMP_Text        moneyText;
 
     [Header("Ability Icons")]
     [SerializeField] private AbilityIconBinding[] abilityIcons;
 
-    [Header("Fallback")]
-    [Tooltip("Used only if no InventoryManager is present (e.g. testing this scene alone).")]
-    [SerializeField] private int fallbackSlotCount = 20;
+
+    [SerializeField] private Color lockedColor = new Color(1f, 1f, 1f, 0.15f);
+    [SerializeField] private Color unlockedColor = Color.white;
+
+    [Header("Money")]
+    [SerializeField] private LumenUI lumenUI;
+
+    [Header("Slots")]
+    [SerializeField] private int slotCount = 20;
 
     [System.Serializable]
     public class AbilityIconBinding
     {
         public AbilityType ability;
-        [Tooltip("The icon Image for this ability.")]
         public Image icon;
-        [Tooltip("Hide the icon entirely while locked instead of dimming it.")]
         public bool  hideWhenLocked = false;
-        public Color lockedColor    = new Color(1f, 1f, 1f, 0.15f);
-        public Color unlockedColor  = Color.white;
     }
 
     private readonly List<InventorySlotUI> spawnedSlots = new();
@@ -52,28 +44,15 @@ public class InventoryUI : MonoBehaviour
 
         if (inventoryPanel != null) inventoryPanel.SetActive(false);
         IsOpen = false;
-
-        if (InventoryManager.Instance != null)
-            InventoryManager.Instance.OnInventoryChanged += Refresh;
-
-        if (GameManager.Instance != null)
-            GameManager.Instance.OnLumensChanged += OnMoneyChanged;
-    }
-
-    private void OnDestroy()
-    {
-        if (InventoryManager.Instance != null)
-            InventoryManager.Instance.OnInventoryChanged -= Refresh;
-
-        if (GameManager.Instance != null)
-            GameManager.Instance.OnLumensChanged -= OnMoneyChanged;
     }
 
     // Safety net: never leave the game frozen if this object goes away while open.
     private void OnDisable()
     {
         if (!IsOpen) return;
+
         IsOpen = false;
+        lumenUI?.Hide();
         TimeManager.Release(this);
     }
 
@@ -91,7 +70,6 @@ public class InventoryUI : MonoBehaviour
             Close();
     }
 
-    // ── Open / Close ──────────────────────────────────────────────────────────
     public void Open()
     {
         if (IsOpen) return;
@@ -102,6 +80,10 @@ public class InventoryUI : MonoBehaviour
 
         IsOpen = true;
         if (inventoryPanel != null) inventoryPanel.SetActive(true);
+
+        // Same trick the pause menu uses: pin the lumen counter open instead of
+        // letting it fade out on its usual timer.
+        lumenUI?.Show();
 
         Refresh();
         TimeManager.Freeze(this);
@@ -114,6 +96,7 @@ public class InventoryUI : MonoBehaviour
         IsOpen = false;
         if (inventoryPanel != null) inventoryPanel.SetActive(false);
 
+        lumenUI?.Hide();
         TimeManager.Release(this);
     }
 
@@ -123,7 +106,6 @@ public class InventoryUI : MonoBehaviour
         else        Open();
     }
 
-    // ── Building / refreshing ─────────────────────────────────────────────────
     private void BuildGrid()
     {
         if (slotGridParent == null || slotPrefab == null)
@@ -137,11 +119,7 @@ public class InventoryUI : MonoBehaviour
             Destroy(slotGridParent.GetChild(i).gameObject);
         spawnedSlots.Clear();
 
-        int count = InventoryManager.Instance != null
-            ? InventoryManager.Instance.SlotCount
-            : fallbackSlotCount;
-
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < Mathf.Max(1, slotCount); i++)
         {
             var slot = Instantiate(slotPrefab, slotGridParent);
             slot.name = $"Slot_{i:D2}";
@@ -150,37 +128,25 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    private void OnMoneyChanged(int _) => RefreshMoney();
-
     public void Refresh()
     {
-        RefreshMoney();
         RefreshAbilities();
         RefreshSlots();
-    }
-
-    private void RefreshMoney()
-    {
-        if (moneyText == null) return;
-
-        int money = InventoryManager.Instance != null
-            ? InventoryManager.Instance.CurrentMoney
-            : (GameManager.Instance != null ? GameManager.Instance.CurrentLumens : 0);
-
-        moneyText.text = money.ToString();
     }
 
     private void RefreshAbilities()
     {
         if (abilityIcons == null) return;
 
-        var inv = InventoryManager.Instance;
+        // Straight from the run profile - the same bools PlayerMovement and the
+        // CheatMenu use, so the panel can never disagree with what the player can do.
+        var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
 
         foreach (var binding in abilityIcons)
         {
             if (binding == null || binding.icon == null) continue;
 
-            bool unlocked = inv != null && inv.IsAbilityUnlocked(binding.ability);
+            bool unlocked = run != null && run.IsAbilityUnlocked(binding.ability);
 
             if (binding.hideWhenLocked)
             {
@@ -189,16 +155,16 @@ public class InventoryUI : MonoBehaviour
             else
             {
                 binding.icon.gameObject.SetActive(true);
-                binding.icon.color = unlocked ? binding.unlockedColor : binding.lockedColor;
+                binding.icon.color = unlocked ? unlockedColor : lockedColor;
             }
         }
     }
 
+    // There is no item storage yet. When you build one, this is the only place that
+    // needs to change - hand each slot its Item instead of null.
     private void RefreshSlots()
     {
-        var inv = InventoryManager.Instance;
-
         for (int i = 0; i < spawnedSlots.Count; i++)
-            spawnedSlots[i].SetItem(inv != null ? inv.GetItem(i) : null);
+            spawnedSlots[i].SetItem(null);
     }
 }
