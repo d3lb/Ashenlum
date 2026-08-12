@@ -53,8 +53,19 @@ MonoBehaviour:
   healthSlider: {fileID: 7065926185235632157}
   easeHealthSlider: {fileID: 2740083394104963074}
   barTransform: {fileID: 6420208606526685141}
+  fillImage: {fileID: 6292968721914700587}
+  globalVolume: {fileID: 5625066554528539636}
   widthPerHP: 5.5
-  lerpSpeed: 10
+  highColor: {r: 1, g: 1, b: 1, a: 1}
+  midColor: {r: 0.8524469, g: 0.6367924, b: 1, a: 1}
+  lowColor: {r: 0.6, g: 0.1, b: 0.8, a: 1}
+  vignetteColor: {r: 0.6, g: 0.10196079, b: 0.8000001, a: 1}
+  midPulseIntensity: 0.6
+  lowPulseIntensity: 0.7
+  midPulseSpeed: 5
+  lowPulseSpeed: 7
+  lerpSpeed: 15
+  colorLerpSpeed: 6
 --- !u!1 &651918327667143860
 GameObject:
   m_ObjectHideFlags: 0
@@ -421,6 +432,7 @@ RectTransform:
   - {fileID: 551439815753159526}
   - {fileID: 8212229810835200321}
   - {fileID: 8454726870658258053}
+  - {fileID: 6215474362211102083}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1073,6 +1085,55 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &8218020353237754462
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6215474362211102083}
+  - component: {fileID: 5625066554528539636}
+  m_Layer: 0
+  m_Name: Global Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6215474362211102083
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8218020353237754462}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3358523551896630612}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5625066554528539636
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8218020353237754462}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Core.Runtime::UnityEngine.Rendering.Volume
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 53b456442afcbd748885853c13dd5578, type: 2}
 --- !u!1 &8813803338322382936
 GameObject:
   m_ObjectHideFlags: 0

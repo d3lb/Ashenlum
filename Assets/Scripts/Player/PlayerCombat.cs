@@ -225,11 +225,11 @@ public class PlayerCombat : MonoBehaviour
     {
         if (isKill)
         {
-            CameraShake.Instance.Shake(killShakeDuration, killShakeAmplitude, killShakeFrequency);
+            CameraShakeManager.Instance.Shake(killShakeDuration, killShakeAmplitude, killShakeFrequency);
         }
         else
         {
-            CameraShake.Instance.Shake(hitShakeDuration, hitShakeAmplitude, hitShakeFrequency);
+            CameraShakeManager.Instance.Shake(hitShakeDuration, hitShakeAmplitude, hitShakeFrequency);
         }
     }
 

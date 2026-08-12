@@ -157,8 +157,8 @@ public class SecretaryBirdMovement : MonoBehaviour
         if (impactHitStop > 0f && TimeManager.Instance != null)
             TimeManager.Instance.HitStop(impactHitStop);
 
-        if (impactShakeDuration > 0f && CameraShake.Instance != null)
-            CameraShake.Instance.Shake(impactShakeDuration, impactShakeAmplitude, impactShakeFrequency);
+        if (impactShakeDuration > 0f && CameraShakeManager.Instance != null)
+            CameraShakeManager.Instance.Shake(impactShakeDuration, impactShakeAmplitude, impactShakeFrequency);
     }
 
     public IEnumerator Glide(Vector2 target, float speed, float arriveDist = 0.1f, float maxTime = 3f)
