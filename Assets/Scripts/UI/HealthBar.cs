@@ -90,6 +90,12 @@ public class HealthBar : MonoBehaviour
     {
         PlayerHealth.StabilityState stability = playerHealth.CurrentStabilityState;
 
+        if (stability == PlayerHealth.StabilityState.High)
+        {
+            pulseTimer = 0f;
+            pulseWasRising = false;
+        }
+
         Color targetColor;
         float pulseIntensity;
         float pulseSpeed;

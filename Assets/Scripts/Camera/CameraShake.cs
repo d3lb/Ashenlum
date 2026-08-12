@@ -28,7 +28,8 @@ public class CameraShake : MonoBehaviour
         while (timer < duration)
         {
             timer += Time.unscaledDeltaTime;
-            noise.m_AmplitudeGain = amplitude * (1f - timer / duration);
+            float t = timer / duration;
+            noise.m_AmplitudeGain = amplitude * (1f - t * t);
             yield return null;
         }
         noise.m_AmplitudeGain = 0f;
