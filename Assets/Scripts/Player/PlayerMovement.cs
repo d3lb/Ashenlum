@@ -44,6 +44,10 @@ public class PlayerMovement : MonoBehaviour
 
     //Dash
     private int dashesLeft;
+
+    // physicsData is a shared asset - a purchase must never write to it.
+    private int MaxDashes => physicsData.dashAmount +
+        (GameManager.Instance != null ? GameManager.Instance.activeRun.bonusDashes : 0);
     private bool dashRefilling;
     private Vector2 lastDashDir;
 
@@ -491,7 +495,7 @@ public class PlayerMovement : MonoBehaviour
         dashRefilling = true;
         yield return new WaitForSeconds(physicsData.dashRefillTime);
         dashRefilling = false;
-        dashesLeft = Mathf.Min(physicsData.dashAmount, dashesLeft + 1);
+        dashesLeft = Mathf.Min(MaxDashes, dashesLeft + 1);
     }
     #endregion
 
@@ -528,7 +532,7 @@ public class PlayerMovement : MonoBehaviour
        
         if (!GameManager.Instance.activeRun.isDashUnlocked) return false;
 
-        if (state.CurrentState != PlayerStateType.Dash && dashesLeft < physicsData.dashAmount && !dashRefilling)
+        if (state.CurrentState != PlayerStateType.Dash && dashesLeft < MaxDashes && !dashRefilling)
         {
             StartCoroutine(nameof(RefillDash), 1);
         }

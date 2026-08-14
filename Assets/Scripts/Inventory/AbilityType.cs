@@ -5,6 +5,5 @@ public enum AbilityType
 {
     Dash,
     DoubleJump,
-    WallJump,
-    WingBurst
+    WallJump
 }

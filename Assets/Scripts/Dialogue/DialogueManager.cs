@@ -2,8 +2,10 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-// Owns the dialogue box. NPCs hand it a Dialogue asset and never touch the UI.
+// Owns the dialogue box. Callers hand it a Conversation and never touch the UI.
 // E finishes the current line, then advances, then closes.
+// onFinished fires after the box is gone - that is how the boss knows to start
+// fighting and the shop knows to open.
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
@@ -25,6 +27,7 @@ public class DialogueManager : MonoBehaviour
     private Coroutine typingRoutine;
     private Coroutine closeRoutine;
     private int       lastInputFrame = -1;
+    private System.Action finished;
 
     private void Awake()
     {
@@ -48,6 +51,7 @@ public class DialogueManager : MonoBehaviour
         typingRoutine = null;
         isTyping      = false;
         IsDialogueActive = false;
+        finished = null;
     }
 
     private void OnDestroy()
@@ -68,25 +72,28 @@ public class DialogueManager : MonoBehaviour
             HandleAdvance();
     }
 
-    public void StartDialogue(Dialogue dialogue)
+    public void StartDialogue(Conversation conversation, System.Action onFinished = null)
     {
-        if (dialogue == null || dialogue.sentences == null || dialogue.sentences.Length == 0)
+        if (conversation == null || conversation.sentences == null || conversation.sentences.Length == 0)
         {
-            Debug.LogWarning("[DialogueManager] Empty Dialogue asset.", this);
+            Debug.LogWarning("[DialogueManager] Empty Conversation asset.", this);
+            onFinished?.Invoke();
             return;
         }
         if (IsDialogueActive || closeRoutine != null) return;
 
-        sentences        = dialogue.sentences;
+        finished = onFinished;
+
+        sentences        = conversation.sentences;
         index            = 0;
         IsDialogueActive = true;
         lastInputFrame   = Time.frameCount;
 
         dialoguePanel.SetActive(true);
 
-        bool hasName = !string.IsNullOrEmpty(dialogue.speakerName);
+        bool hasName = !string.IsNullOrEmpty(conversation.speakerName);
         nameText.gameObject.SetActive(hasName);
-        nameText.text = hasName ? dialogue.speakerName : string.Empty;
+        nameText.text = hasName ? conversation.speakerName : string.Empty;
 
         ShowSentence(sentences[index]);
     }
@@ -156,5 +163,9 @@ public class DialogueManager : MonoBehaviour
 
         IsDialogueActive = false;
         closeRoutine     = null;
+
+        System.Action callback = finished;
+        finished = null;
+        callback?.Invoke();
     }
 }

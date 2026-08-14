@@ -23,7 +23,7 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
-        if (IsPaused || DialogueManager.IsDialogueActive || InventoryUI.IsOpen)
+        if (IsPaused || DialogueManager.IsDialogueActive || InventoryUI.IsOpen || ShopUI.IsOpen)
         {
             Movement = Vector2.zero;
 

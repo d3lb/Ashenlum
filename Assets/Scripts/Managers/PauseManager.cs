@@ -43,7 +43,7 @@ public class PauseManager : MonoBehaviour
 
         // The inventory owns Escape while it's open (it closes itself), so the
         // pause menu must not also pop up underneath it.
-        if (InventoryUI.IsOpen)
+        if (InventoryUI.IsOpen || ShopUI.IsOpen)
             return;
 
         if (Input.GetKeyDown(KeyCode.Escape))

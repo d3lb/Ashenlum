@@ -7,7 +7,8 @@ public class PlayerHealth : MonoBehaviour
 {
     [Header("Main Settings")]
     [SerializeField] private int hp = 100;
-    [SerializeField] private int maxHp = 100;
+    [SerializeField] private int baseMaxHp = 100;
+    private int maxHp = 100;
     [SerializeField] private float iFrameTime = 0.3f;
     [SerializeField] private float respawnDelay = 1.5f;
 
@@ -71,6 +72,7 @@ public class PlayerHealth : MonoBehaviour
 
         if (run != null)
         {
+            maxHp = baseMaxHp + run.bonusMaxHp;
             run.maxHp = maxHp;
             if (run.currentHp < 0) run.currentHp = maxHp;
             hp = Mathf.Clamp(run.currentHp, 0, maxHp);
@@ -122,6 +124,18 @@ public class PlayerHealth : MonoBehaviour
             Heal(amount);
             regenBuffer -= amount;
         }
+    }
+
+    // Called by the shop so a purchase is felt immediately, not next scene.
+    public void RefreshMaxHealth()
+    {
+        var run = GameManager.Instance?.activeRun;
+        if (run == null) return;
+
+        int gained = (baseMaxHp + run.bonusMaxHp) - maxHp;
+        maxHp = baseMaxHp + run.bonusMaxHp;
+        run.maxHp = maxHp;
+        if (gained > 0) Heal(gained);
     }
 
     public void Heal(int amount)

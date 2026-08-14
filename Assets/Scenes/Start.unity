@@ -185330,12 +185330,10 @@ MonoBehaviour:
   player: {fileID: 1682832976}
   phase2At: 0.66
   phase3At: 0.33
-  pacing: {fileID: 0}
+  pacing: {fileID: 1993792085}
+  bossId: SecretaryBird
+  introConversation: {fileID: 11400000, guid: 46f76f3ea8f20754ba7611ded4b771a5, type: 2}
   introDelay: 3
-  waitForCue: 0
-  onIntro:
-    m_PersistentCalls:
-      m_Calls: []
   logAttacks: 0
 --- !u!114 &1993792082
 MonoBehaviour:

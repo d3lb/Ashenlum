@@ -21,9 +21,9 @@ public class SecretaryBirdBrain : MonoBehaviour
     [SerializeField] private SecretaryBirdPacing pacing;
 
     [Header("Intro")]
+    [SerializeField] private string bossId = "SecretaryBird";
+    [SerializeField] private Conversation introConversation;
     [SerializeField] private float introDelay = 2f;
-    [SerializeField] private bool waitForCue;
-    [SerializeField] private UnityEngine.Events.UnityEvent onIntro;
 
     [Header("Debug")]
     [SerializeField] private bool logAttacks;
@@ -69,23 +69,34 @@ public class SecretaryBirdBrain : MonoBehaviour
         loop = StartCoroutine(Begin());
     }
 
-    public void FinishIntro() => introCued = true;
-
     private IEnumerator Begin()
     {
         state.CurrentState = SecretaryBirdState.BossStateType.Intro;
         CleanUp();
 
-        introCued = false;
-        onIntro?.Invoke();
+        if (FirstMeeting())
+        {
+            GameManager.Instance.activeRun.seenEvents.Add(bossId);
 
-        if (waitForCue)
+            introCued = false;
+            DialogueManager.Instance.StartDialogue(introConversation, () => introCued = true);
             yield return new WaitUntil(() => introCued);
+        }
         else if (introDelay > 0f)
+        {
             yield return new WaitForSeconds(introDelay);
+        }
 
         // Nested, not StartCoroutine - Deactivate's StopCoroutine(loop) must still reach it.
         yield return FightLoop();
+    }
+
+    private bool FirstMeeting()
+    {
+        if (introConversation == null || DialogueManager.Instance == null) return false;
+
+        var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
+        return run != null && !run.seenEvents.Contains(bossId);
     }
 
     public void Deactivate()

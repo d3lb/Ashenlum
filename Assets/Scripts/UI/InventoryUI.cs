@@ -77,6 +77,7 @@ public class InventoryUI : MonoBehaviour
         // Don't stack on top of the pause menu or a conversation.
         if (PauseManager.Instance != null && PauseManager.Instance.IsPaused) return;
         if (DialogueManager.IsDialogueActive) return;
+        if (ShopUI.IsOpen) return;
 
         IsOpen = true;
         if (inventoryPanel != null) inventoryPanel.SetActive(true);

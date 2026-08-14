@@ -61,7 +61,9 @@ public class PlayerAbility : MonoBehaviour
     private void DoBurst()
     {
         // heal player
-        playerHealth.Heal(Mathf.RoundToInt(playerHealth.MaxHP * burstHealPercent));
+        float percent = burstHealPercent + (GameManager.Instance != null
+            ? GameManager.Instance.activeRun.bonusHealPercent : 0f);
+        playerHealth.Heal(Mathf.RoundToInt(playerHealth.MaxHP * percent));
 
         float missingPercent = 1f - ((float)playerHealth.CurrentHP / playerHealth.MaxHP);
         int damage = Mathf.RoundToInt(Mathf.Lerp(minBurstDamage, maxBurstDamage, missingPercent));

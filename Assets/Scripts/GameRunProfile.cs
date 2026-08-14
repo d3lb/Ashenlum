@@ -9,8 +9,6 @@ public class GameRunProfile
     public string targetEntranceId = "";
     public bool isTransitioningScenes = false;
     public int maxHp = 100;
-    // -1 = not set yet. PlayerHealth seeds it from its own maxHp on the first scene,
-    // so changing max health in the Inspector actually takes effect on a fresh run.
     public int currentHp = -1;
 
     [Header("Checkpoint Status")]
@@ -21,17 +19,38 @@ public class GameRunProfile
 
     [Header("Inventory & Upgrades")]
     public int lumens = 0;
+    // Safe from death loss. Deposited at a shop.
+    public int bankedLumens = 0;
     public HashSet<string> items = new();
+
+    // How many times each Upgrade has been bought, keyed by Upgrade.Id.
+    public Dictionary<string, int> upgradeCounts = new();
+
+    public int bonusMaxHp = 0;
+    public float bonusHealPercent = 0f;
+    public int bonusDashes = 0;
+
+    public int TimesPurchased(string upgradeId) =>
+        upgradeCounts.TryGetValue(upgradeId, out int n) ? n : 0;
+
+    public void ApplyUpgrade(Upgrade upgrade)
+    {
+        upgradeCounts[upgrade.Id] = TimesPurchased(upgrade.Id) + 1;
+
+        switch (upgrade.type)
+        {
+            case UpgradeType.MaxHealth: bonusMaxHp       += Mathf.RoundToInt(upgrade.amount); break;
+            case UpgradeType.BurstHeal: bonusHealPercent += upgrade.amount;                   break;
+            case UpgradeType.Dash:      bonusDashes      += Mathf.RoundToInt(upgrade.amount); break;
+        }
+    }
 
     [Header("Ability Unlocks")]
     public bool isDashUnlocked = false;
     public bool isDoubleJumpUnlocked = false;
     public bool isWallJumpUnlocked = false;
-    public bool isWingBurstUnlocked = false;
 
-    // The profile is the single source of truth for unlocks - PlayerMovement and the
-    // CheatMenu both read these bools directly. These two helpers just let UI ask the
-    // question with an AbilityType instead of picking the right field by hand.
+
     public bool IsAbilityUnlocked(AbilityType ability)
     {
         switch (ability)
@@ -39,7 +58,6 @@ public class GameRunProfile
             case AbilityType.Dash:       return isDashUnlocked;
             case AbilityType.DoubleJump: return isDoubleJumpUnlocked;
             case AbilityType.WallJump:   return isWallJumpUnlocked;
-            case AbilityType.WingBurst:  return isWingBurstUnlocked;
             default:                     return false;
         }
     }
@@ -51,11 +69,11 @@ public class GameRunProfile
             case AbilityType.Dash:       isDashUnlocked       = value; break;
             case AbilityType.DoubleJump: isDoubleJumpUnlocked = value; break;
             case AbilityType.WallJump:   isWallJumpUnlocked   = value; break;
-            case AbilityType.WingBurst:  isWingBurstUnlocked  = value; break;
         }
     }
 
     [Header("World State")]
+    public HashSet<string> seenEvents = new();
     public HashSet<string> defeatedBosses = new();
     public HashSet<string> brokenWalls = new();
     public HashSet<string> temporaryRemoved = new();

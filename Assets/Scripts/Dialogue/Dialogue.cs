@@ -1,16 +1,19 @@
 using UnityEngine;
 
-// A reusable, designer-authored conversation. Create assets via
-// Assets ▸ Create ▸ Ashenlum ▸ Dialogue, fill in the sentences, then drop the
-// asset onto any NPCInteractable. Kept intentionally data-only so it stays
-// fully decoupled from the runtime (the DialogueManager just reads it).
-[CreateAssetMenu(fileName = "New Dialogue", menuName = "Ashenlum/Dialogue")]
-public class Dialogue : ScriptableObject
+// An interactable that says something. NPCs, signs, notes, gravestones.
+public class Dialogue : Interactable
 {
-    [Tooltip("Optional speaker name shown above the text. Leave blank to hide the name line.")]
-    public string speakerName;
+    [SerializeField] private Conversation conversation;
 
-    [Tooltip("One entry per line. Shown in order; press E to reveal/advance.")]
-    [TextArea(2, 5)]
-    public string[] sentences;
+    // The manager holds IsDialogueActive true for one extra frame after closing, which
+    // outlasts PlayerInput's latched keypress - so the press that ends a conversation
+    // cannot immediately restart it.
+    protected override bool CanInteract => !DialogueManager.IsDialogueActive;
+
+    protected override string PromptVerb => "Talk";
+
+    protected override void Interact()
+    {
+        DialogueManager.Instance.StartDialogue(conversation);
+    }
 }
