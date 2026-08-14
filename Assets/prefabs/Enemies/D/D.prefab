@@ -263,7 +263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
-  damage: 30
+  damage: 20
   hitCooldown: 0.5
   playerLayer:
     serializedVersion: 2
@@ -390,7 +390,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
-  damage: 30
+  damage: 35
   hitCooldown: 0.5
   playerLayer:
     serializedVersion: 2
@@ -486,7 +486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
-  damage: 30
+  damage: 35
   hitCooldown: 0.5
   playerLayer:
     serializedVersion: 2
@@ -952,7 +952,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
-  damage: 30
+  damage: 35
   hitCooldown: 0.5
   playerLayer:
     serializedVersion: 2
@@ -1048,7 +1048,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
-  damage: 30
+  damage: 35
   hitCooldown: 0.5
   playerLayer:
     serializedVersion: 2

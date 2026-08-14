@@ -81,9 +81,9 @@ public class CheatMenu : MonoBehaviour
                 ph.Heal(ph.MaxHP);
                 run.currentHp = ph.CurrentHP;
             }
-            if (GUILayout.Button("-10 HP"))
+            if (GUILayout.Button("-25 HP"))
             {
-                ph.TakeDamage(10, ph.transform.position);
+                ph.TakeDamage(25, ph.transform.position);
                 run.currentHp = ph.CurrentHP;
             }
             GUILayout.EndHorizontal();
@@ -96,8 +96,8 @@ public class CheatMenu : MonoBehaviour
         run.lumens = IntField("Lumens", run.lumens);
 
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("+10 Lumens")) GameManager.Instance.AddLumens(10); ;
-        if (GUILayout.Button("-10 Lumens")) GameManager.Instance.TakeLumens(10); ;
+        if (GUILayout.Button("+15 Lumens")) GameManager.Instance.AddLumens(15); ;
+        if (GUILayout.Button("-15 Lumens")) GameManager.Instance.TakeLumens(15); ;
         GUILayout.EndHorizontal();
 
         //  ABILITIES 

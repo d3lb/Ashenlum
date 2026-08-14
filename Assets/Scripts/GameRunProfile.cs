@@ -9,7 +9,9 @@ public class GameRunProfile
     public string targetEntranceId = "";
     public bool isTransitioningScenes = false;
     public int maxHp = 100;
-    public int currentHp = 100;
+    // -1 = not set yet. PlayerHealth seeds it from its own maxHp on the first scene,
+    // so changing max health in the Inspector actually takes effect on a fresh run.
+    public int currentHp = -1;
 
     [Header("Checkpoint Status")]
     public HashSet<string> openedCheckpoints = new();

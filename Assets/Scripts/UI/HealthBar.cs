@@ -12,6 +12,8 @@ public class HealthBar : MonoBehaviour
     [SerializeField] private Image fillImage;      // the health bar fill graphic
     [SerializeField] private Volume globalVolume;  // drag your Global Volume here
     [SerializeField] private float widthPerHP = 2f;
+    [SerializeField] private bool keepBarCentered = true;
+    [SerializeField] private float barCenterX = 0f;
 
     [Header("Pulse Shake")]
     [SerializeField] private float midShakeAmplitude = 0.3f;
@@ -82,6 +84,15 @@ public class HealthBar : MonoBehaviour
 
         float width = playerHealth.MaxHP * widthPerHP;
         barTransform.sizeDelta = new Vector2(width, barTransform.sizeDelta.y);
+
+        // anchoredPosition places the PIVOT, so shift by how far the pivot sits from the
+        // bar's middle. Works at any pivot setting - the bar grows both ways from barCenterX.
+        if (keepBarCentered)
+        {
+            Vector2 pos = barTransform.anchoredPosition;
+            pos.x = barCenterX + width * (barTransform.pivot.x - 0.5f);
+            barTransform.anchoredPosition = pos;
+        }
 
         UpdateStabilityVisuals();
     }

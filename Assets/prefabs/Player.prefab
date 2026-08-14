@@ -886,8 +886,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd81250936e03554591187ab2a49de11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
-  hp: 100
-  maxHp: 100
+  hp: 150
+  maxHp: 150
   iFrameTime: 0.7
   respawnDelay: 0.3
   hitRecoilX: 50
@@ -919,7 +919,7 @@ MonoBehaviour:
   burstRadius: 7
   minBurstDamage: 1
   maxBurstDamage: 10
-  burstHeal: 25
+  burstHeal: 30
   burstCooldown: 10
   postHitLockTime: 0.5
   enemyLayer:

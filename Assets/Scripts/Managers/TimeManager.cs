@@ -24,9 +24,6 @@ public class TimeManager : MonoBehaviour
     }
 
     // ── Freeze stack ──────────────────────────────────────────────────────────
-    public static bool IsFrozen => holders.Count > 0;
-    public static int HolderCount => holders.Count;
-
     public static void Freeze(Object owner)
     {
         if (owner == null) return;

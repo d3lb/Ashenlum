@@ -7,8 +7,11 @@ public class GameManager : MonoBehaviour
 {
 
     public static GameManager Instance;
-    // Active Run 
-    public GameRunProfile activeRun = new GameRunProfile();
+    // Active Run
+    // NonSerialized on purpose: this is runtime state. Left serialized, Unity bakes a copy
+    // into Managers.prefab and those stale values silently win over the C# defaults - which
+    // is how currentHp stayed pinned at 100 no matter what the player's maxHp was set to.
+    [System.NonSerialized] public GameRunProfile activeRun = new GameRunProfile();
 
     // Default Spawn Scene
     private string startingScene = "Start";

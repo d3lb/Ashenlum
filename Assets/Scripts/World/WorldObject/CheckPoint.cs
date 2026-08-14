@@ -1,42 +1,24 @@
 using UnityEngine;
 
-public class CheckPoint : MonoBehaviour
+public class CheckPoint : Interactable
 {
-    private PlayerInput input;
     [SerializeField] private string checkpointEntranceId;
+
     public string CheckpointEntranceId => checkpointEntranceId;
-    private bool isPlayerInRange;
 
-    private void Update()
+    private bool Discovered =>
+        GameManager.Instance.activeRun.openedCheckpoints.Contains(checkpointEntranceId);
+
+    protected override string PromptVerb => Discovered ? "Rest" : "Discover";
+
+    protected override void Interact()
     {
-        if (isPlayerInRange && input.InteractPressed)
+        if (!Discovered)
         {
-            SaveProgress();
+            GameManager.Instance.activeRun.openedCheckpoints.Add(checkpointEntranceId);
+            // First visit - discovery animation goes here.
         }
-    }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            input = other.GetComponent<PlayerInput>();
-            isPlayerInRange = true;
-        }
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            isPlayerInRange = false;
-            input = null;
-        }
-    }
-
-    private void SaveProgress()
-    {
         GameManager.Instance.SetCheckpoint(checkpointEntranceId);
-
-        Debug.Log("Checkpoint Saved");
     }
 }

@@ -66,11 +66,14 @@ public class PlayerHealth : MonoBehaviour
 
     private void Start()
     {
+
         var run = GameManager.Instance?.activeRun;
+
         if (run != null)
         {
-            hp = run.currentHp;
             run.maxHp = maxHp;
+            if (run.currentHp < 0) run.currentHp = maxHp;
+            hp = Mathf.Clamp(run.currentHp, 0, maxHp);
         }
     }
 

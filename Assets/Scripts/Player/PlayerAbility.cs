@@ -16,7 +16,8 @@ public class PlayerAbility : MonoBehaviour
     [SerializeField] private float burstRadius = 7f;
     [SerializeField] private int minBurstDamage = 1;
     [SerializeField] private int maxBurstDamage = 10; 
-    [SerializeField] private int burstHeal = 15;
+    // Fraction of max health, so retuning maxHp never silently rebalances the heal.
+    [SerializeField, Range(0f, 1f)] private float burstHealPercent = 0.2f;
     [SerializeField] private float burstCooldown = 10f;
     [SerializeField] private float postHitLockTime = 0.5f;
     [SerializeField] private LayerMask enemyLayer;
@@ -60,7 +61,7 @@ public class PlayerAbility : MonoBehaviour
     private void DoBurst()
     {
         // heal player
-        playerHealth.Heal(burstHeal);
+        playerHealth.Heal(Mathf.RoundToInt(playerHealth.MaxHP * burstHealPercent));
 
         float missingPercent = 1f - ((float)playerHealth.CurrentHP / playerHealth.MaxHP);
         int damage = Mathf.RoundToInt(Mathf.Lerp(minBurstDamage, maxBurstDamage, missingPercent));
