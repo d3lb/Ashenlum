@@ -1,0 +1,22 @@
+using UnityEngine;
+
+// The only permanent upgrade in the game. Always worth buying, so it is the thing that
+// keeps lumens meaningful once your two talisman slots are full.
+[CreateAssetMenu(fileName = "Strength", menuName = "Ashenlum/Strength Upgrade")]
+public class StrengthUpgrade : ShopGood
+{
+    public int damagePerLevel = 1;
+    public int maxLevel = 5;
+
+    [Header("Cost")]
+    public int baseCost = 150;
+    public int costIncrease = 100;
+
+    public override int PriceFor(GameRunProfile run) =>
+        baseCost + costIncrease * run.strengthLevel;
+
+    public override bool SoldOut(GameRunProfile run) =>
+        maxLevel > 0 && run.strengthLevel >= maxLevel;
+
+    public override void Purchase(GameRunProfile run) => run.strengthLevel++;
+}

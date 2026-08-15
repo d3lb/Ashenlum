@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -31,6 +31,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private int highDamage = 2;
     [SerializeField] private int midDamage = 3;
     [SerializeField] private int lowDamage = 5;
+    [SerializeField] private int damagePerStrengthLevel = 1;
     [Space(2)]
     [SerializeField] private float attackCooldown = 0.2f;
     [SerializeField] private float attackDuration = 0.1f;
@@ -138,6 +139,10 @@ public class PlayerCombat : MonoBehaviour
                 break;
         }
 
+        // Strength is the one permanent upgrade - it lifts every tier.
+        if (GameManager.Instance != null)
+            damage += GameManager.Instance.activeRun.strengthLevel * damagePerStrengthLevel;
+
         SpawnSlash(attackType);
         activeCollider.enabled = true;
 
@@ -179,7 +184,7 @@ public class PlayerCombat : MonoBehaviour
 
                     ShakeHit(destroyed);
 
-                    ApplyRecoil(attackType);
+                    ApplyRecoil(attackType, damageable);
 
                     recoilApplied = true;
                 }
@@ -236,7 +241,7 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // Recoil knockback / pogo when hitting
-    private void ApplyRecoil(AttackType type)
+    private void ApplyRecoil(AttackType type, IDamageable hit = null)
     {
         int dir = attackDir;
 
@@ -247,10 +252,18 @@ public class PlayerCombat : MonoBehaviour
                 rb.AddForce(new Vector2(-dir * recoilForceX, 0), ForceMode2D.Impulse);
                 break;
 
-            // pogo
+            // pogo - the thing you hit decides how hard it throws you, so a parkour
+            // pad can launch further than an enemy without touching the player's value.
             case AttackType.Down:
+                float force = pogoForce;
+                if (hit is MonoBehaviour hitObject)
+                {
+                    PogoTarget pad = hitObject.GetComponentInParent<PogoTarget>();
+                    if (pad != null) force *= pad.PogoMultiplier;
+                }
+
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
-                rb.AddForce(Vector2.up * pogoForce, ForceMode2D.Impulse);
+                rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
                 break;
 
             case AttackType.Up:

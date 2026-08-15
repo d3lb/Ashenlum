@@ -8,29 +8,29 @@ public class ShopSlotUI : MonoBehaviour
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text descriptionText;
-    [SerializeField] private TMP_Text costText;
+    [SerializeField] private TMP_Text priceText;
     [SerializeField] private Button buyButton;
 
     [SerializeField] private Color affordableColor = Color.white;
     [SerializeField] private Color tooExpensiveColor = new Color(0.8f, 0.3f, 0.3f);
     [SerializeField] private Color soldOutColor = new Color(1f, 1f, 1f, 0.35f);
 
-    private Upgrade upgrade;
-    private System.Action<Upgrade> onBuy;
+    private ShopGood good;
+    private System.Action<ShopGood> onBuy;
 
     private void Awake()
     {
-        buyButton.onClick.AddListener(() => onBuy?.Invoke(upgrade));
+        buyButton.onClick.AddListener(() => onBuy?.Invoke(good));
     }
 
-    public void Bind(Upgrade item, int timesPurchased, int playerLumens, System.Action<Upgrade> buyCallback)
+    public void Bind(ShopGood item, GameRunProfile run, System.Action<ShopGood> buyCallback)
     {
-        upgrade = item;
+        good = item;
         onBuy = buyCallback;
 
-        bool soldOut = item.SoldOutAt(timesPurchased);
-        int cost = item.CostAt(timesPurchased);
-        bool affordable = playerLumens >= cost;
+        bool soldOut = item.SoldOut(run);
+        int price = item.PriceFor(run);
+        bool affordable = run.lumens >= price;
 
         if (icon != null)
         {
@@ -38,20 +38,31 @@ public class ShopSlotUI : MonoBehaviour
             icon.enabled = item.icon != null;
         }
 
-        nameText.text = item.DisplayName;
+        nameText.text = OwnedSuffix(item, run);
         if (descriptionText != null) descriptionText.text = item.description;
 
         if (soldOut)
         {
-            costText.text = "Sold";
-            costText.color = soldOutColor;
+            priceText.text = "Sold";
+            priceText.color = soldOutColor;
         }
         else
         {
-            costText.text = cost.ToString();
-            costText.color = affordable ? affordableColor : tooExpensiveColor;
+            priceText.text = price.ToString();
+            priceText.color = affordable ? affordableColor : tooExpensiveColor;
         }
 
         buyButton.interactable = !soldOut && affordable;
+    }
+
+    // Bundles are stackable, so show how many you're carrying.
+    private static string OwnedSuffix(ShopGood item, GameRunProfile run)
+    {
+        if (item is LumenBundle bundle)
+        {
+            int held = run.BundleCount(bundle.Id);
+            if (held > 0) return $"{item.DisplayName}  x{held}";
+        }
+        return item.DisplayName;
     }
 }

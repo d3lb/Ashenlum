@@ -19,30 +19,77 @@ public class GameRunProfile
 
     [Header("Inventory & Upgrades")]
     public int lumens = 0;
-    // Safe from death loss. Deposited at a shop.
-    public int bankedLumens = 0;
     public HashSet<string> items = new();
 
-    // How many times each Upgrade has been bought, keyed by Upgrade.Id.
-    public Dictionary<string, int> upgradeCounts = new();
+    // Bundles survive death. Keyed by LumenBundle.Id, value is how many you hold.
+    public Dictionary<string, int> bundles = new();
 
-    public int bonusMaxHp = 0;
-    public float bonusHealPercent = 0f;
-    public int bonusDashes = 0;
+    public int BundleCount(string bundleId) =>
+        bundles.TryGetValue(bundleId, out int n) ? n : 0;
 
-    public int TimesPurchased(string upgradeId) =>
-        upgradeCounts.TryGetValue(upgradeId, out int n) ? n : 0;
+    public void AddBundle(LumenBundle bundle) =>
+        bundles[bundle.Id] = BundleCount(bundle.Id) + 1;
 
-    public void ApplyUpgrade(Upgrade upgrade)
+    // Cash one in. Returns false if you don't have any.
+    public bool UseBundle(LumenBundle bundle)
     {
-        upgradeCounts[upgrade.Id] = TimesPurchased(upgrade.Id) + 1;
+        int held = BundleCount(bundle.Id);
+        if (held <= 0) return false;
 
-        switch (upgrade.type)
+        bundles[bundle.Id] = held - 1;
+        lumens += bundle.value;
+        return true;
+    }
+
+    public const int TalismanSlots = 2;
+
+    public int strengthLevel = 0;
+
+    // Bought talismans are kept forever - they cannot be sold or dropped.
+    public List<Talisman> ownedTalismans = new();
+    public Talisman[] equippedTalismans = new Talisman[TalismanSlots];
+
+    public bool Owns(Talisman t) => t != null && ownedTalismans.Contains(t);
+
+    public void AddTalisman(Talisman t)
+    {
+        if (t != null && !ownedTalismans.Contains(t)) ownedTalismans.Add(t);
+    }
+
+    public bool IsEquipped(Talisman t) =>
+        t != null && System.Array.IndexOf(equippedTalismans, t) >= 0;
+
+    // Into the first free slot. False if you own none of it, or both slots are taken.
+    public bool Equip(Talisman t)
+    {
+        if (!Owns(t) || IsEquipped(t)) return false;
+
+        for (int i = 0; i < equippedTalismans.Length; i++)
         {
-            case UpgradeType.MaxHealth: bonusMaxHp       += Mathf.RoundToInt(upgrade.amount); break;
-            case UpgradeType.BurstHeal: bonusHealPercent += upgrade.amount;                   break;
-            case UpgradeType.Dash:      bonusDashes      += Mathf.RoundToInt(upgrade.amount); break;
+            if (equippedTalismans[i] != null) continue;
+            equippedTalismans[i] = t;
+            return true;
         }
+        return false;
+    }
+
+    public void Unequip(Talisman t)
+    {
+        for (int i = 0; i < equippedTalismans.Length; i++)
+            if (equippedTalismans[i] == t) equippedTalismans[i] = null;
+    }
+
+    // Derived, never banked - that is what lets a talisman be taken off again.
+    public int bonusMaxHp => Mathf.RoundToInt(Sum(TalismanType.MaxHealth));
+    public float bonusHealPercent => Sum(TalismanType.BurstHeal);
+    public int bonusDashes => Mathf.RoundToInt(Sum(TalismanType.Dash));
+
+    private float Sum(TalismanType type)
+    {
+        float total = 0f;
+        foreach (Talisman t in equippedTalismans)
+            if (t != null && t.type == type) total += t.amount;
+        return total;
     }
 
     [Header("Ability Unlocks")]

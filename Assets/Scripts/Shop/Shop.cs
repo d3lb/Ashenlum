@@ -3,7 +3,7 @@ using UnityEngine;
 public class Shop : Interactable
 {
     [SerializeField] private Conversation greeting;
-    [SerializeField] private Upgrade[] stock;
+    [SerializeField] private ShopGood[] stock;
 
     protected override string PromptVerb => "Trade";
 

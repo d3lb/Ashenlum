@@ -230,7 +230,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 042029b484cffb241abb41a4fe9ba1ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  pogoMultiplier: 1.5
   touchBounceForce: 0
-  touchSideForce: 50
+  touchSideForce: 35
   bounceCooldown: 0.12
   defaultSideDir: 1

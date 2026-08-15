@@ -1,8 +1,16 @@
 using UnityEngine;
 
-public class PogoTarget : MonoBehaviour
+public class PogoTarget : MonoBehaviour, IDamageable
 {
-    [Header("Bounce")]
+    [Header("Slash pogo")]
+    // Multiplies the player's pogo force when down-slashed. A multiplier rather than a
+    // flat value so retuning the player rescales every pad instead of leaving them stale.
+    [SerializeField] private float pogoMultiplier = 3f;
+
+    public float PogoMultiplier => pogoMultiplier;
+
+    // Hitting the pad with your body instead of your attack flings you and wrecks the jump.
+    [Header("Touch bounce")]
     [SerializeField] private float touchBounceForce = 8f;
     [SerializeField] private float touchSideForce = 6f;
     [SerializeField] private float bounceCooldown = 0.15f;
@@ -19,7 +27,10 @@ public class PogoTarget : MonoBehaviour
     {
         BouncePlayer(collision);
     }
-
+    public bool TakeDamage(int damage, Vector2 attackerPos)
+    {
+        return true;
+    }
     private void BouncePlayer(Collision2D collision)
     {
         if (Time.time < nextBounceTime) return;

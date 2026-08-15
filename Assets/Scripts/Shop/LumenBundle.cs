@@ -1,0 +1,18 @@
+using UnityEngine;
+
+// A pouch of lumens you buy at a premium. Death takes your loose lumens; it cannot take
+// a bundle. Cash it in later to get the value back.
+[CreateAssetMenu(fileName = "New Lumen Bundle", menuName = "Ashenlum/Lumen Bundle")]
+public class LumenBundle : ShopGood
+{
+    // What you get back when you use it.
+    public int value = 100;
+    // What it costs to buy. Higher than value - that gap is the insurance premium.
+    public int price = 110;
+
+    public override int PriceFor(GameRunProfile run) => price;
+
+    public override bool SoldOut(GameRunProfile run) => false;
+
+    public override void Purchase(GameRunProfile run) => run.AddBundle(this);
+}

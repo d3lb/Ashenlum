@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,21 +11,15 @@ public class InventoryUI : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private GameObject      inventoryPanel;
-    [SerializeField] private Transform       slotGridParent;
-    [SerializeField] private InventorySlotUI slotPrefab;
 
     [Header("Ability Icons")]
     [SerializeField] private AbilityIconBinding[] abilityIcons;
-
 
     [SerializeField] private Color lockedColor = new Color(1f, 1f, 1f, 0.15f);
     [SerializeField] private Color unlockedColor = Color.white;
 
     [Header("Money")]
     [SerializeField] private LumenUI lumenUI;
-
-    [Header("Slots")]
-    [SerializeField] private int slotCount = 20;
 
     [System.Serializable]
     public class AbilityIconBinding
@@ -36,12 +29,8 @@ public class InventoryUI : MonoBehaviour
         public bool  hideWhenLocked = false;
     }
 
-    private readonly List<InventorySlotUI> spawnedSlots = new();
-
     private void Start()
     {
-        BuildGrid();
-
         if (inventoryPanel != null) inventoryPanel.SetActive(false);
         IsOpen = false;
     }
@@ -107,33 +96,7 @@ public class InventoryUI : MonoBehaviour
         else        Open();
     }
 
-    private void BuildGrid()
-    {
-        if (slotGridParent == null || slotPrefab == null)
-        {
-            Debug.LogError("[InventoryUI] Slot Grid Parent and Slot Prefab must be assigned.", this);
-            return;
-        }
-
-        // Clear anything the designer left in the grid so we never double up.
-        for (int i = slotGridParent.childCount - 1; i >= 0; i--)
-            Destroy(slotGridParent.GetChild(i).gameObject);
-        spawnedSlots.Clear();
-
-        for (int i = 0; i < Mathf.Max(1, slotCount); i++)
-        {
-            var slot = Instantiate(slotPrefab, slotGridParent);
-            slot.name = $"Slot_{i:D2}";
-            slot.Clear();
-            spawnedSlots.Add(slot);
-        }
-    }
-
-    public void Refresh()
-    {
-        RefreshAbilities();
-        RefreshSlots();
-    }
+    public void Refresh() => RefreshAbilities();
 
     private void RefreshAbilities()
     {
@@ -161,11 +124,4 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    // There is no item storage yet. When you build one, this is the only place that
-    // needs to change - hand each slot its Item instead of null.
-    private void RefreshSlots()
-    {
-        for (int i = 0; i < spawnedSlots.Count; i++)
-            spawnedSlots[i].SetItem(null);
-    }
 }

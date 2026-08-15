@@ -47,6 +47,9 @@ public class LumenUI : MonoBehaviour
 
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
+        currentRoutine = null;
+
+        if (!isActiveAndEnabled) return;
 
         currentRoutine = StartCoroutine(ShowThenHide());
     }
@@ -64,6 +67,15 @@ public class LumenUI : MonoBehaviour
     {
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
+        currentRoutine = null;
+
+        // A menu closing during teardown can call this while the object is already off.
+        // Coroutines cannot start on an inactive object, so just snap it hidden.
+        if (!isActiveAndEnabled)
+        {
+            canvasGroup.alpha = 0f;
+            return;
+        }
 
         currentRoutine = StartCoroutine(Fade(1f, 0f, fadeOutDuration));
     }
@@ -72,6 +84,7 @@ public class LumenUI : MonoBehaviour
     {
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
+        currentRoutine = null;
 
         canvasGroup.alpha = 1f;
     }
