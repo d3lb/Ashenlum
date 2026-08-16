@@ -586,6 +586,7 @@ GameObject:
   - component: {fileID: 3520169302900139264}
   - component: {fileID: 5234061844615144275}
   - component: {fileID: 2829052459967847420}
+  - component: {fileID: 7732229841669832897}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -834,7 +835,6 @@ MonoBehaviour:
   movement: {fileID: 4630120701967796853}
   state: {fileID: 9070195286219344354}
   health: {fileID: 2934515355638856455}
-  cameraShake: {fileID: 0}
   attackColliderRight: {fileID: 261618399042406348}
   attackColliderLeft: {fileID: 6439687369115092992}
   attackColliderUp: {fileID: 5414997424931189785}
@@ -848,6 +848,7 @@ MonoBehaviour:
   highDamage: 2
   midDamage: 3
   lowDamage: 5
+  damagePerStrengthLevel: 1
   attackCooldown: 0.4
   attackDuration: 0.1
   attackSpeed: 1
@@ -887,7 +888,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   hp: 120
-  maxHp: 120
+  baseMaxHp: 100
   iFrameTime: 0.7
   respawnDelay: 0.3
   hitRecoilX: 50
@@ -951,3 +952,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fd7f920486a063443af302932a041958, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+--- !u!114 &7732229841669832897
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8849866329559990079}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ed05b7c834d95641b202fcdfa93e47d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerActiveAbility
+  state: {fileID: 9070195286219344354}
+  playerHealth: {fileID: 2934515355638856455}
+  animator: {fileID: 0}
+  postHitLockTime: 0.5
+  recoverTime: 0.2

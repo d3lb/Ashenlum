@@ -16,9 +16,13 @@ public class LumenUI : MonoBehaviour
 
     private Coroutine currentRoutine;
 
+    // Held open by a menu. The counter must not fade out from under an open shop
+    // or inventory just because the amount happened to change.
+    private bool pinned;
+
     private void Awake()
     {
-        PauseManager.Instance.RegisterLumenUI(this);
+        if (PauseManager.Instance != null) PauseManager.Instance.RegisterLumenUI(this);
     }
     private void Start()
     {
@@ -45,6 +49,8 @@ public class LumenUI : MonoBehaviour
     {
         lumenText.text = amount.ToString();
 
+        if (pinned) return;
+
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
         currentRoutine = null;
@@ -65,6 +71,8 @@ public class LumenUI : MonoBehaviour
 
     public void Hide()
     {
+        pinned = false;
+
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
         currentRoutine = null;
@@ -82,6 +90,8 @@ public class LumenUI : MonoBehaviour
 
     public void Show()
     {
+        pinned = true;
+
         if (currentRoutine != null)
             StopCoroutine(currentRoutine);
         currentRoutine = null;

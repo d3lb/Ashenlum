@@ -14,10 +14,6 @@ public class SceneTransition : MonoBehaviour
         if (!other.CompareTag("Player") || loading) return;
         loading = true;
 
-        PlayerHealth ph = other.GetComponent<PlayerHealth>();
-        if (ph != null)
-            GameManager.Instance.activeRun.currentHp = ph.CurrentHP;
-
         GameManager.Instance.GoToScene(sceneToLoad, targetEntranceId);
     }
 }

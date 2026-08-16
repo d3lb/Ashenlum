@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7fa95c0321b82a743934a4c8309c92fd, type: 3}
-  m_Name: Shop Dialogue
+  m_Name: Boss
   m_EditorClassIdentifier: Assembly-CSharp::Conversation
-  speakerName: Dealer
+  speakerName: The Secretary
   sentences:
-  - Hello man
-  - How can i help you
+  - Wings. On you. What a waste of a good design.
+  - I'll have them off you before you land.

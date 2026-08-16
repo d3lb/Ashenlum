@@ -20,23 +20,30 @@ public class GameRunProfile
     [Header("Inventory & Upgrades")]
     public int lumens = 0;
 
-    // Bundles survive death. Keyed by LumenBundle.Id, value is how many you hold.
-    public Dictionary<string, int> bundles = new();
+    // Bundles survive death. Keyed by the asset itself, so nothing has to hunt down
+    // which shop sold it to turn an id back into something the inventory can draw.
+    public Dictionary<LumenBundle, int> bundles = new();
 
-    public int BundleCount(string bundleId) =>
-        bundles.TryGetValue(bundleId, out int n) ? n : 0;
+    public int BundleCount(LumenBundle bundle) =>
+        bundle != null && bundles.TryGetValue(bundle, out int n) ? n : 0;
 
-    public void AddBundle(LumenBundle bundle) =>
-        bundles[bundle.Id] = BundleCount(bundle.Id) + 1;
-
-    // Cash one in. Returns false if you don't have any.
-    public bool UseBundle(LumenBundle bundle)
+    public void AddBundle(LumenBundle bundle)
     {
-        int held = BundleCount(bundle.Id);
+        if (bundle == null) return;
+        bundles[bundle] = BundleCount(bundle) + 1;
+    }
+
+    // Spends the bundle but does NOT pay out - GameManager.UseBundle does that, so
+    // every change to lumens goes through the one place that raises OnLumensChanged.
+    public bool ConsumeBundle(LumenBundle bundle)
+    {
+        int held = BundleCount(bundle);
         if (held <= 0) return false;
 
-        bundles[bundle.Id] = held - 1;
-        lumens += bundle.value;
+        // Drop the key at zero so the inventory can just walk the dictionary.
+        if (held == 1) bundles.Remove(bundle);
+        else           bundles[bundle] = held - 1;
+
         return true;
     }
 
@@ -90,6 +97,27 @@ public class GameRunProfile
             if (t != null && t.type == type) total += t.amount;
         return total;
     }
+
+    // One socket, so equipping just replaces whatever was in it.
+    public List<ActiveAbility> ownedAbilities = new();
+    public ActiveAbility equippedAbility;
+
+    public bool OwnsAbility(ActiveAbility a) => a != null && ownedAbilities.Contains(a);
+
+    public void AddAbility(ActiveAbility a)
+    {
+        if (a != null && !ownedAbilities.Contains(a)) ownedAbilities.Add(a);
+    }
+
+    public bool EquipAbility(ActiveAbility a)
+    {
+        if (!OwnsAbility(a)) return false;
+
+        equippedAbility = a;
+        return true;
+    }
+
+    public void UnequipAbility() => equippedAbility = null;
 
     [Header("Ability Unlocks")]
     public bool isDashUnlocked = false;

@@ -7,6 +7,11 @@ public class CheatMenu : MonoBehaviour
     [Header("Toggle Key")]
     [SerializeField] private KeyCode toggleKey = KeyCode.F1;
 
+    // Drop every talisman, strength upgrade, bundle and ability asset in here.
+    [Header("Grant")]
+    [SerializeField] private ShopGood[] grantGoods;
+    [SerializeField] private ActiveAbility[] grantAbilities;
+
     private bool isOpen = false;
     private Vector2 scrollPos;
 
@@ -76,16 +81,8 @@ public class CheatMenu : MonoBehaviour
             GUILayout.Label($"HP: {ph.CurrentHP} / {ph.MaxHP}");
 
             GUILayout.BeginHorizontal();
-            if (GUILayout.Button("Full Heal"))
-            {
-                ph.Heal(ph.MaxHP);
-                run.currentHp = ph.CurrentHP;
-            }
-            if (GUILayout.Button("-25 HP"))
-            {
-                ph.TakeDamage(25, ph.transform.position);
-                run.currentHp = ph.CurrentHP;
-            }
+            if (GUILayout.Button("Full Heal")) ph.Heal(ph.MaxHP);
+            if (GUILayout.Button("-25 HP")) ph.TakeDamage(25, ph.transform.position);
             GUILayout.EndHorizontal();
         }
         else
@@ -93,7 +90,8 @@ public class CheatMenu : MonoBehaviour
             GUILayout.Label("Player not found.");
         }
 
-        run.lumens = IntField("Lumens", run.lumens);
+        int typedLumens = IntField("Lumens", run.lumens);
+        if (typedLumens != run.lumens) GameManager.Instance.AddLumens(typedLumens - run.lumens);
 
         GUILayout.BeginHorizontal();
         if (GUILayout.Button("+15 Lumens")) GameManager.Instance.AddLumens(15); ;
@@ -107,7 +105,55 @@ public class CheatMenu : MonoBehaviour
         run.isDoubleJumpUnlocked = Toggle("Double Jump", run.isDoubleJumpUnlocked);
         run.isWallJumpUnlocked = Toggle("Wall Jump", run.isWallJumpUnlocked);
 
-        //  TELEPORTATION 
+        //  GRANT
+        Section("Grant");
+
+        if (GUILayout.Button("Give One Of Everything"))
+        {
+            if (grantGoods != null)
+                foreach (ShopGood g in grantGoods)
+                    if (g != null && !g.SoldOut(run)) g.Purchase(run);
+
+            if (grantAbilities != null)
+                foreach (ActiveAbility a in grantAbilities)
+                    if (a != null) run.AddAbility(a);
+        }
+
+        if (grantGoods != null)
+        {
+            foreach (ShopGood g in grantGoods)
+            {
+                if (g == null) continue;
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label($"{g.DisplayName} ({g.OwnedCount(run)})");
+
+                GUI.enabled = !g.SoldOut(run);
+                if (GUILayout.Button("+1", GUILayout.Width(36))) g.Purchase(run);
+                GUI.enabled = true;
+
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        if (grantAbilities != null)
+        {
+            foreach (ActiveAbility a in grantAbilities)
+            {
+                if (a == null) continue;
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label(a.abilityName);
+
+                GUI.enabled = !run.OwnsAbility(a);
+                if (GUILayout.Button("Give", GUILayout.Width(36))) run.AddAbility(a);
+                GUI.enabled = true;
+
+                GUILayout.EndHorizontal();
+            }
+        }
+
+        //  TELEPORTATION
         Section("Teleport");
 
         if (GUILayout.Button("Teleport To Checkpoint"))
@@ -138,14 +184,15 @@ public class CheatMenu : MonoBehaviour
         return GUILayout.Toggle(value, label);
     }
 
-    private int IntField(string label, int value, System.Action<int> onChanged = null)
+    private int IntField(string label, int value)
     {
         GUILayout.BeginHorizontal();
         GUILayout.Label(label, GUILayout.Width(80));
         string input = GUILayout.TextField(value.ToString(), GUILayout.Width(60));
         GUILayout.EndHorizontal();
-        if (int.TryParse(input, out int result) && result != value)
-            onChanged?.Invoke(result);
-        return result;
+
+        // Keep the old value when the box is empty or not a number. TryParse writes 0
+        // on failure, so returning it blindly wiped your lumens the moment you cleared it.
+        return int.TryParse(input, out int result) ? result : value;
     }
 }

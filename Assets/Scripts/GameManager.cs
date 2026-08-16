@@ -180,6 +180,14 @@ public class GameManager : MonoBehaviour
         OnLumensChanged?.Invoke(activeRun.lumens);
     }
 
+    public bool UseBundle(LumenBundle bundle)
+    {
+        if (bundle == null || !activeRun.ConsumeBundle(bundle)) return false;
+
+        AddLumens(bundle.value);
+        return true;
+    }
+
     // PLAYER DEATH 
     public void PlayerDied(float respawnDelay)
     {

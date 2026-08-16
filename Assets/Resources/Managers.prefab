@@ -341,6 +341,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheatMenu
   toggleKey: 282
+  grantGoods:
+  - {fileID: 11400000, guid: f1a0a4aafbc945949ad5905e5ec9afa0, type: 2}
+  - {fileID: 11400000, guid: 4af91772b81c12645956489901003f37, type: 2}
+  - {fileID: 11400000, guid: b645f4c1e8048ee4e817382399074a4f, type: 2}
+  - {fileID: 11400000, guid: fe9ba080b6e60034fa9450c83eb4299b, type: 2}
+  - {fileID: 11400000, guid: fe9ba080b6e60034fa9450c83eb4299b, type: 2}
+  - {fileID: 11400000, guid: fe9ba080b6e60034fa9450c83eb4299b, type: 2}
+  grantAbilities:
+  - {fileID: 11400000, guid: a68cf47db9bbb9848b134f41bf74b828, type: 2}
 --- !u!1 &5851196925059447732
 GameObject:
   m_ObjectHideFlags: 0

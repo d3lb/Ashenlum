@@ -24,7 +24,7 @@ public class ShopUI : MonoBehaviour
         Instance = this;
         IsOpen = false;
 
-        shopPanel.SetActive(false);
+        if (shopPanel != null) shopPanel.SetActive(false);
     }
 
     private void OnDestroy()
@@ -52,7 +52,7 @@ public class ShopUI : MonoBehaviour
 
         stock = goods;
         IsOpen = true;
-        shopPanel.SetActive(true);
+        if (shopPanel != null) shopPanel.SetActive(true);
         lumenUI?.Show();
 
         BuildList();
@@ -66,7 +66,7 @@ public class ShopUI : MonoBehaviour
         if (!IsOpen) return;
 
         IsOpen = false;
-        shopPanel.SetActive(false);
+        if (shopPanel != null) shopPanel.SetActive(false);
         lumenUI?.Hide();
 
         TimeManager.Release(this);

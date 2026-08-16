@@ -79,6 +79,17 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
+    // The profile is the record, this component is the truth. Anything that moves hp
+    // writes it back here, so no caller has to remember to do it.
+    private void SyncProfile()
+    {
+        var run = GameManager.Instance?.activeRun;
+        if (run == null) return;
+
+        run.currentHp = hp;
+        run.maxHp = maxHp;
+    }
+
     public void Update()
     {
         if (isInvincible)
@@ -103,6 +114,8 @@ public class PlayerHealth : MonoBehaviour
         hp -= dmg;
         isInvincible = true;
         iFrameTimer = iFrameTime;
+
+        SyncProfile();
 
         if (TimeManager.Instance != null) TimeManager.Instance.HitStop(damagedPauseTime);
         if (CameraShakeManager.Instance != null) CameraShakeManager.Instance.Shake(hitShakeDuration, hitShakeAmplitude, hitShakeFrequency);
@@ -134,14 +147,17 @@ public class PlayerHealth : MonoBehaviour
 
         int gained = (baseMaxHp + run.bonusMaxHp) - maxHp;
         maxHp = baseMaxHp + run.bonusMaxHp;
-        run.maxHp = maxHp;
+
         if (gained > 0) Heal(gained);
+        else            SyncProfile();
     }
 
     public void Heal(int amount)
     {
         hp += amount;
         if (hp > maxHp) hp = maxHp;
+
+        SyncProfile();
     }
 
     private void Die()

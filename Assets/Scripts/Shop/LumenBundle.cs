@@ -19,8 +19,8 @@ public class LumenBundle : ShopGood
 
     public override void Purchase(GameRunProfile run) => run.AddBundle(this);
 
-    public override int OwnedCount(GameRunProfile run) => run.BundleCount(Id);
+    public override int OwnedCount(GameRunProfile run) => run.BundleCount(this);
 
     public override int StockRemaining(GameRunProfile run) =>
-        stockLimit > 0 ? Mathf.Max(0, stockLimit - run.BundleCount(Id)) : -1;
+        stockLimit > 0 ? Mathf.Max(0, stockLimit - run.BundleCount(this)) : -1;
 }

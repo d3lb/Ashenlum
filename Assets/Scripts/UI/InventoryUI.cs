@@ -20,6 +20,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private Color unlockedColor = Color.white;
 
     [Header("Loadout")]
+    [SerializeField] private AbilitySocketUI abilitySocket;
     [SerializeField] private TalismanSocketUI[] talismanSockets;
 
     [Header("Owned list")]
@@ -150,6 +151,10 @@ public class InventoryUI : MonoBehaviour
     {
         var run = GameManager.Instance.activeRun;
 
+        if (abilitySocket != null)
+            abilitySocket.Bind(run.equippedAbility,
+                run.equippedAbility == null ? null : UnequipAbility);
+
         for (int i = 0; i < talismanSockets.Length; i++)
         {
             int slot = i;
@@ -165,9 +170,13 @@ public class InventoryUI : MonoBehaviour
 
         ClearSpawned();
 
-        // Active abilities do not exist as a type yet - the section is here so the
-        // category is visible, and it fills itself once there is something to own.
-        SpawnEmpty(abilityListParent);
+        foreach (ActiveAbility a in run.ownedAbilities)
+        {
+            ActiveAbility captured = a;
+            bool equipped = run.equippedAbility == a;
+            Spawn(abilityListParent, a.icon, 1, equipped, equipped ? null : () => EquipAbility(captured));
+        }
+        if (run.ownedAbilities.Count == 0) SpawnEmpty(abilityListParent);
 
         foreach (Talisman t in run.ownedTalismans)
         {
@@ -177,13 +186,12 @@ public class InventoryUI : MonoBehaviour
         }
         if (run.ownedTalismans.Count == 0) SpawnEmpty(talismanListParent);
 
-        var bundles = BundlesHeld(run);
-        foreach (var pair in bundles)
+        foreach (var pair in run.bundles)
         {
             LumenBundle captured = pair.Key;
             Spawn(bundleListParent, captured.icon, pair.Value, false, () => UseBundle(captured));
         }
-        if (bundles.Count == 0) SpawnEmpty(bundleListParent);
+        if (run.bundles.Count == 0) SpawnEmpty(bundleListParent);
 
         // Fitters only recalculate on the next layout pass, so cells spawned and shown in
         // the same frame draw on top of each other. Force it now instead.
@@ -216,27 +224,9 @@ public class InventoryUI : MonoBehaviour
         spawnedEntries.Clear();
     }
 
-    // Bundles are stored as id -> count, so the asset has to come from the shop stock
-    // the player bought from. Held bundles are looked up through the shops in the scene.
-    private Dictionary<LumenBundle, int> BundlesHeld(GameRunProfile run)
-    {
-        var held = new Dictionary<LumenBundle, int>();
-
-        foreach (Shop shop in FindObjectsByType<Shop>(FindObjectsSortMode.None))
-            foreach (ShopGood good in shop.Stock)
-                if (good is LumenBundle bundle && !held.ContainsKey(bundle))
-                {
-                    int count = run.BundleCount(bundle.Id);
-                    if (count > 0) held[bundle] = count;
-                }
-
-        return held;
-    }
-
-
     private void Spawn(Transform parent, Sprite icon, int count, bool dimmed, System.Action click)
     {
-        InventoryEntryUI entry = Instantiate(entryPrefab, parent);
+        InventoryEntryUI entry = Instantiate(entryPrefab, parent, false);
         entry.Bind(icon, count, dimmed, click);
         spawnedEntries.Add(entry.gameObject);
     }
@@ -264,9 +254,21 @@ public class InventoryUI : MonoBehaviour
         Refresh();
     }
 
+    private void EquipAbility(ActiveAbility ability)
+    {
+        if (!GameManager.Instance.activeRun.EquipAbility(ability)) return;
+        Refresh();
+    }
+
+    private void UnequipAbility()
+    {
+        GameManager.Instance.activeRun.UnequipAbility();
+        Refresh();
+    }
+
     private void UseBundle(LumenBundle bundle)
     {
-        if (GameManager.Instance.activeRun.UseBundle(bundle))
+        if (GameManager.Instance.UseBundle(bundle))
             Refresh();
     }
 }
