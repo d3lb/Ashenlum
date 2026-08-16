@@ -1,32 +1,21 @@
 using UnityEngine;
 
+// Trip-wire, nothing more. Put this box wherever you want the fight to actually start -
+// it does not have to be the room entrance.
+[RequireComponent(typeof(Collider2D))]
 public class BossTrigger : MonoBehaviour
 {
-    [SerializeField] private CameraSwitcher cameraSwitcher;
-    [SerializeField] private SecretaryBirdBrain boss;
-    private bool activated;
+    [SerializeField] private BossEncounter encounter;
+
+    private bool fired;
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (activated)
-            return;
+        if (fired) return;
+        if (!other.CompareTag("Player")) return;
+        if (encounter == null) return;
 
-        if (!other.CompareTag("Player"))
-            return;
-
-        activated = true;
-        boss.Activate();
-
-        cameraSwitcher.SwitchToBossCam();
-    }
-
-    private void OnTriggerExit2D(Collider2D other)
-    {
-        if (!other.CompareTag("Player"))
-            return;
-
-        activated = false;
-
-        cameraSwitcher.SwitchToGameplayCam();
+        fired = true;
+        encounter.Begin();
     }
 }

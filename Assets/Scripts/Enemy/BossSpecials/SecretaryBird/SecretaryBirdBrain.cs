@@ -40,6 +40,8 @@ public class SecretaryBirdBrain : MonoBehaviour
     private bool introCued;
     private SecretaryBirdAttack current;
 
+    public string BossId => bossId;
+
     public bool Active => active;
 
     public SecretaryBirdAttack CurrentAttack => current;
@@ -60,6 +62,13 @@ public class SecretaryBirdBrain : MonoBehaviour
             GameObject p = GameObject.FindGameObjectWithTag("Player");
             if (p != null) player = p.transform;
         }
+    }
+
+    private void Start()
+    {
+        // Same rule EnemyHealth and the breakables use: already dealt with, so not here.
+        var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
+        if (run != null && run.defeatedBosses.Contains(bossId)) Destroy(gameObject);
     }
 
     public void Activate()
