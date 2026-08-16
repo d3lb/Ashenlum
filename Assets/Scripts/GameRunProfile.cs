@@ -19,7 +19,6 @@ public class GameRunProfile
 
     [Header("Inventory & Upgrades")]
     public int lumens = 0;
-    public HashSet<string> items = new();
 
     // Bundles survive death. Keyed by LumenBundle.Id, value is how many you hold.
     public Dictionary<string, int> bundles = new();

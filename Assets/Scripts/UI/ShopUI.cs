@@ -95,15 +95,19 @@ public class ShopUI : MonoBehaviour
             spawned[i].Bind(stock[i], run, Buy);
     }
 
-    private void Buy(ShopGood good)
+    private void Buy(ShopGood good, int quantity)
     {
         var run = GameManager.Instance.activeRun;
-        int price = good.PriceFor(run);
 
-        if (good.SoldOut(run) || run.lumens < price) return;
+        // One at a time, re-checking each step - a rising price can stop you partway.
+        for (int i = 0; i < quantity; i++)
+        {
+            int price = good.PriceFor(run);
+            if (good.SoldOut(run) || run.lumens < price) break;
 
-        GameManager.Instance.TakeLumens(price);
-        good.Purchase(run);
+            GameManager.Instance.TakeLumens(price);
+            good.Purchase(run);
+        }
 
         Refresh();
     }

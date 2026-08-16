@@ -18,6 +18,4 @@ MonoBehaviour:
   icon: {fileID: 1483891370214596094, guid: 2f15a0dc5bae608469a95f7295db5fe6, type: 3}
   type: 0
   amount: 25
-  baseCost: 200
-  costIncrease: 50
-  maxPurchases: 1
+  price: 200

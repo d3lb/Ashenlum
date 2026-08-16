@@ -14,6 +14,7 @@ public class Dialogue : Interactable
 
     protected override void Interact()
     {
+        if (DialogueManager.Instance == null) return;
         DialogueManager.Instance.StartDialogue(conversation);
     }
 }

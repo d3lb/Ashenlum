@@ -5,7 +5,6 @@ public class EnemyAnimation : MonoBehaviour
     [Header("References")]
     [SerializeField] private Animator animator;
     [SerializeField] private EnemyState state;
-    [SerializeField] private Rigidbody2D rb;
 
     private void Update()
     {

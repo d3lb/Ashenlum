@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class EnemyHealth : MonoBehaviour, IDamageable
@@ -6,7 +6,6 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     private PersistentObject persistentObject;
 
     [SerializeField] private GameObject corpsePrefab;
-    [SerializeField] private Material whiteFlashMat;
     [Space(5)]
 
     [Header("Health")]

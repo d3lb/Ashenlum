@@ -5,6 +5,9 @@ public class Shop : Interactable
     [SerializeField] private Conversation greeting;
     [SerializeField] private ShopGood[] stock;
 
+    // The inventory reads this to turn held bundle ids back into assets.
+    public ShopGood[] Stock => stock;
+
     protected override string PromptVerb => "Trade";
 
     protected override bool CanInteract => !DialogueManager.IsDialogueActive && !ShopUI.IsOpen;

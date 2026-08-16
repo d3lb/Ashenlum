@@ -6,7 +6,6 @@ public class SceneEntrance : MonoBehaviour
 {
     [Header("Entrance Settings")]
     [SerializeField] private string entranceId;
-    [SerializeField] private CameraRoomBounds startingRoom;
 
     private void Start()
     {

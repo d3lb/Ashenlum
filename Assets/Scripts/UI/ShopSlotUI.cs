@@ -2,13 +2,21 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// One row in the shop list. Renders what ShopUI hands it and reports the click back.
+// One row in the shop list. Owns the quantity the player has dialled in; ShopUI owns
+// the money and the actual purchase.
 public class ShopSlotUI : MonoBehaviour
 {
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text descriptionText;
     [SerializeField] private TMP_Text priceText;
+
+    [Header("Quantity")]
+    // Reads "3/10" - buying three, ten in stock.
+    [SerializeField] private TMP_Text quantityText;
+    [SerializeField] private Button minusButton;
+    [SerializeField] private Button plusButton;
+
     [SerializeField] private Button buyButton;
 
     [SerializeField] private Color affordableColor = Color.white;
@@ -16,53 +24,59 @@ public class ShopSlotUI : MonoBehaviour
     [SerializeField] private Color soldOutColor = new Color(1f, 1f, 1f, 0.35f);
 
     private ShopGood good;
-    private System.Action<ShopGood> onBuy;
+    private GameRunProfile run;
+    private System.Action<ShopGood, int> onBuy;
+    private int quantity = 1;
 
     private void Awake()
     {
-        buyButton.onClick.AddListener(() => onBuy?.Invoke(good));
+        buyButton.onClick.AddListener(() => onBuy?.Invoke(good, quantity));
+        minusButton.onClick.AddListener(() => Step(-1));
+        plusButton.onClick.AddListener(() => Step(1));
     }
 
-    public void Bind(ShopGood item, GameRunProfile run, System.Action<ShopGood> buyCallback)
+    public void Bind(ShopGood item, GameRunProfile profile, System.Action<ShopGood, int> buyCallback)
     {
         good = item;
+        run = profile;
         onBuy = buyCallback;
+        quantity = 1;
 
-        bool soldOut = item.SoldOut(run);
-        int price = item.PriceFor(run);
-        bool affordable = run.lumens >= price;
+        UpdateVisuals();
+    }
+
+    private void Step(int delta)
+    {
+        quantity += delta;
+        UpdateVisuals();
+    }
+
+    private void UpdateVisuals()
+    {
+        int stock = good.StockRemaining(run);
+        int max = good.MaxBuyable(run);
+
+        quantity = Mathf.Clamp(quantity, 1, Mathf.Max(1, max));
 
         if (icon != null)
         {
-            icon.sprite = item.icon;
-            icon.enabled = item.icon != null;
+            icon.sprite = good.icon;
+            icon.enabled = good.icon != null;
         }
 
-        nameText.text = OwnedSuffix(item, run);
-        if (descriptionText != null) descriptionText.text = item.description;
+        nameText.text = good.DisplayName;
+        if (descriptionText != null) descriptionText.text = good.description;
 
-        if (soldOut)
-        {
-            priceText.text = "Sold";
-            priceText.color = soldOutColor;
-        }
-        else
-        {
-            priceText.text = price.ToString();
-            priceText.color = affordable ? affordableColor : tooExpensiveColor;
-        }
+        quantityText.text = $"{quantity}/{(stock < 0 ? "∞" : stock.ToString())}";
 
-        buyButton.interactable = !soldOut && affordable;
-    }
+        bool soldOut = good.SoldOut(run);
+        bool canBuy = !soldOut && max >= quantity;
 
-    // Bundles are stackable, so show how many you're carrying.
-    private static string OwnedSuffix(ShopGood item, GameRunProfile run)
-    {
-        if (item is LumenBundle bundle)
-        {
-            int held = run.BundleCount(bundle.Id);
-            if (held > 0) return $"{item.DisplayName}  x{held}";
-        }
-        return item.DisplayName;
+        priceText.text = soldOut ? "Sold" : good.TotalPrice(run, quantity).ToString();
+        priceText.color = soldOut ? soldOutColor : (canBuy ? affordableColor : tooExpensiveColor);
+
+        minusButton.interactable = quantity > 1;
+        plusButton.interactable = quantity < max;
+        buyButton.interactable = canBuy;
     }
 }

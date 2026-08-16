@@ -15,8 +15,16 @@ public class StrengthUpgrade : ShopGood
     public override int PriceFor(GameRunProfile run) =>
         baseCost + costIncrease * run.strengthLevel;
 
+    public override int PriceAfter(GameRunProfile run, int extra) =>
+        baseCost + costIncrease * (run.strengthLevel + extra);
+
     public override bool SoldOut(GameRunProfile run) =>
         maxLevel > 0 && run.strengthLevel >= maxLevel;
 
     public override void Purchase(GameRunProfile run) => run.strengthLevel++;
+
+    public override int OwnedCount(GameRunProfile run) => run.strengthLevel;
+
+    public override int StockRemaining(GameRunProfile run) =>
+        maxLevel > 0 ? Mathf.Max(0, maxLevel - run.strengthLevel) : -1;
 }

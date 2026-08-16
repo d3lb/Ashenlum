@@ -13,7 +13,6 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private PlayerMovement movement;
     [SerializeField] private PlayerState state;
     [SerializeField] private PlayerHealth health;
-    [SerializeField] private CameraShake cameraShake;
     [SerializeField] private Collider2D attackColliderRight;
     [SerializeField] private Collider2D attackColliderLeft;
     [SerializeField] private Collider2D attackColliderUp;

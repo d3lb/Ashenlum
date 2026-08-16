@@ -25,4 +25,8 @@ public class Talisman : ShopGood
     public override bool SoldOut(GameRunProfile run) => run.Owns(this);
 
     public override void Purchase(GameRunProfile run) => run.AddTalisman(this);
+
+    public override int OwnedCount(GameRunProfile run) => run.Owns(this) ? 1 : 0;
+
+    public override int StockRemaining(GameRunProfile run) => run.Owns(this) ? 0 : 1;
 }
