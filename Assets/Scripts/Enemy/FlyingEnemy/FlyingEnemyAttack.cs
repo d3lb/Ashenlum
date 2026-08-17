@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FlyingEnemyAttack : MonoBehaviour
+public class FlyingEnemyAttack : MonoBehaviour, IRespawnReset
 {
     [Header("References")]
     [SerializeField] private Collider2D attackCollider;
@@ -24,12 +24,21 @@ public class FlyingEnemyAttack : MonoBehaviour
     {
         state = GetComponent<EnemyState>();
         rb = GetComponent<Rigidbody2D>();
-        attackCollider.enabled = false;
+
+        ResetForRespawn();
 
         // Find player — same approach you used in your ground enemy
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
             playerTransform = player.transform;
+    }
+
+    // Dying mid-dive kills the routine before it can switch the hitbox back off, so it
+    // would otherwise come back permanently dangerous to touch.
+    public void ResetForRespawn()
+    {
+        attackCollider.enabled = false;
+        lastAttackTime = 0f;
     }
 
     private void Update()

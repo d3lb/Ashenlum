@@ -153,6 +153,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CheckPoint
   checkpointEntranceId: 
+  restWavePrefab: {fileID: 782752755126259645, guid: 77b8925386988ce4ea7adb436e9762e8, type: 3}
 --- !u!1001 &7528437021325818395
 PrefabInstance:
   m_ObjectHideFlags: 0

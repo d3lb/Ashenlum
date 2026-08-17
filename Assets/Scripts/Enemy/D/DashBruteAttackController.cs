@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class DashBruteAttackController : MonoBehaviour
+public class DashBruteAttackController : MonoBehaviour, IRespawnReset
 {
     [Header("References")]
     [SerializeField] private EnemyAnimation enemyAnimation;
@@ -41,6 +41,16 @@ public class DashBruteAttackController : MonoBehaviour
     {
         state = GetComponent<EnemyState>();
         rb = GetComponent<Rigidbody2D>();
+
+        ResetForRespawn();
+    }
+
+    // Dying mid-attack kills the routine before it can clear these, and isPerformingAttack
+    // stuck true means CanAttack never passes again.
+    public void ResetForRespawn()
+    {
+        isPerformingAttack = false;
+        lastAttackTime = 0f;
 
         leftMeleeHitbox.enabled = false;
         rightMeleeHitbox.enabled = false;

@@ -34,6 +34,10 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
 
     private Vector2 lastHitDirection;
+
+    private Vector3 spawnPosition;
+    private int startHp;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -41,7 +45,14 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         sprite = GetComponent<SpriteRenderer>();
         mat = sprite.material = new Material(sprite.material);
         persistentObject = GetComponent<PersistentObject>();
+
+        spawnPosition = transform.position;
+        startHp = hp;
+
+        WorldReset.Register(this);
     }
+
+    private void OnDestroy() => WorldReset.Unregister(this);
 
     private void Start()
     {
@@ -50,11 +61,48 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         GameRunProfile run = GameManager.Instance.activeRun;
 
-        if (run.temporaryRemoved.Contains(persistentObject.Id) ||
-            run.permanentRemoved.Contains(persistentObject.Id))
-        {
+        // Permanent is gone for good. Temporary only sleeps - a rest brings it back.
+        if (run.permanentRemoved.Contains(persistentObject.Id))
             Destroy(gameObject);
+        else if (run.temporaryRemoved.Contains(persistentObject.Id))
+            gameObject.SetActive(false);
+    }
+
+    public void ResetToSpawn()
+    {
+        if (gameObject.activeSelf && hp >= startHp) return;
+
+        GameRunProfile run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
+
+        // Permanent kills stay dead - that is the whole point of marking them permanent.
+        // The temporary set is emptied by WorldReset, not one id at a time.
+        if (persistentObject != null && run != null &&
+            run.permanentRemoved.Contains(persistentObject.Id)) return;
+
+        hp = startHp;
+        isInvincible = false;
+        iFrameTimer = 0f;
+        knockbackTimer = 0f;
+
+        transform.position = spawnPosition;
+        if (rb != null) rb.linearVelocity = Vector2.zero;
+
+        if (state != null)
+        {
+            state.IsDead = false;
+            state.IsKnocked = false;
+            state.IsAttacking = false;
+            state.CurrentState = EnemyState.EnemyStateType.Patrol;
         }
+
+        flashCoroutine = null;
+        if (mat != null) mat.SetFloat("_FlashAmount", 0f);
+
+        // Whatever a killed coroutine never got to undo.
+        foreach (IRespawnReset part in GetComponentsInChildren<IRespawnReset>(true))
+            part.ResetForRespawn();
+
+        gameObject.SetActive(true);
     }
 
     public void Update()
@@ -135,8 +183,6 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             corpse.GetComponent<Corpse>()?.Pop(lastHitDirection);
         }
 
-        Destroy(gameObject);
-
         if (persistentObject != null)
         {
             switch (persistentObject.PersistenceType)
@@ -150,6 +196,10 @@ public class EnemyHealth : MonoBehaviour, IDamageable
                     break;
             }
         }
+
+        // Switched off, not destroyed: a rest has to be able to put it back, and a
+        // destroyed object cannot be put back without knowing how to rebuild it.
+        gameObject.SetActive(false);
     }
 
 

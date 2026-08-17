@@ -25,6 +25,9 @@ public class LumenPickup : MonoBehaviour
     private float currentSpeed;
     private float spawnTimer = 0f;
 
+    // Already on its way to the player, so a rest is not allowed to take it back.
+    public bool IsFlying => isFlying;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();

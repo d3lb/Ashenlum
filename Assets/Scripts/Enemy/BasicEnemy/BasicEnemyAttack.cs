@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class BasicEnemyAttack : MonoBehaviour
+public class BasicEnemyAttack : MonoBehaviour, IRespawnReset
 {
     [Header("References")]
     [SerializeField] private Collider2D attackColliderRight;
@@ -28,9 +28,16 @@ public class BasicEnemyAttack : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
 
+        ResetForRespawn();
+    }
+
+    // Dying mid-swing kills the routine before it can switch the hitbox back off, so it
+    // would otherwise come back permanently dangerous to touch.
+    public void ResetForRespawn()
+    {
         attackColliderRight.enabled = false;
         attackColliderLeft.enabled = false;
-
+        lastAttackTime = 0f;
     }
 
     private void Update()
