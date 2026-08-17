@@ -20,6 +20,15 @@ public class GameRunProfile
     [Header("Inventory & Upgrades")]
     public int lumens = 0;
 
+    // The shade - everything you were carrying when you died, left on the last patch of
+    // ground you stood on. Only one exists at a time: dying again before you reach it
+    // loses the old pile, and that is the entire cost of dying.
+    public int     droppedLumens;
+    public string  dropScene;
+    public Vector2 dropPosition;
+
+    public bool HasShade => droppedLumens > 0;
+
     // Bundles survive death. Keyed by the asset itself, so nothing has to hunt down
     // which shop sold it to turn an id back into something the inventory can draw.
     public Dictionary<LumenBundle, int> bundles = new();

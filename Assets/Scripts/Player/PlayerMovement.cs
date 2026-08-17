@@ -72,6 +72,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask _groundLayer;
     #endregion
 
+    // Where the shade drops if you die. Written only while actually standing on ground,
+    // so it can never be a spike - you die the instant you touch one, you never stand
+    // on one. That is what stops the pile landing somewhere you have to suicide to reach.
+    public Vector2 LastSafeGround { get; private set; }
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -82,6 +87,7 @@ public class PlayerMovement : MonoBehaviour
     {
         SetGravityScale(physicsData.gravityScale);
         state.IsFacingRight = true;
+        LastSafeGround = transform.position;
     }
 
     private void Update()
@@ -144,6 +150,7 @@ public class PlayerMovement : MonoBehaviour
             if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer))
             {
                 LastOnGroundTime = physicsData.coyoteTime;
+                LastSafeGround = transform.position;
             }
 
 

@@ -188,12 +188,43 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    // PLAYER DEATH 
+    // PLAYER DEATH
     public void PlayerDied(float respawnDelay)
     {
         activeRun.temporaryRemoved.Clear();
 
+        DropShade();
+
         StartCoroutine(RespawnRoutine(respawnDelay));
+    }
+
+    // Everything you were carrying stays behind on the last ground you stood on. Anchored
+    // to the player rather than the death spot so a spike death does not leave the pile
+    // somewhere you would have to kill yourself to collect.
+    private void DropShade()
+    {
+        if (activeRun.lumens <= 0) return;
+
+        PlayerMovement player = FindFirstObjectByType<PlayerMovement>();
+
+        // No player to read a safe spot from - keep the lumens rather than strand them.
+        if (player == null) return;
+
+        activeRun.droppedLumens = activeRun.lumens;
+        activeRun.dropScene     = activeRun.currentArea;
+        activeRun.dropPosition  = player.LastSafeGround;
+
+        activeRun.lumens = 0;
+        OnLumensChanged?.Invoke(0);
+    }
+
+    // Called by the shade once the player has smashed it open.
+    public void CollectShade()
+    {
+        if (!activeRun.HasShade) return;
+
+        activeRun.droppedLumens = 0;
+        activeRun.dropScene     = null;
     }
 
     private IEnumerator RespawnRoutine(float respawnDelay)

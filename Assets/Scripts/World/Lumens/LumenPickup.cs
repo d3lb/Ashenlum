@@ -7,6 +7,11 @@ public class LumenPickup : MonoBehaviour
     [Header("Refrence")]
     [SerializeField] private Collider2D colli;
 
+    [Header("Worth")]
+    // One lumen each when an enemy drops them. The shade splits a whole purse across a
+    // handful of these instead of spawning three hundred objects.
+    [SerializeField] private int value = 1;
+
     [Header("Attraction")]
     [SerializeField] private float attractRadius = 3f;     // how close player must be to trigger fly
     [SerializeField] private float spawnDelay = 1f;        // time after which the lumen starts following the player
@@ -27,6 +32,8 @@ public class LumenPickup : MonoBehaviour
 
     // Already on its way to the player, so a rest is not allowed to take it back.
     public bool IsFlying => isFlying;
+
+    public void SetValue(int amount) => value = Mathf.Max(1, amount);
 
     private void Awake()
     {
@@ -77,7 +84,7 @@ public class LumenPickup : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
 
-        GameManager.Instance.AddLumens(1);
+        GameManager.Instance.AddLumens(value);
         Destroy(gameObject);
     }
 
