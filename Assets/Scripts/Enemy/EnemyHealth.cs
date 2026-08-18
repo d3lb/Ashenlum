@@ -98,11 +98,13 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         flashCoroutine = null;
         if (mat != null) mat.SetFloat("_FlashAmount", 0f);
 
+        // Active BEFORE the reset call: an implementor is allowed to restart a coroutine
+        // in there, and StartCoroutine throws on an inactive object.
+        gameObject.SetActive(true);
+
         // Whatever a killed coroutine never got to undo.
         foreach (IRespawnReset part in GetComponentsInChildren<IRespawnReset>(true))
             part.ResetForRespawn();
-
-        gameObject.SetActive(true);
     }
 
     public void Update()

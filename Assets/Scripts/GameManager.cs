@@ -203,6 +203,11 @@ public class GameManager : MonoBehaviour
     // somewhere you would have to kill yourself to collect.
     private void DropShade()
     {
+        // Dying replaces the pile. Whatever was still out there is gone - that is the
+        // cost, and it applies even when you die broke and leave nothing new behind.
+        activeRun.droppedLumens = 0;
+        activeRun.dropScene     = null;
+
         if (activeRun.lumens <= 0) return;
 
         PlayerMovement player = FindFirstObjectByType<PlayerMovement>();
@@ -218,13 +223,18 @@ public class GameManager : MonoBehaviour
         OnLumensChanged?.Invoke(0);
     }
 
-    // Called by the shade once the player has smashed it open.
+    // Called by the shade when it reaches the player. Pays out through AddLumens so the
+    // counter hears about it like any other gain.
     public void CollectShade()
     {
         if (!activeRun.HasShade) return;
 
+        int amount = activeRun.droppedLumens;
+
         activeRun.droppedLumens = 0;
         activeRun.dropScene     = null;
+
+        AddLumens(amount);
     }
 
     private IEnumerator RespawnRoutine(float respawnDelay)

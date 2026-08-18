@@ -1,72 +1,50 @@
-using System.Collections;
 using UnityEngine;
 
-// What is left of you where you fell. One hit opens it and everything you were carrying
-// comes back. It is not an enemy - it has no health and it does not fight back. The walk
-// to reach it is the punishment, not a second fight.
-public class PlayerShade : MonoBehaviour, IDamageable
+// What is left of you where you fell - your own light, still hanging in the air. Get near
+// it and it comes back on its own. Nothing to fight, nothing to press: the walk is the
+// whole cost of dying.
+public class PlayerShade : MonoBehaviour
 {
-    [Header("References")]
-    [SerializeField] private SpriteRenderer sprite;
-    [SerializeField] private Collider2D     shadeCollider;
-    [SerializeField] private LumenPickup    lumenPrefab;
+    [Header("Return")]
+    [SerializeField] private float attractRadius   = 3f;
+    [SerializeField] private float initialSpeed    = 3f;
+    [SerializeField] private float acceleration    = 8f;
+    [SerializeField] private float collectDistance = 0.4f;
 
-    [Header("Payout")]
-    [Tooltip("A whole purse is split across at most this many pickups.")]
-    [SerializeField] private int   maxPickups    = 8;
-    [SerializeField] private float scatterRadius = 0.4f;
+    private Transform player;
+    private bool  returning;
+    private float speed;
 
-    [Header("Visual")]
-    [SerializeField] private Color hitColor   = Color.white;
-    [SerializeField] private float breakDelay = 0.05f;
-
-    private bool isBroken;
-
-    // One hit opens it, whatever the damage. Making the player grind it down would only
-    // pad the walk back with busywork.
-    public bool TakeDamage(int damage, Vector2 attackerPosition)
+    private void Start()
     {
-        if (isBroken) return false;
-
-        StartCoroutine(BreakRoutine());
-        return true;
+        GameObject p = GameObject.FindGameObjectWithTag("Player");
+        if (p != null) player = p.transform;
     }
 
-    private IEnumerator BreakRoutine()
+    private void Update()
     {
-        isBroken = true;
+        if (player == null) return;
 
-        if (shadeCollider != null) shadeCollider.enabled = false;
-        if (sprite != null)        sprite.color = hitColor;
-
-        yield return new WaitForSeconds(breakDelay);
-
-        Payout();
-
-        // Clear the record before the object goes, so reloading the scene cannot put back
-        // a shade the player already opened.
-        GameManager.Instance.CollectShade();
-
-        Destroy(gameObject);
-    }
-
-    private void Payout()
-    {
-        int total = GameManager.Instance.activeRun.droppedLumens;
-        if (total <= 0 || lumenPrefab == null) return;
-
-        int count = Mathf.Min(total, Mathf.Max(1, maxPickups));
-        int each  = total / count;
-
-        // Spread the remainder one per pickup so rounding never eats a lumen.
-        int extra = total % count;
-
-        for (int i = 0; i < count; i++)
+        if (!returning)
         {
-            Vector2 pos = (Vector2)transform.position + Random.insideUnitCircle * scatterRadius;
+            if (Vector2.Distance(transform.position, player.position) > attractRadius) return;
 
-            LumenPickup pickup = Instantiate(lumenPrefab, pos, Quaternion.identity);
-            pickup.SetValue(each + (i < extra ? 1 : 0));
+            returning = true;
+            speed = initialSpeed;
         }
+
+        speed += acceleration * Time.deltaTime;
+
+        transform.position = Vector2.MoveTowards(
+            transform.position, player.position, speed * Time.deltaTime);
+
+        if (Vector2.Distance(transform.position, player.position) <= collectDistance)
+            Collect();
+    }
+
+    private void Collect()
+    {
+        if (GameManager.Instance != null) GameManager.Instance.CollectShade();
+        Destroy(gameObject);
     }
 }
