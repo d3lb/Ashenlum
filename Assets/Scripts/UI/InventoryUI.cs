@@ -239,6 +239,7 @@ public class InventoryUI : MonoBehaviour
         // Both sockets full - free one first rather than silently swapping.
         if (!GameManager.Instance.activeRun.Equip(talisman)) return;
 
+        GameManager.Instance.MarkDirty();
         playerHealth?.RefreshMaxHealth();
         Refresh();
     }
@@ -250,6 +251,7 @@ public class InventoryUI : MonoBehaviour
 
         run.Unequip(run.equippedTalismans[slot]);
 
+        GameManager.Instance.MarkDirty();
         playerHealth?.RefreshMaxHealth();
         Refresh();
     }
@@ -257,6 +259,8 @@ public class InventoryUI : MonoBehaviour
     private void EquipAbility(ActiveAbility ability)
     {
         if (!GameManager.Instance.activeRun.EquipAbility(ability)) return;
+
+        GameManager.Instance.MarkDirty();
         Refresh();
     }
 

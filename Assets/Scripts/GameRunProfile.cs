@@ -20,17 +20,12 @@ public class GameRunProfile
     [Header("Inventory & Upgrades")]
     public int lumens = 0;
 
-    // The shade - everything you were carrying when you died, left on the last patch of
-    // ground you stood on. Only one exists at a time: dying again before you reach it
-    // loses the old pile, and that is the entire cost of dying.
     public int     droppedLumens;
     public string  dropScene;
     public Vector2 dropPosition;
 
     public bool HasShade => droppedLumens > 0;
 
-    // Bundles survive death. Keyed by the asset itself, so nothing has to hunt down
-    // which shop sold it to turn an id back into something the inventory can draw.
     public Dictionary<LumenBundle, int> bundles = new();
 
     public int BundleCount(LumenBundle bundle) =>
@@ -42,14 +37,11 @@ public class GameRunProfile
         bundles[bundle] = BundleCount(bundle) + 1;
     }
 
-    // Spends the bundle but does NOT pay out - GameManager.UseBundle does that, so
-    // every change to lumens goes through the one place that raises OnLumensChanged.
     public bool ConsumeBundle(LumenBundle bundle)
     {
         int held = BundleCount(bundle);
         if (held <= 0) return false;
 
-        // Drop the key at zero so the inventory can just walk the dictionary.
         if (held == 1) bundles.Remove(bundle);
         else           bundles[bundle] = held - 1;
 
@@ -60,7 +52,6 @@ public class GameRunProfile
 
     public int strengthLevel = 0;
 
-    // Bought talismans are kept forever - they cannot be sold or dropped.
     public List<Talisman> ownedTalismans = new();
     public Talisman[] equippedTalismans = new Talisman[TalismanSlots];
 
@@ -74,7 +65,6 @@ public class GameRunProfile
     public bool IsEquipped(Talisman t) =>
         t != null && System.Array.IndexOf(equippedTalismans, t) >= 0;
 
-    // Into the first free slot. False if you own none of it, or both slots are taken.
     public bool Equip(Talisman t)
     {
         if (!Owns(t) || IsEquipped(t)) return false;
@@ -93,8 +83,6 @@ public class GameRunProfile
         for (int i = 0; i < equippedTalismans.Length; i++)
             if (equippedTalismans[i] == t) equippedTalismans[i] = null;
     }
-
-    // Derived, never banked - that is what lets a talisman be taken off again.
     public int bonusMaxHp => Mathf.RoundToInt(Sum(TalismanType.MaxHealth));
     public float bonusHealPercent => Sum(TalismanType.BurstHeal);
     public int bonusDashes => Mathf.RoundToInt(Sum(TalismanType.Dash));
@@ -107,7 +95,6 @@ public class GameRunProfile
         return total;
     }
 
-    // One socket, so equipping just replaces whatever was in it.
     public List<ActiveAbility> ownedAbilities = new();
     public ActiveAbility equippedAbility;
 
@@ -153,6 +140,114 @@ public class GameRunProfile
             case AbilityType.DoubleJump: isDoubleJumpUnlocked = value; break;
             case AbilityType.WallJump:   isWallJumpUnlocked   = value; break;
         }
+    }
+
+    // SAVING
+
+    public RunSave ToSave()
+    {
+        RunSave save = new RunSave
+        {
+            currentArea          = currentArea,
+            targetEntranceId     = targetEntranceId,
+            maxHp                = maxHp,
+            currentHp            = currentHp,
+            hasCheckpoint        = hasCheckpoint,
+            checkpointScene      = checkpointScene,
+            checkpointEntranceId = checkpointEntranceId,
+            lumens               = lumens,
+            strengthLevel        = strengthLevel,
+            equippedAbility      = equippedAbility != null ? equippedAbility.Id : "",
+            isDashUnlocked       = isDashUnlocked,
+            isDoubleJumpUnlocked = isDoubleJumpUnlocked,
+            isWallJumpUnlocked   = isWallJumpUnlocked,
+            droppedLumens        = droppedLumens,
+            dropScene            = dropScene,
+            dropPosition         = dropPosition
+        };
+
+        save.openedCheckpoints.AddRange(openedCheckpoints);
+        save.seenEvents.AddRange(seenEvents);
+        save.defeatedBosses.AddRange(defeatedBosses);
+        save.brokenWalls.AddRange(brokenWalls);
+        save.permanentRemoved.AddRange(permanentRemoved);
+
+        foreach (Talisman t in ownedTalismans)
+            if (t != null) save.ownedTalismans.Add(t.Id);
+
+        foreach (Talisman t in equippedTalismans)
+            save.equippedTalismans.Add(t != null ? t.Id : "");
+
+        foreach (var pair in bundles)
+        {
+            if (pair.Key == null) continue;
+            save.bundleIds.Add(pair.Key.Id);
+            save.bundleCounts.Add(pair.Value);
+        }
+
+        foreach (ActiveAbility a in ownedAbilities)
+            if (a != null) save.ownedAbilities.Add(a.Id);
+
+        return save;
+    }
+
+    public void ApplySave(RunSave save, GameAssetDatabase db)
+    {
+        if (save == null) return;
+
+        currentArea          = save.currentArea;
+        targetEntranceId     = save.targetEntranceId;
+        maxHp                = save.maxHp;
+        currentHp            = save.currentHp;
+        hasCheckpoint        = save.hasCheckpoint;
+        checkpointScene      = save.checkpointScene;
+        checkpointEntranceId = save.checkpointEntranceId;
+        lumens               = save.lumens;
+        strengthLevel        = save.strengthLevel;
+        isDashUnlocked       = save.isDashUnlocked;
+        isDoubleJumpUnlocked = save.isDoubleJumpUnlocked;
+        isWallJumpUnlocked   = save.isWallJumpUnlocked;
+        droppedLumens        = save.droppedLumens;
+        dropScene            = save.dropScene;
+        dropPosition         = save.dropPosition;
+
+        openedCheckpoints = new HashSet<string>(save.openedCheckpoints);
+        seenEvents        = new HashSet<string>(save.seenEvents);
+        defeatedBosses    = new HashSet<string>(save.defeatedBosses);
+        brokenWalls       = new HashSet<string>(save.brokenWalls);
+        permanentRemoved  = new HashSet<string>(save.permanentRemoved);
+        temporaryRemoved  = new HashSet<string>();
+
+        ownedTalismans = new List<Talisman>();
+        equippedTalismans = new Talisman[TalismanSlots];
+        bundles = new Dictionary<LumenBundle, int>();
+        ownedAbilities = new List<ActiveAbility>();
+        equippedAbility = null;
+
+        if (db == null) return;
+
+        foreach (string id in save.ownedTalismans)
+        {
+            Talisman t = db.FindGood<Talisman>(id);
+            if (t != null) ownedTalismans.Add(t);
+        }
+
+        for (int i = 0; i < equippedTalismans.Length && i < save.equippedTalismans.Count; i++)
+            equippedTalismans[i] = db.FindGood<Talisman>(save.equippedTalismans[i]);
+
+        for (int i = 0; i < save.bundleIds.Count && i < save.bundleCounts.Count; i++)
+        {
+            LumenBundle bundle = db.FindGood<LumenBundle>(save.bundleIds[i]);
+            if (bundle != null && save.bundleCounts[i] > 0) bundles[bundle] = save.bundleCounts[i];
+        }
+
+        foreach (string id in save.ownedAbilities)
+        {
+            ActiveAbility a = db.FindAbility(id);
+            if (a != null) ownedAbilities.Add(a);
+        }
+
+        equippedAbility = db.FindAbility(save.equippedAbility);
     }
 
     [Header("World State")]

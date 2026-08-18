@@ -27,6 +27,7 @@ public class LumenPickup : MonoBehaviour
     private Transform player;
     private Rigidbody2D rb;
     private bool isFlying = false;
+    private bool forceFly = false;
     private float currentSpeed;
     private float spawnTimer = 0f;
 
@@ -34,6 +35,10 @@ public class LumenPickup : MonoBehaviour
     public bool IsFlying => isFlying;
 
     public void SetValue(int amount) => value = Mathf.Max(1, amount);
+
+    // Skip the settle and the proximity check. Used by the shade: that light is already
+    // the player's, it should come home rather than wait to be walked over.
+    public void LaunchAtPlayer() => forceFly = true;
 
     private void Awake()
     {
@@ -60,7 +65,7 @@ public class LumenPickup : MonoBehaviour
 
         float dist = Vector2.Distance(transform.position, player.position);
 
-        if (!isFlying && spawnTimer >= spawnDelay && dist <= attractRadius)
+        if (!isFlying && (forceFly || (spawnTimer >= spawnDelay && dist <= attractRadius)))
         {
             isFlying = true;
             currentSpeed = initialFlySpeed;

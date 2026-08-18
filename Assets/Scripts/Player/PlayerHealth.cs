@@ -88,6 +88,8 @@ public class PlayerHealth : MonoBehaviour
 
         run.currentHp = hp;
         run.maxHp = maxHp;
+
+        GameManager.Instance.MarkDirty();
     }
 
     public void Update()

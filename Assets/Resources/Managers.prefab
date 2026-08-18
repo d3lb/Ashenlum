@@ -529,6 +529,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 613952b3763cea54cb1efc18abf0088a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+  assetDatabase: {fileID: 11400000, guid: a5e5830cc9958884c8a8094812ef37ba, type: 2}
+  saveInterval: 1
 --- !u!1 &7112116317106351911
 GameObject:
   m_ObjectHideFlags: 0

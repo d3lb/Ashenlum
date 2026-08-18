@@ -17,6 +17,9 @@ public class AbilityProjectile : MonoBehaviour
     [SerializeField] private float curveTime = 0.7f;
 
     [Header("Hits")]
+    // Match this to the visible circle. A zero-width ray from the centre slips past
+    // anything the sprite clearly overlapped, which reads as the shot passing through.
+    [SerializeField] private float radius = 0.5f;
     [SerializeField] private LayerMask enemyLayers;
     [SerializeField] private LayerMask groundLayers;
     [SerializeField] private bool pierce = false;
@@ -52,16 +55,20 @@ public class AbilityProjectile : MonoBehaviour
 
         if (step.sqrMagnitude > 0.0000001f)
         {
-            RaycastHit2D[] hits = Physics2D.RaycastAll(
-                from, step.normalized, step.magnitude, enemyLayers | groundLayers);
+            RaycastHit2D[] hits = Physics2D.CircleCastAll(
+                from, radius, step.normalized, step.magnitude, enemyLayers | groundLayers);
 
             System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
 
             foreach (RaycastHit2D hit in hits)
             {
+                // A cast that starts already overlapping reports distance 0 and a zero
+                // point, which would put the impact effect at the world origin.
+                Vector2 point = hit.distance > 0f ? hit.point : from;
+
                 if (((1 << hit.collider.gameObject.layer) & groundLayers) != 0)
                 {
-                    Impact(hit.point);
+                    Impact(point);
                     return;
                 }
 
@@ -72,7 +79,7 @@ public class AbilityProjectile : MonoBehaviour
 
                 if (!pierce)
                 {
-                    Impact(hit.point);
+                    Impact(point);
                     return;
                 }
             }
@@ -81,6 +88,12 @@ public class AbilityProjectile : MonoBehaviour
         transform.position = from + step;
 
         if (Time.time >= despawnAt) Destroy(gameObject);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireSphere(transform.position, radius);
     }
 
     private void Impact(Vector2 at)

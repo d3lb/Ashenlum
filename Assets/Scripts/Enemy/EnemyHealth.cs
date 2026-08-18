@@ -195,6 +195,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
                 case PersistenceType.Permanent:
                     GameManager.Instance.activeRun.permanentRemoved.Add(persistentObject.Id);
+                    GameManager.Instance.MarkDirty();
                     break;
             }
         }

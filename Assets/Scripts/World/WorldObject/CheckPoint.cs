@@ -6,6 +6,9 @@ public class CheckPoint : Interactable
     [SerializeField] private string checkpointEntranceId;
     [SerializeField] private RestWave restWavePrefab;
 
+    // Only used when there is no wave prefab to wait on.
+    [SerializeField] private float freezeTime = 1.5f;
+
     private bool resting;
 
     public string CheckpointEntranceId => checkpointEntranceId;
@@ -24,6 +27,7 @@ public class CheckPoint : Interactable
         if (!Discovered)
         {
             GameManager.Instance.activeRun.openedCheckpoints.Add(checkpointEntranceId);
+            GameManager.Instance.MarkDirty();
             // First visit only lights it. Discovery animation goes here.
             return;
         }
@@ -45,13 +49,16 @@ public class CheckPoint : Interactable
 
         WorldReset.ResetAll();
 
+        // Held for the whole wave - the player watches the world reset, they do not
+        // walk away mid-animation. The wave destroys itself, which is the cue to release.
         if (restWavePrefab != null)
         {
             RestWave wave = Instantiate(restWavePrefab, origin, Quaternion.identity);
-
-            while (!wave.Finished) yield return null;
-
-            Destroy(wave.gameObject);
+            while (wave != null) yield return null;
+        }
+        else
+        {
+            yield return new WaitForSecondsRealtime(freezeTime);
         }
 
         TimeManager.Release(this);

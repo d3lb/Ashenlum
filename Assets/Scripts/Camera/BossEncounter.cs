@@ -56,6 +56,9 @@ public class BossEncounter : MonoBehaviour
         Run?.defeatedBosses.Add(bossId);
         Run?.SetAbilityUnlocked(reward, true);
 
+        // A boss kill is the least acceptable thing to lose to a crash.
+        if (GameManager.Instance != null) GameManager.Instance.SaveNow();
+
         SetDoorsClosed(false);
 
         if (cameraSwitcher != null) cameraSwitcher.SwitchToGameplayCam();

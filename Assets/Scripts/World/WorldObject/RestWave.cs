@@ -19,7 +19,7 @@ public class RestWave : MonoBehaviour
 
     private float elapsed;
 
-    public bool Finished => elapsed >= growTime + holdTime + fadeTime;
+    private bool Finished => elapsed >= growTime + holdTime + fadeTime;
 
     private void Awake()
     {
@@ -47,5 +47,8 @@ public class RestWave : MonoBehaviour
         Color c = fade.color;
         c.a = alpha;
         fade.color = c;
+
+        // Owns its own lifetime, so nothing has to stay frozen waiting for it.
+        if (Finished) Destroy(gameObject);
     }
 }
