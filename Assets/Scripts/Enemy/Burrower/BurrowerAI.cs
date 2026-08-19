@@ -1,11 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// Travels under the ash where nothing can reach it, bursts out to strike, and dives again.
-// The moving mound is the only warning the player gets.
-//
-// One collider gates the whole fight: while it is under, the body collider is off, so it
-// can neither be hit nor hit you. Surfacing turns it on. That single window is the enemy.
+// Under = collider off, cannot hit or be hit. Surfacing is the whole window.
 public class BurrowerAI : MonoBehaviour, IRespawnReset
 {
     [Header("References")]
@@ -56,8 +52,7 @@ public class BurrowerAI : MonoBehaviour, IRespawnReset
         ResetForRespawn();
     }
 
-    // A rest, or dying mid-surface, has to put it back under and harmless. Without this it
-    // would come back stranded above ground with its hitbox live.
+    // Without this it comes back stranded above ground with its hitbox live.
     public void ResetForRespawn()
     {
         if (hunt != null) StopCoroutine(hunt);

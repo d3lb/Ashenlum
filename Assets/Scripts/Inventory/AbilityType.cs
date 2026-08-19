@@ -1,6 +1,4 @@
-// Every unlockable traversal/combat ability in the game.
-// Unlock state lives on GameRunProfile — see IsAbilityUnlocked / SetAbilityUnlocked.
-// This enum only exists so UI can ask about an ability without hard-coding a field name.
+// Unlock state lives on GameRunProfile.
 public enum AbilityType
 {
     Dash,

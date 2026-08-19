@@ -55,8 +55,7 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
 
     public virtual bool CanUse(int phase) => phase >= minPhase;
 
-    // Act must use `yield return Something()`, never StartCoroutine, or the brain's
-    // watchdog can only kill half the chain when an attack times out.
+    // Act must `yield return`, never StartCoroutine, or the watchdog kills half the chain.
     public abstract IEnumerator Act(Transform player);
 
     protected IEnumerator BlinkTo(Vector2 target, bool danger = false)
@@ -78,8 +77,7 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
 
     protected IEnumerator MoveToWall(Transform player, float heightT)
     {
-        // Feint count comes from the phase, not the attack. Phase 1 has none - the honest
-        // move has to be learned before a lie about it can mean anything.
+        // Feints come from the phase: phase 1 has none, the honest move is learned first.
         int hops = 0;
         for (int i = 0; i < Pace.maxFeints; i++)
         {
@@ -101,9 +99,7 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
         int side = TargetWall(player);
         float height = RandomHopHeight();
 
-        // Low, and the safe wall is the one he is already on. There is no safe horizontal
-        // move from here, so he climbs instead of stuttering in place - which also lifts him
-        // above the split line, where the next hop becomes a free crossing over the player.
+        // No safe horizontal move from here, so he climbs above the split line instead.
         if (InLowerHalf && side == CurrentSide)
             height = Mathf.Max(height, Random.Range(splitHeight + 0.1f, hopHeightRange.y));
 

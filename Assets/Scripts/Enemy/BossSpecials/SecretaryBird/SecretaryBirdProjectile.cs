@@ -46,8 +46,7 @@ public class SecretaryBirdProjectile : MonoBehaviour
         Vector2 from = transform.position;
         Vector2 step = velocity * Time.deltaTime;
 
-        // Raycast, not triggers: Unity 2D skips collider pairs where neither side has a
-        // Rigidbody2D, so OnTriggerEnter2D never fires for this against static ground.
+        // Raycast, not triggers: no Rigidbody2D on either side means no trigger callbacks.
         if (step.sqrMagnitude > 0.0000001f)
         {
             RaycastHit2D hit = Physics2D.Raycast(from, step.normalized, step.magnitude, groundLayers);

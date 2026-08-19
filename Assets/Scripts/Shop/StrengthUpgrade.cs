@@ -1,7 +1,5 @@
 using UnityEngine;
 
-// The only permanent upgrade in the game. Always worth buying, so it is the thing that
-// keeps lumens meaningful once your two talisman slots are full.
 [CreateAssetMenu(fileName = "Strength", menuName = "Ashenlum/Strength Upgrade")]
 public class StrengthUpgrade : ShopGood
 {

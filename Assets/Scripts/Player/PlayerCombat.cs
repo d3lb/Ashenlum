@@ -251,8 +251,7 @@ public class PlayerCombat : MonoBehaviour
                 rb.AddForce(new Vector2(-dir * recoilForceX, 0), ForceMode2D.Impulse);
                 break;
 
-            // pogo - the thing you hit decides how hard it throws you, so a parkour
-            // pad can launch further than an enemy without touching the player's value.
+            // The thing you hit decides the launch, so pads can differ from enemies.
             case AttackType.Down:
                 float force = pogoForce;
                 if (hit is MonoBehaviour hitObject)

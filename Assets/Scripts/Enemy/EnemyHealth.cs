@@ -74,8 +74,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
         GameRunProfile run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
 
-        // Permanent kills stay dead - that is the whole point of marking them permanent.
-        // The temporary set is emptied by WorldReset, not one id at a time.
+        // Permanent stays dead. WorldReset empties the temporary set, not this.
         if (persistentObject != null && run != null &&
             run.permanentRemoved.Contains(persistentObject.Id)) return;
 
@@ -98,8 +97,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         flashCoroutine = null;
         if (mat != null) mat.SetFloat("_FlashAmount", 0f);
 
-        // Active BEFORE the reset call: an implementor is allowed to restart a coroutine
-        // in there, and StartCoroutine throws on an inactive object.
+        // Active first: implementors may restart coroutines, which throws on an inactive object.
         gameObject.SetActive(true);
 
         // Whatever a killed coroutine never got to undo.
@@ -200,8 +198,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             }
         }
 
-        // Switched off, not destroyed: a rest has to be able to put it back, and a
-        // destroyed object cannot be put back without knowing how to rebuild it.
+        // Switched off, not destroyed - a rest has to be able to put it back.
         gameObject.SetActive(false);
     }
 

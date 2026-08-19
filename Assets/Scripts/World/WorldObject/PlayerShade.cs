@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// What is left of you where you fell. Two hits crack it open and your light comes back
-// out already heading for you. It has no health bar and it does not fight back.
+// Two hits open it. No health, does not fight back.
 public class PlayerShade : MonoBehaviour, IDamageable
 {
     [Header("References")]
@@ -31,8 +30,7 @@ public class PlayerShade : MonoBehaviour, IDamageable
         if (sprite != null) baseColor = sprite.color;
     }
 
-    // Damage amount is ignored on purpose - a stronger weapon should not open your own
-    // light faster, it is a fixed two hits so the cost of dying never changes.
+    // Damage is ignored: a stronger weapon must not make dying cheaper.
     public bool TakeDamage(int damage, Vector2 attackerPosition)
     {
         if (isBroken) return false;
@@ -67,8 +65,7 @@ public class PlayerShade : MonoBehaviour, IDamageable
 
         yield return new WaitForSeconds(breakDelay);
 
-        // Never clear the record for a payout that did not happen - that would destroy
-        // the shade and the lumens with it.
+        // Clearing the record on a failed payout would destroy the lumens with the shade.
         if (!Payout())
         {
             Debug.LogError("[PlayerShade] Nothing was paid out, so the shade is staying. " +
@@ -81,8 +78,7 @@ public class PlayerShade : MonoBehaviour, IDamageable
             yield break;
         }
 
-        // Clear the record before the object goes, so reloading the scene cannot put back
-        // a shade the player already opened.
+        // Cleared before the object goes, so a reload cannot put back an opened shade.
         GameManager.Instance.CollectShade();
 
         Destroy(gameObject);
@@ -108,8 +104,7 @@ public class PlayerShade : MonoBehaviour, IDamageable
             LumenPickup pickup = Instantiate(lumenPrefab, pos, Quaternion.identity);
             pickup.SetValue(each + (i < extra ? 1 : 0));
 
-            // Straight to the player - this light is already theirs, it should not sit
-            // on the floor waiting to be walked over.
+            // Already the player's light - it should not sit on the floor.
             pickup.LaunchAtPlayer();
         }
 

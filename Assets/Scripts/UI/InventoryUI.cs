@@ -24,8 +24,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private TalismanSocketUI[] talismanSockets;
 
     [Header("Owned list")]
-    // The grid inside each section. Sections themselves are laid out in the editor -
-    // there are two, they never change, so there is nothing to build at runtime.
+    // The grid inside each section; the sections themselves are laid out in the editor.
     [SerializeField] private Transform abilityListParent;
     [SerializeField] private Transform talismanListParent;
     [SerializeField] private Transform bundleListParent;
@@ -87,8 +86,7 @@ public class InventoryUI : MonoBehaviour
         IsOpen = true;
         if (inventoryPanel != null) inventoryPanel.SetActive(true);
 
-        // Same trick the pause menu uses: pin the lumen counter open instead of
-        // letting it fade out on its usual timer.
+        // Pin the counter open instead of letting it fade on its timer.
         lumenUI?.Show();
 
         playerHealth = FindFirstObjectByType<PlayerHealth>();
@@ -125,8 +123,7 @@ public class InventoryUI : MonoBehaviour
     {
         if (abilityIcons == null) return;
 
-        // Straight from the run profile - the same bools PlayerMovement and the
-        // CheatMenu use, so the panel can never disagree with what the player can do.
+        // Straight from the run profile, so the panel cannot disagree with the player.
         var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
 
         foreach (var binding in abilityIcons)
@@ -193,13 +190,11 @@ public class InventoryUI : MonoBehaviour
         }
         if (run.bundles.Count == 0) SpawnEmpty(bundleListParent);
 
-        // Fitters only recalculate on the next layout pass, so cells spawned and shown in
-        // the same frame draw on top of each other. Force it now instead.
+        // Fitters recalculate next pass, so same-frame cells would draw on top of each other.
         RebuildLayout(talismanListParent);
     }
 
-    // Rebuilds from the highest layout group above this transform, so nested
-    // grid -> section -> content all resolve in one go.
+    // Rebuild from the topmost layout group so nested grid/section/content all resolve.
     private static void RebuildLayout(Transform from)
     {
         RectTransform top = null;
@@ -214,8 +209,7 @@ public class InventoryUI : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(top);
     }
 
-    // Only removes cells this script created. Anything you placed by hand in the editor
-    // is left alone - it is your layout, not ours to delete.
+    // Only removes cells this script spawned - editor-placed ones are left alone.
     private void ClearSpawned()
     {
         foreach (GameObject go in spawnedEntries)
@@ -240,7 +234,7 @@ public class InventoryUI : MonoBehaviour
         if (!GameManager.Instance.activeRun.Equip(talisman)) return;
 
         GameManager.Instance.MarkDirty();
-        playerHealth?.RefreshMaxHealth();
+        RefreshPlayerMaxHealth();
         Refresh();
     }
 
@@ -252,7 +246,7 @@ public class InventoryUI : MonoBehaviour
         run.Unequip(run.equippedTalismans[slot]);
 
         GameManager.Instance.MarkDirty();
-        playerHealth?.RefreshMaxHealth();
+        RefreshPlayerMaxHealth();
         Refresh();
     }
 
@@ -268,6 +262,13 @@ public class InventoryUI : MonoBehaviour
     {
         GameManager.Instance.activeRun.UnequipAbility();
         Refresh();
+    }
+
+    // A null here would save a stale maxHp, because MarkDirty has already fired.
+    private void RefreshPlayerMaxHealth()
+    {
+        if (playerHealth == null) playerHealth = FindFirstObjectByType<PlayerHealth>();
+        playerHealth?.RefreshMaxHealth();
     }
 
     private void UseBundle(LumenBundle bundle)

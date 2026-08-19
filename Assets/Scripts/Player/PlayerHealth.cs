@@ -73,14 +73,16 @@ public class PlayerHealth : MonoBehaviour
         if (run != null)
         {
             maxHp = baseMaxHp + run.bonusMaxHp;
-            run.maxHp = maxHp;
+
             if (run.currentHp < 0) run.currentHp = maxHp;
             hp = Mathf.Clamp(run.currentHp, 0, maxHp);
+
+            // Through SyncProfile: writing the fields by hand left the save holding an old maxHp.
+            SyncProfile();
         }
     }
 
-    // The profile is the record, this component is the truth. Anything that moves hp
-    // writes it back here, so no caller has to remember to do it.
+    // Anything that moves hp writes it back here, so no caller has to remember.
     private void SyncProfile()
     {
         var run = GameManager.Instance?.activeRun;
@@ -150,8 +152,16 @@ public class PlayerHealth : MonoBehaviour
         int gained = (baseMaxHp + run.bonusMaxHp) - maxHp;
         maxHp = baseMaxHp + run.bonusMaxHp;
 
-        if (gained > 0) Heal(gained);
-        else            SyncProfile();
+        if (gained > 0)
+        {
+            Heal(gained);
+            return;
+        }
+
+        // Only what was above the new cap is lost: 40/125 stays 40/100.
+        if (hp > maxHp) hp = maxHp;
+
+        SyncProfile();
     }
 
     public void Heal(int amount)

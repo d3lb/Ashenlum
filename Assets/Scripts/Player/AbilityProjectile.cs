@@ -17,13 +17,11 @@ public class AbilityProjectile : MonoBehaviour
     [SerializeField] private float curveTime = 0.7f;
 
     [Header("Hits")]
-    // Match this to the visible circle. A zero-width ray from the centre slips past
-    // anything the sprite clearly overlapped, which reads as the shot passing through.
     [SerializeField] private float radius = 0.5f;
     [SerializeField] private LayerMask enemyLayers;
+
+    [Header("Walls")]
     [SerializeField] private LayerMask groundLayers;
-    [SerializeField] private bool pierce = false;
-    [SerializeField] private GameObject impactPrefab;
 
     private readonly HashSet<IDamageable> alreadyHit = new();
     private Vector2 direction;
@@ -55,33 +53,29 @@ public class AbilityProjectile : MonoBehaviour
 
         if (step.sqrMagnitude > 0.0000001f)
         {
-            RaycastHit2D[] hits = Physics2D.CircleCastAll(
-                from, radius, step.normalized, step.magnitude, enemyLayers | groundLayers);
+            RaycastHit2D[] hits = Physics2D.CircleCastAll(from, radius, step.normalized, step.magnitude, enemyLayers);
 
             System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
 
             foreach (RaycastHit2D hit in hits)
             {
-                // A cast that starts already overlapping reports distance 0 and a zero
-                // point, which would put the impact effect at the world origin.
                 Vector2 point = hit.distance > 0f ? hit.point : from;
-
-                if (((1 << hit.collider.gameObject.layer) & groundLayers) != 0)
-                {
-                    Impact(point);
-                    return;
-                }
 
                 IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
                 if (target == null || !alreadyHit.Add(target)) continue;
 
                 target.TakeDamage(damage, from);
+            }
 
-                if (!pierce)
-                {
-                    Impact(point);
-                    return;
-                }
+            // A thin ray, not the circle: the radius sticks out above and below the shot,
+            // so a circle cast would die on any floor or ceiling it merely passes. The
+            // shot only ever travels dead left or right, so this can only meet a wall.
+            RaycastHit2D wall = Physics2D.Raycast(from, step.normalized, step.magnitude, groundLayers);
+
+            if (wall.collider != null)
+            {
+                Destroy(gameObject);
+                return;
             }
         }
 
@@ -90,15 +84,10 @@ public class AbilityProjectile : MonoBehaviour
         if (Time.time >= despawnAt) Destroy(gameObject);
     }
 
-    private void OnDrawGizmosSelected()
+
+    private void OnDrawGizmos()
     {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, radius);
-    }
-
-    private void Impact(Vector2 at)
-    {
-        if (impactPrefab != null) Instantiate(impactPrefab, at, Quaternion.identity);
-        Destroy(gameObject);
     }
 }

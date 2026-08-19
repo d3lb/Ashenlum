@@ -15,6 +15,7 @@ MonoBehaviour:
   id: lumen-bundle-50
   displayName: Lumen Bundle
   description: Puts your lumens in a safe place
-  icon: {fileID: -5429860603474748724, guid: 541a4d755b213944c90d4ce4df283a69, type: 3}
+  icon: {fileID: -7153124976402842372, guid: 62a64f436bff63c48b86353fe804acb2, type: 3}
   value: 50
   price: 55
+  stockLimit: 0

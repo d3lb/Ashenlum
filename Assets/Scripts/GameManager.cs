@@ -7,28 +7,25 @@ public class GameManager : MonoBehaviour
 {
 
     public static GameManager Instance;
-    // Active Run
-    // NonSerialized on purpose: this is runtime state. Left serialized, Unity bakes a copy
-    // into Managers.prefab and those stale values silently win over the C# defaults - which
-    // is how currentHp stayed pinned at 100 no matter what the player's maxHp was set to.
+    // NonSerialized: serialized, Unity bakes stale values into the prefab that beat the defaults.
     [System.NonSerialized] public GameRunProfile activeRun = new GameRunProfile();
 
-    // Turns saved ids back into assets. Without it a loaded run keeps its lumens and
-    // its progress but forgets every talisman, bundle and ability it owned.
+    // Without it a loaded run keeps progress but forgets every talisman, bundle and ability.
     [SerializeField] private GameAssetDatabase assetDatabase;
+
+    // The menu needs it too, to turn a saved run's ids into icons for the slot list.
+    public GameAssetDatabase Assets => assetDatabase;
 
     // Default Spawn Scene
     private string startingScene = "Start";
 
-    // The menu is not part of a run. Recording it as currentArea is how Continue ends
-    // up loading you straight back into the menu you just left.
+    // Recording the menu as currentArea is how Continue loads straight back into it.
     [SerializeField] private string menuScene = "MainMenu";
 
     // SAVING
     public int CurrentProfileId { get; private set; } = -1;
 
-    // Writes are marked, not performed. Picking up twenty lumens should cost one file
-    // write, not twenty.
+    // Marked, not written: twenty lumens should cost one file write.
     [SerializeField] private float saveInterval = 1f;
 
     private bool  saveDirty;
@@ -96,16 +93,14 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    // Picks up where the last played profile left off. False if there is nothing to
-    // continue, so the menu can grey the button out instead of loading an empty run.
+    // False when there is nothing to continue, so the menu can grey the button out.
     public bool ContinueGame()
     {
         ProfileIndex index = SaveSystem.LoadIndex();
 
         if (index.lastUsedProfile >= 0 && LoadProfile(index.lastUsedProfile)) return true;
 
-        // The index lost track, or predates it existing. A real save file still beats
-        // refusing to continue.
+        // Index lost track or predates itself - a real save file still beats refusing.
         for (int i = 0; i < SaveSystem.SlotCount; i++)
             if (SaveSystem.HasRun(i)) return LoadProfile(i);
 
@@ -129,14 +124,39 @@ public class GameManager : MonoBehaviour
         index.lastUsedProfile = profileId;
         SaveSystem.SaveIndex(index);
 
-        GoToScene(activeRun.currentArea, activeRun.targetEntranceId);
+        Resume();
         return true;
+    }
+
+    private void SetResume(GameRunProfile.ResumeType type, string scene, string id)
+    {
+        activeRun.resumeType  = type;
+        activeRun.resumeScene = scene;
+        activeRun.resumeId    = id;
+    }
+
+    // No heal on the checkpoint path, or quit-and-reload is a free full heal.
+    private void Resume()
+    {
+        switch (activeRun.resumeType)
+        {
+            case GameRunProfile.ResumeType.Checkpoint when activeRun.hasCheckpoint:
+                GoToCheckpoint(false);
+                break;
+
+            case GameRunProfile.ResumeType.Entrance when !string.IsNullOrEmpty(activeRun.resumeScene):
+                GoToScene(activeRun.resumeScene, activeRun.resumeId);
+                break;
+
+            default:
+                GoToScene(startingScene, "");
+                break;
+        }
     }
 
     public void DeleteProfile(int profileId)
     {
-        // The run being played could be renumbered out from under us, so stop tracking
-        // it. In practice this only ever runs from the menu, where nothing is active.
+        // The active run could be renumbered underneath us.
         if (CurrentProfileId == profileId) CurrentProfileId = -1;
 
         SaveSystem.DeleteRun(profileId);
@@ -216,9 +236,12 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            // Written before the save: OnSceneLoaded sets this too, but that happens
-            // after the file is on disk, so a save here would record the scene left.
+            // Before the save: OnSceneLoaded sets this too, but only after the file is written.
             activeRun.currentArea = sceneName;
+
+            // The newest thing the player did wins, even if they rested earlier.
+            SetResume(GameRunProfile.ResumeType.Entrance, sceneName, entranceId);
+
             SaveNow();
         }
 
@@ -241,6 +264,8 @@ public class GameManager : MonoBehaviour
 
         if (scene.name == pendingCheckpointScene)
         {
+            // FinishCheckpointTeleport does its own fade in.
+            pendingFadeIn = false;
             StartCoroutine(FinishCheckpointTeleport());
             pendingCheckpointScene = null;
             return;
@@ -265,15 +290,18 @@ public class GameManager : MonoBehaviour
         activeRun.checkpointEntranceId = entranceId;
         activeRun.hasCheckpoint = true;
 
+        SetResume(GameRunProfile.ResumeType.Checkpoint, activeRun.checkpointScene, entranceId);
+
         MarkDirty();
     }
 
-    public void GoToCheckpoint()
+    public void GoToCheckpoint(bool heal = true)
     {
         if (!activeRun.hasCheckpoint)
             return;
 
-        activeRun.currentHp = activeRun.maxHp;
+        // Dying and teleporting restore you. Loading a save does not.
+        if (heal) activeRun.currentHp = activeRun.maxHp;
 
         pendingCheckpointScene = activeRun.checkpointScene;
         activeRun.currentArea  = activeRun.checkpointScene;
@@ -368,13 +396,10 @@ public class GameManager : MonoBehaviour
         StartCoroutine(RespawnRoutine(respawnDelay));
     }
 
-    // Everything you were carrying stays behind on the last ground you stood on. Anchored
-    // to the player rather than the death spot so a spike death does not leave the pile
-    // somewhere you would have to kill yourself to collect.
+    // Anchored to last safe ground, so a spike death does not strand the pile.
     private void DropShade()
     {
-        // Dying replaces the pile. Whatever was still out there is gone - that is the
-        // cost, and it applies even when you die broke and leave nothing new behind.
+        // Dying replaces the pile, even when you die broke and leave nothing new.
         activeRun.droppedLumens = 0;
         activeRun.dropScene     = null;
 
@@ -393,8 +418,7 @@ public class GameManager : MonoBehaviour
         OnLumensChanged?.Invoke(0);
     }
 
-    // Called by the shade once it has been cracked open. Only clears the record - the
-    // pickups it spawned carry the lumens and pay out as the player touches them.
+    // Only clears the record - the spawned pickups carry the lumens.
     public void CollectShade()
     {
         if (!activeRun.HasShade) return;

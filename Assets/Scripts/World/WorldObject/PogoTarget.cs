@@ -3,8 +3,7 @@ using UnityEngine;
 public class PogoTarget : MonoBehaviour, IDamageable
 {
     [Header("Slash pogo")]
-    // Multiplies the player's pogo force when down-slashed. A multiplier rather than a
-    // flat value so retuning the player rescales every pad instead of leaving them stale.
+    // A multiplier, so retuning the player rescales every pad.
     [SerializeField] private float pogoMultiplier = 3f;
 
     public float PogoMultiplier => pogoMultiplier;

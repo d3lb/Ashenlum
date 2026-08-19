@@ -53,8 +53,7 @@ public class SecretaryBirdMovement : MonoBehaviour
         state = GetComponent<SecretaryBirdState>();
     }
 
-    // The normal test is not optional: the boss perches ON a wall, so an unfiltered
-    // "did I touch anything" check ends every dash on frame one.
+    // He perches ON a wall, so an unfiltered contact check ends every dash on frame one.
     public void ReportImpact(Collision2D c)
     {
         if (!dashing) return;
@@ -96,8 +95,7 @@ public class SecretaryBirdMovement : MonoBehaviour
 
         Vector2 start = rb.position;
 
-        // Already there. Without this the pull-back fires with a meaningless direction and
-        // the boss launches somewhere arbitrary instead of doing nothing.
+        // Already there - without this the pull-back fires in an arbitrary direction.
         if (Vector2.Distance(start, target) <= arriveDist)
         {
             Stop();

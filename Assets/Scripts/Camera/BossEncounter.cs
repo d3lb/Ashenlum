@@ -1,8 +1,6 @@
 using UnityEngine;
 
-// Sequences the fight: doors shut, camera moves, boss wakes - then the reverse plus the
-// reward when he dies. These are not separate features, they are two moments, so one
-// thing orders them. Whether the boss still exists at all is the boss's own business.
+// Doors, camera and boss wake as one moment, so one thing has to order them.
 public class BossEncounter : MonoBehaviour
 {
     [Header("Boss")]
@@ -18,8 +16,7 @@ public class BossEncounter : MonoBehaviour
     [Header("Reward")]
     [SerializeField] private AbilityType reward = AbilityType.Dash;
 
-    // Cached, because the boss removes itself when it has already been beaten and the
-    // trigger still needs to know that afterwards.
+    // Cached: the boss deletes itself once beaten, and the trigger still asks after that.
     private string bossId;
 
     private GameRunProfile Run => GameManager.Instance != null ? GameManager.Instance.activeRun : null;

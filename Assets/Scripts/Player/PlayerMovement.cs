@@ -72,9 +72,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask _groundLayer;
     #endregion
 
-    // Where the shade drops if you die. Written only while actually standing on ground,
-    // so it can never be a spike - you die the instant you touch one, you never stand
-    // on one. That is what stops the pile landing somewhere you have to suicide to reach.
+    // Only written while grounded, so the shade never lands on a spike.
     public Vector2 LastSafeGround { get; private set; }
 
     private void Awake()

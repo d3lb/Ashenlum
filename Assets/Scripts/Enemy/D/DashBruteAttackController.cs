@@ -45,8 +45,7 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset
         ResetForRespawn();
     }
 
-    // Dying mid-attack kills the routine before it can clear these, and isPerformingAttack
-    // stuck true means CanAttack never passes again.
+    // Coroutines die with the object; isPerformingAttack stuck true blocks CanAttack forever.
     public void ResetForRespawn()
     {
         isPerformingAttack = false;

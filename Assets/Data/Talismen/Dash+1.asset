@@ -15,7 +15,7 @@ MonoBehaviour:
   id: dash-1
   displayName: Dash Upgrade
   description: Gives you a second dash.
-  icon: {fileID: 2900404276945141117, guid: 0d21bb26d0ebbb24a8e60ea5f8ac8f25, type: 3}
+  icon: {fileID: 2584262176649439783, guid: 495c56ad777d9a54885aeb83c1d6e79e, type: 3}
   type: 2
   amount: 1
   price: 100

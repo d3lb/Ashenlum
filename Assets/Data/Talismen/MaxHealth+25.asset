@@ -15,7 +15,7 @@ MonoBehaviour:
   id: max-health-25
   displayName: Health Upgrade
   description: Increases your max health
-  icon: {fileID: 1483891370214596094, guid: 2f15a0dc5bae608469a95f7295db5fe6, type: 3}
+  icon: {fileID: 1566745724729579636, guid: f36089822f28ffc4590e6af14f4af8ed, type: 3}
   type: 0
   amount: 25
   price: 200

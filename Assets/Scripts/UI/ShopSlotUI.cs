@@ -2,8 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// One row in the shop list. Owns the quantity the player has dialled in; ShopUI owns
-// the money and the actual purchase.
+// Owns the dialled-in quantity; ShopUI owns the money.
 public class ShopSlotUI : MonoBehaviour
 {
     [SerializeField] private Image icon;

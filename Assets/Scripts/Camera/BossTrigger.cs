@@ -1,7 +1,6 @@
 using UnityEngine;
 
-// Trip-wire, nothing more. Put this box wherever you want the fight to actually start -
-// it does not have to be the room entrance.
+// Place this box wherever the fight should start, not necessarily the entrance.
 [RequireComponent(typeof(Collider2D))]
 public class BossTrigger : MonoBehaviour
 {

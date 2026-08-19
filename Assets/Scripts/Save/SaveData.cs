@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Plain data only. JsonUtility cannot write a HashSet, a Dictionary or an asset
-// reference, so everything the run profile holds gets flattened into lists and ids here.
+// JsonUtility cannot write HashSet, Dictionary or asset refs - everything is flattened.
 
 [System.Serializable]
 public class ProfileEntry
@@ -39,6 +38,11 @@ public class RunSave
     [Header("Health")]
     public int maxHp;
     public int currentHp;
+
+    [Header("Resume point")]
+    public int    resumeType;      // GameRunProfile.ResumeType
+    public string resumeScene;
+    public string resumeId;
 
     [Header("Checkpoints")]
     public bool         hasCheckpoint;

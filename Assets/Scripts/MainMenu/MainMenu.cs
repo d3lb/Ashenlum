@@ -14,6 +14,27 @@ public class MainMenu : MonoBehaviour
     [Header("Slots")]
     [SerializeField] private SaveSlotUI[] slots;
 
+    // Scene names are not player-facing. "Right" means nothing; "Shattered Grove" does.
+    [SerializeField] private AreaName[] areaNames;
+
+    [System.Serializable]
+    public class AreaName
+    {
+        public string scene;
+        public string display;
+    }
+
+    private string DisplayNameFor(string scene)
+    {
+        if (string.IsNullOrEmpty(scene)) return "";
+
+        if (areaNames != null)
+            foreach (AreaName area in areaNames)
+                if (area != null && area.scene == scene) return area.display;
+
+        return scene;
+    }
+
     private void Start()
     {
         if (settingsPanel != null) settingsPanel.SetActive(false);
@@ -74,9 +95,40 @@ public class MainMenu : MonoBehaviour
             if (slots[i] == null) continue;
 
             int id = i;
-
-            slots[i].Bind(id, index.Get(id), SaveSystem.HasRun(id), () => Play(id), () => Erase(id));
+            slots[i].Bind(id, Summarise(id, index.Get(id)), () => Play(id), () => Erase(id));
         }
+    }
+
+    // Resolves ids to sprites here so the row never sees a save format.
+    private SlotSummary Summarise(int profileId, ProfileEntry entry)
+    {
+        var summary = new SlotSummary { used = SaveSystem.HasRun(profileId) };
+        if (!summary.used) return summary;
+
+        if (entry != null)
+        {
+            summary.playTime = entry.playTime;
+            summary.deaths   = entry.deaths;
+        }
+
+        RunSave save = SaveSystem.LoadRun(profileId);
+        if (save == null) return summary;
+
+        summary.hp     = save.currentHp;
+        summary.maxHp  = save.maxHp;
+        summary.lumens = save.lumens;
+        summary.area   = DisplayNameFor(save.currentArea);
+
+        GameAssetDatabase db = GameManager.Instance != null ? GameManager.Instance.Assets : null;
+        if (db == null) return summary;
+
+        summary.ability = db.FindAbility(save.equippedAbility)?.icon;
+
+        summary.talismans = new Sprite[save.equippedTalismans.Count];
+        for (int i = 0; i < save.equippedTalismans.Count; i++)
+            summary.talismans[i] = db.FindGood<Talisman>(save.equippedTalismans[i])?.icon;
+
+        return summary;
     }
 
     private void Play(int profileId)

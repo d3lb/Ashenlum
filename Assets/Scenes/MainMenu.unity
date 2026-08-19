@@ -818,6 +818,11 @@ MonoBehaviour:
   - {fileID: 1672736945}
   - {fileID: 475045700}
   - {fileID: 723525402}
+  areaNames:
+  - scene: Start
+    display: Ash Fall
+  - scene: Right
+    display: Bloom
 --- !u!1001 &963997843
 PrefabInstance:
   m_ObjectHideFlags: 0

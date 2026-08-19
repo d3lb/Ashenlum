@@ -41,8 +41,7 @@ public class PauseManager : MonoBehaviour
         if (GameManager.Instance.activeRun.isTransitioningScenes)
             return;
 
-        // The inventory owns Escape while it's open (it closes itself), so the
-        // pause menu must not also pop up underneath it.
+        // The inventory owns Escape while open, so pause must not stack under it.
         if (InventoryUI.IsOpen || ShopUI.IsOpen)
             return;
 

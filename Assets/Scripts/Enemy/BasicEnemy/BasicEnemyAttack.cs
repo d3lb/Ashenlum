@@ -31,8 +31,7 @@ public class BasicEnemyAttack : MonoBehaviour, IRespawnReset
         ResetForRespawn();
     }
 
-    // Dying mid-swing kills the routine before it can switch the hitbox back off, so it
-    // would otherwise come back permanently dangerous to touch.
+    // Coroutines die with the object, so the hitbox never gets switched back off.
     public void ResetForRespawn()
     {
         attackColliderRight.enabled = false;

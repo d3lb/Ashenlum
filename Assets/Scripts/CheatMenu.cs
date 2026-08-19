@@ -191,8 +191,7 @@ public class CheatMenu : MonoBehaviour
         string input = GUILayout.TextField(value.ToString(), GUILayout.Width(60));
         GUILayout.EndHorizontal();
 
-        // Keep the old value when the box is empty or not a number. TryParse writes 0
-        // on failure, so returning it blindly wiped your lumens the moment you cleared it.
+        // TryParse writes 0 on failure; returning it wiped lumens whenever the box was cleared.
         return int.TryParse(input, out int result) ? result : value;
     }
 }

@@ -3,16 +3,52 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+// Already resolved, so the row never sees a RunSave or an id.
+public class SlotSummary
+{
+    public bool   used;
+    public int    hp;
+    public int    maxHp;
+    public int    lumens;
+    public int    deaths;
+    public float  playTime;
+    public string area;
+
+    public Sprite   ability;
+    public Sprite[] talismans;
+}
+
 public class SaveSlotUI : MonoBehaviour
 {
+    [Header("Header")]
     [SerializeField] private TMP_Text titleText;
-    [SerializeField] private TMP_Text detailText;
-    [SerializeField] private Button   playButton;
-    [SerializeField] private Button   eraseButton;
+
+    [Header("Stats")]
+    [SerializeField] private TMP_Text hpText;
+    [SerializeField] private TMP_Text lumenText;
+
+    [Header("Loadout")]
+    [SerializeField] private Image   abilityIcon;
+    [SerializeField] private Image[] talismanIcons;
+
+    [Header("Run")]
+    [SerializeField] private TMP_Text playTimeText;
+    [SerializeField] private TMP_Text deathsText;
+    [SerializeField] private TMP_Text areaText;
+
+    [Header("States")]
+    // Everything above lives under this; the empty label replaces it on a free slot.
+    [SerializeField] private GameObject filledGroup;
+    [SerializeField] private GameObject emptyLabel;
+
+    [Header("Buttons")]
+    [SerializeField] private Button playButton;
+    [SerializeField] private Button eraseButton;
 
     private System.Action onPlay;
     private System.Action onErase;
 
+    // Two rows sharing a button means only the last one bound ever responds.
     private static readonly Dictionary<Button, SaveSlotUI> claimed = new();
 
     private void Awake()
@@ -50,23 +86,46 @@ public class SaveSlotUI : MonoBehaviour
         claimed[button] = this;
     }
 
-    public void Bind(int profileId, ProfileEntry entry, bool used,
-                     System.Action play, System.Action erase)
+    public void Bind(int profileId, SlotSummary summary, System.Action play, System.Action erase)
     {
         onPlay  = play;
         onErase = erase;
 
         if (titleText != null) titleText.text = $"{profileId + 1}.";
 
-        if (detailText != null)
-        {
-            if (!used)              detailText.text = "Empty";
-            else if (entry == null) detailText.text = "Saved game";   // file with no index entry
-            else                    detailText.text = $"{FormatTime(entry.playTime)}   ·   {entry.deaths} deaths";
-        }
+        bool used = summary != null && summary.used;
 
+        if (filledGroup != null) filledGroup.SetActive(used);
+        if (emptyLabel != null)  emptyLabel.SetActive(!used);
+
+        // Play hides; erase greys, so rows keep their shape.
         if (playButton != null)  playButton.gameObject.SetActive(used);
         if (eraseButton != null) eraseButton.interactable = used;
+
+        if (!used) return;
+
+        if (hpText != null)       hpText.text = $"{summary.hp}/{summary.maxHp}";
+        if (lumenText != null)    lumenText.text = summary.lumens.ToString();
+        if (playTimeText != null) playTimeText.text = FormatTime(summary.playTime);
+        if (deathsText != null)   deathsText.text = $"{summary.deaths} deaths";
+        if (areaText != null)     areaText.text = summary.area;
+
+        SetIcon(abilityIcon, summary.ability);
+
+        if (talismanIcons != null)
+            for (int i = 0; i < talismanIcons.Length; i++)
+                SetIcon(talismanIcons[i],
+                        summary.talismans != null && i < summary.talismans.Length
+                            ? summary.talismans[i] : null);
+    }
+
+    // An empty socket hides rather than showing a blank white box.
+    private static void SetIcon(Image image, Sprite sprite)
+    {
+        if (image == null) return;
+
+        image.sprite = sprite;
+        image.enabled = sprite != null;
     }
 
     private static string FormatTime(float seconds)

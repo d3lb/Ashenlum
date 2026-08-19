@@ -16,8 +16,7 @@ public class LumenUI : MonoBehaviour
 
     private Coroutine currentRoutine;
 
-    // Held open by a menu. The counter must not fade out from under an open shop
-    // or inventory just because the amount happened to change.
+    // Pinned by a menu: it must not fade out just because the amount changed.
     private bool pinned;
 
     private void Awake()
@@ -77,8 +76,7 @@ public class LumenUI : MonoBehaviour
             StopCoroutine(currentRoutine);
         currentRoutine = null;
 
-        // A menu closing during teardown can call this while the object is already off.
-        // Coroutines cannot start on an inactive object, so just snap it hidden.
+        // Coroutines cannot start on an inactive object, so snap it hidden.
         if (!isActiveAndEnabled)
         {
             canvasGroup.alpha = 0f;

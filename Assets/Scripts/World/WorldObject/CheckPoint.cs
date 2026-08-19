@@ -49,8 +49,7 @@ public class CheckPoint : Interactable
 
         WorldReset.ResetAll();
 
-        // Held for the whole wave - the player watches the world reset, they do not
-        // walk away mid-animation. The wave destroys itself, which is the cue to release.
+        // Held for the whole wave; the wave destroying itself is the cue to release.
         if (restWavePrefab != null)
         {
             RestWave wave = Instantiate(restWavePrefab, origin, Quaternion.identity);

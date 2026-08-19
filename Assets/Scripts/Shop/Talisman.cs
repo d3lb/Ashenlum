@@ -7,8 +7,7 @@ public enum TalismanType
     Dash
 }
 
-// Owned forever once bought, but only two can be equipped at a time. The bonus only
-// applies while equipped, so GameRunProfile derives its totals rather than banking them.
+// Owned forever, two equipped. Bonuses are derived, never banked.
 [CreateAssetMenu(fileName = "New Talisman", menuName = "Ashenlum/Talisman")]
 public class Talisman : ShopGood
 {

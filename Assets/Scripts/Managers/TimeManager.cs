@@ -74,8 +74,7 @@ public class TimeManager : MonoBehaviour
         hitStopCoroutine = null;
     }
 
-    // A hitstop interrupted by a scene change or a disable would otherwise hold the
-    // freeze forever.
+    // An interrupted hitstop would otherwise hold the freeze forever.
     private void OnDisable()
     {
         hitStopCoroutine = null;

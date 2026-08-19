@@ -2,8 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// One cell in the owned list on the right. Knows nothing about what it is showing -
-// InventoryUI hands it a sprite and what to do when clicked.
+// InventoryUI hands it a sprite and a click action; it knows nothing else.
 public class InventoryEntryUI : MonoBehaviour
 {
     [SerializeField] private Image icon;

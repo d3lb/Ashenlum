@@ -1,8 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-// The floating "E - Talk" above an interactable. One per interactable, added as a child
-// prefab. Owns nothing but its own visibility and text - Interactable drives it.
+// Owns only its own visibility and text - Interactable drives it.
 public class InteractPrompt : MonoBehaviour
 {
     [SerializeField] private GameObject visual;

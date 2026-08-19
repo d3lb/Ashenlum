@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// Everything a rest puts back. Enemies register themselves in Awake, so this still knows
-// about the ones that are switched off because they are dead - a search would not.
+// Enemies register themselves - a dead one is disabled and a search cannot find it.
 public static class WorldReset
 {
     private static readonly List<EnemyHealth> enemies = new();
@@ -16,8 +15,7 @@ public static class WorldReset
 
     public static void ResetAll()
     {
-        // Enemies in scenes that are not loaded cannot be told anything. Emptying the set
-        // is what brings them back - EnemyHealth.Start reads it when that scene loads.
+        // Unloaded scenes cannot be told anything; emptying the set is what revives them.
         GameRunProfile run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
         run?.temporaryRemoved.Clear();
 
@@ -34,8 +32,7 @@ public static class WorldReset
             enemy.ResetToSpawn();
         }
 
-        // Leftovers from kills that no longer happened. These are always active, so a
-        // search finds them - only the dead enemies needed a registry to be findable.
+        // Always active, so a search finds these - only dead enemies needed the registry.
         Sweep<Corpse>();
         Sweep<LumenPickup>(lumen => !lumen.IsFlying);
     }

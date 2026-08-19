@@ -1,7 +1,6 @@
 using UnityEngine;
 
-// Anything a shop can put on a shelf. Upgrades and lumen bundles are both this, so the
-// shop keeps one list instead of two.
+// One list for every kind of good.
 public abstract class ShopGood : ScriptableObject
 {
     public string id;
@@ -25,8 +24,7 @@ public abstract class ShopGood : ScriptableObject
     // How many more the shop will sell. -1 means unlimited.
     public abstract int StockRemaining(GameRunProfile run);
 
-    // Price of the next one if you had already bought "extra" more this visit.
-    // Only matters for goods whose price climbs, like strength.
+    // Price of the next one after buying `extra` more. Only matters for climbing prices.
     public virtual int PriceAfter(GameRunProfile run, int extra) => PriceFor(run);
 
     public int TotalPrice(GameRunProfile run, int quantity)

@@ -212,7 +212,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  m_Sprite: {fileID: -6486237541469288603, guid: eaa489660fb3b0342be329925a06f02f, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1219,7 +1219,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 3207119325396803000, guid: e392eb85397618b4794fe8b1d9ad0982, type: 3}
+  m_Sprite: {fileID: 3948324395833988871, guid: e392eb85397618b4794fe8b1d9ad0982, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1643,7 +1643,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -5429860603474748724, guid: 541a4d755b213944c90d4ce4df283a69, type: 3}
+  m_Sprite: {fileID: -116059596369708853, guid: 541a4d755b213944c90d4ce4df283a69, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2101,8 +2101,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 314, y: -166}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: 200, y: -67.01}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6479891590832853122
 CanvasRenderer:
@@ -2829,7 +2829,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 2900404276945141117, guid: 0d21bb26d0ebbb24a8e60ea5f8ac8f25, type: 3}
+  m_Sprite: {fileID: -7848039375673857549, guid: 0d21bb26d0ebbb24a8e60ea5f8ac8f25, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3063,7 +3063,7 @@ Transform:
   m_GameObject: {fileID: 8335038824827997887}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 178, y: -338, z: 0}
+  m_LocalPosition: {x: 200, y: -282, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3558,11 +3558,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6651402094839072187, guid: 628fd670d980c0b4d850a7cac3c68f2e, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6651402094839072187, guid: 628fd670d980c0b4d850a7cac3c68f2e, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6651402094839072187, guid: 628fd670d980c0b4d850a7cac3c68f2e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3594,7 +3594,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6651402094839072187, guid: 628fd670d980c0b4d850a7cac3c68f2e, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -100
       objectReference: {fileID: 0}
     - target: {fileID: 6651402094839072187, guid: 628fd670d980c0b4d850a7cac3c68f2e, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -3789,11 +3789,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6651402094839072187, guid: 628fd670d980c0b4d850a7cac3c68f2e, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6651402094839072187, guid: 628fd670d980c0b4d850a7cac3c68f2e, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6651402094839072187, guid: 628fd670d980c0b4d850a7cac3c68f2e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3825,7 +3825,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6651402094839072187, guid: 628fd670d980c0b4d850a7cac3c68f2e, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 160.07
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6651402094839072187, guid: 628fd670d980c0b4d850a7cac3c68f2e, type: 3}
       propertyPath: m_AnchoredPosition.y

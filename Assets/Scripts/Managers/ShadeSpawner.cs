@@ -1,14 +1,11 @@
 using UnityEngine;
 
-// Lives on Managers. Puts the shade back into the world every time the player loads into
-// the scene they died in and has not collected it yet.
+// Puts the shade back whenever the player loads into the scene they died in.
 public class ShadeSpawner : MonoBehaviour
 {
     [SerializeField] private PlayerShade shadePrefab;
 
-    // Subscribed in Start rather than OnEnable: GameManager assigns its Instance in Awake
-    // and both components sit on the same prefab, so Awake order between them is not
-    // guaranteed.
+    // Start, not OnEnable: Awake order against GameManager is not guaranteed.
     private void Start()
     {
         if (GameManager.Instance != null)

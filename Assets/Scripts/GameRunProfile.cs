@@ -11,6 +11,13 @@ public class GameRunProfile
     public int maxHp = 100;
     public int currentHp = -1;
 
+    // Where loading resumes. Separate from the checkpoint: dying always uses the checkpoint.
+    public enum ResumeType { None, Checkpoint, Entrance }
+
+    public ResumeType resumeType = ResumeType.None;
+    public string     resumeScene;
+    public string     resumeId;
+
     [Header("Checkpoint Status")]
     public HashSet<string> openedCheckpoints = new();
     public bool hasCheckpoint;
@@ -150,6 +157,9 @@ public class GameRunProfile
         {
             currentArea          = currentArea,
             targetEntranceId     = targetEntranceId,
+            resumeType           = (int)resumeType,
+            resumeScene          = resumeScene,
+            resumeId             = resumeId,
             maxHp                = maxHp,
             currentHp            = currentHp,
             hasCheckpoint        = hasCheckpoint,
@@ -197,6 +207,9 @@ public class GameRunProfile
 
         currentArea          = save.currentArea;
         targetEntranceId     = save.targetEntranceId;
+        resumeType           = (ResumeType)save.resumeType;
+        resumeScene          = save.resumeScene;
+        resumeId             = save.resumeId;
         maxHp                = save.maxHp;
         currentHp            = save.currentHp;
         hasCheckpoint        = save.hasCheckpoint;

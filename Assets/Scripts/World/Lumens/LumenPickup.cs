@@ -8,8 +8,7 @@ public class LumenPickup : MonoBehaviour
     [SerializeField] private Collider2D colli;
 
     [Header("Worth")]
-    // One lumen each when an enemy drops them. The shade splits a whole purse across a
-    // handful of these instead of spawning three hundred objects.
+    // The shade splits a purse across a handful of these instead of hundreds.
     [SerializeField] private int value = 1;
 
     [Header("Attraction")]
@@ -36,8 +35,7 @@ public class LumenPickup : MonoBehaviour
 
     public void SetValue(int amount) => value = Mathf.Max(1, amount);
 
-    // Skip the settle and the proximity check. Used by the shade: that light is already
-    // the player's, it should come home rather than wait to be walked over.
+    // The shade's light is already the player's - it comes home rather than waiting.
     public void LaunchAtPlayer() => forceFly = true;
 
     private void Awake()

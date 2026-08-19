@@ -1,8 +1,7 @@
 using System.IO;
 using UnityEngine;
 
-// Reads and writes the two files from the design: one index of profiles, and one run
-// file per profile. Everything lands in Application.persistentDataPath.
+// Profile index plus one run file each, in Application.persistentDataPath.
 public static class SaveSystem
 {
     public const int SlotCount = 3;
@@ -75,9 +74,7 @@ public static class SaveSystem
         return n;
     }
 
-    // Slots are positions, not identities: saves always sit at 1, 2, 3 with no holes.
-    // Also repairs a folder someone edited by hand - delete save_run_00 and the one that
-    // was in slot 2 slides down rather than leaving an unreachable gap.
+    // Slots are positions: saves sit at 1,2,3 with no holes. Also repairs a hand-edited folder.
     public static void Compact()
     {
         ProfileIndex index = LoadIndex();
@@ -127,8 +124,7 @@ public static class SaveSystem
         }
     }
 
-    // Written to a temp file first, then swapped in. A crash mid-write leaves the old
-    // save intact instead of a half-finished one.
+    // Temp file then swap, so a crash mid-write leaves the old save intact.
     private static void Write(string path, string json)
     {
         try

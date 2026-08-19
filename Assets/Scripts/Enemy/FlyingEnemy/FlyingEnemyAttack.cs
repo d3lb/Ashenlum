@@ -33,8 +33,7 @@ public class FlyingEnemyAttack : MonoBehaviour, IRespawnReset
             playerTransform = player.transform;
     }
 
-    // Dying mid-dive kills the routine before it can switch the hitbox back off, so it
-    // would otherwise come back permanently dangerous to touch.
+    // Coroutines die with the object, so the hitbox never gets switched back off.
     public void ResetForRespawn()
     {
         attackCollider.enabled = false;

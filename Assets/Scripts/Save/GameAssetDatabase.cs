@@ -1,7 +1,6 @@
 using UnityEngine;
 
-// A save file can only hold ids. This turns them back into the assets they came from.
-// Anything the player can own has to be listed here or it will not survive a reload.
+// Ids back into assets. Anything ownable must be listed here or it vanishes on load.
 [CreateAssetMenu(fileName = "Game Asset Database", menuName = "Ashenlum/Asset Database")]
 public class GameAssetDatabase : ScriptableObject
 {
@@ -29,8 +28,7 @@ public class GameAssetDatabase : ScriptableObject
     }
 
 #if UNITY_EDITOR
-    // Catches the mistake that costs you a save: owning something the database never
-    // heard of, so it silently vanishes on load.
+    // A duplicate id silently loads the wrong asset.
     private void OnValidate()
     {
         WarnOnDuplicates();

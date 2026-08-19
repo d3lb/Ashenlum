@@ -1,7 +1,6 @@
 using UnityEngine;
 
-// The shadow that swallows the room. Purely decorative - the reset already happened
-// behind it. All it reports is when it is done playing.
+// Decoration only - the reset already happened behind it.
 public class RestWave : MonoBehaviour
 {
     [Header("Shape")]

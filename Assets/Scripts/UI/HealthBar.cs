@@ -85,8 +85,7 @@ public class HealthBar : MonoBehaviour
         float width = playerHealth.MaxHP * widthPerHP;
         barTransform.sizeDelta = new Vector2(width, barTransform.sizeDelta.y);
 
-        // anchoredPosition places the PIVOT, so shift by how far the pivot sits from the
-        // bar's middle. Works at any pivot setting - the bar grows both ways from barCenterX.
+        // anchoredPosition places the pivot, so shift by its distance from the middle.
         if (keepBarCentered)
         {
             Vector2 pos = barTransform.anchoredPosition;

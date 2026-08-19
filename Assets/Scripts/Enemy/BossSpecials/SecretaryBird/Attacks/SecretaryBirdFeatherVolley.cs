@@ -29,8 +29,7 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack
         yield return MoveToWall(player, perchHeight);
         state.FaceTowards(player.position.x);
 
-        // No line. The wind-up pose is the whole tell - a spread does not travel along a
-        // single path, so a line would promise something the attack does not do.
+        // No line: a spread has no single path to promise.
         Vector2 aim = player.position;
         state.CurrentState = SecretaryBirdState.BossStateType.Windup;
         yield return move.Hold(fanTime);

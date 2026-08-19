@@ -2,10 +2,7 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 
-// Owns the dialogue box. Callers hand it a Conversation and never touch the UI.
-// E finishes the current line, then advances, then closes.
-// onFinished fires after the box is gone - that is how the boss knows to start
-// fighting and the shop knows to open.
+// onFinished fires after the box closes - that is the boss's and the shop's cue.
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance { get; private set; }
@@ -117,8 +114,7 @@ public class DialogueManager : MonoBehaviour
     {
         isTyping = true;
 
-        // Set the whole string once and reveal it character by character - no per-character
-        // allocations, and rich text tags stay intact.
+        // Set once and revealed by character: no per-character allocations, tags stay intact.
         dialogueText.text = sentence;
         dialogueText.ForceMeshUpdate();
         int total = dialogueText.textInfo.characterCount;

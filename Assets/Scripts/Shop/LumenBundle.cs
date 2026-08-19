@@ -1,7 +1,6 @@
 using UnityEngine;
 
-// A pouch of lumens you buy at a premium. Death takes your loose lumens; it cannot take
-// a bundle. Cash it in later to get the value back.
+// Bought at a premium; survives death, unlike loose lumens.
 [CreateAssetMenu(fileName = "New Lumen Bundle", menuName = "Ashenlum/Lumen Bundle")]
 public class LumenBundle : ShopGood
 {
