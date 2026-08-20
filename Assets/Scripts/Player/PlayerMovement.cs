@@ -44,6 +44,12 @@ public class PlayerMovement : MonoBehaviour
 
     //Dash
     private int dashesLeft;
+    private float lastDashTime = -999f;
+
+    // A fast tap releases jump before the jump has been applied, so checking "am I in
+    // the Jump state right now" missed it and you got full height. Remember the release
+    // and spend it once the player is actually rising.
+    private bool jumpCutQueued;
 
     // physicsData is a shared asset - a purchase must never write to it.
     private int MaxDashes => physicsData.dashAmount +
@@ -122,14 +128,12 @@ public class PlayerMovement : MonoBehaviour
         if (input.JumpPressed)
         {
             LastPressedJumpTime = physicsData.jumpInputBufferTime;
+            jumpCutQueued = false;
         }
 
         if (input.JumpReleased)
         {
-            LastPressedJumpTime = 0;
-
-            if (state.CurrentState == PlayerStateType.Jump)
-                StartCoroutine(CutJump());
+            jumpCutQueued = true;
         }
 
         if (input.DashPressed)
@@ -263,6 +267,8 @@ public class PlayerMovement : MonoBehaviour
         }
 
         #endregion
+
+        TryCutJump();
 
         UpdateState();
     }
@@ -401,12 +407,24 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
     }
 
-    private IEnumerator CutJump()
+    // Runs every frame instead of on the release event, so it still fires when the
+    // release arrived before the jump did.
+    private void TryCutJump()
     {
-        yield return null;
+        if (!jumpCutQueued) return;
 
-        if (rb.linearVelocity.y > 0 && jumpNumber == 1 && wallJumpTimer <= 0f)
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.5f);
+        if (rb.linearVelocity.y <= 0f)
+        {
+            // Already falling, so there is nothing left to cut.
+            if (LastOnGroundTime > 0) jumpCutQueued = false;
+            return;
+        }
+
+        if (jumpNumber != 1 || wallJumpTimer > 0f) return;
+
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x,
+                                        rb.linearVelocity.y * physicsData.jumpCutMultiplier);
+        jumpCutQueued = false;
     }
 
 
@@ -477,6 +495,7 @@ public class PlayerMovement : MonoBehaviour
         state.IsDashing = true;
 
         dashesLeft--;
+        lastDashTime = Time.time;
         float gScale = physicsData.gravityScale;
 
         rb.linearVelocity = Vector2.zero;
@@ -536,6 +555,10 @@ public class PlayerMovement : MonoBehaviour
     {
        
         if (!GameManager.Instance.activeRun.isDashUnlocked) return false;
+
+        // Separate from refilling a charge: with more than one charge you could
+        // otherwise chain dashes with no gap at all.
+        if (Time.time < lastDashTime + physicsData.dashCooldown) return false;
 
         if (state.CurrentState != PlayerStateType.Dash && dashesLeft < MaxDashes && !dashRefilling)
         {

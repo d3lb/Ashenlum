@@ -37,6 +37,7 @@ public class PlayerPhysicsData : ScriptableObject
     [Range(0f, 1)] public float jumpHangGravityMult; //Reduces gravity while close to the apex (desired max height) of the jump
     public float jumpHangTimeThreshold; //Speeds (close to 0) where the player will experience extra "jump hang". The player's velocity.y is closest to 0 at the jump's apex (think of the gradient of a parabola or quadratic function)
     [Space(0.5f)]
+    [Range(0.05f, 1f)] public float jumpCutMultiplier = 0.5f; //How much upward speed survives releasing jump early. Lower means shorter taps.
     public float jumpHangAccelerationMult;
     public float jumpHangMaxSpeedMult;
 
@@ -67,6 +68,7 @@ public class PlayerPhysicsData : ScriptableObject
     public float dashTime;
     [Space(5)]
     public float dashRefillTime;
+    public float dashCooldown = 0.2f; //Minimum gap between two dashes, separate from refilling a charge.
 
     [Space(20)]
 
