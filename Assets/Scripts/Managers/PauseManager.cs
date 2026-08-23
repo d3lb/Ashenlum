@@ -38,11 +38,9 @@ public class PauseManager : MonoBehaviour
 
     private void Update()
     {
-        if (GameManager.Instance.activeRun.isTransitioningScenes)
-            return;
-
-        // The inventory owns Escape while open, so pause must not stack under it.
-        if (InventoryUI.IsOpen || ShopUI.IsOpen)
+        // Whoever is open owns Escape. Checked only when closed, or pause could
+        // never be dismissed - being paused makes UIState.Busy true by itself.
+        if (!paused && UIState.Busy)
             return;
 
         if (Input.GetKeyDown(KeyCode.Escape))

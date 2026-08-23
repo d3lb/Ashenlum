@@ -68,7 +68,7 @@ public class PlayerPhysicsData : ScriptableObject
     public float dashTime;
     [Space(5)]
     public float dashRefillTime;
-    public float dashCooldown = 0.2f; //Minimum gap between two dashes, separate from refilling a charge.
+    public float dashCooldown = 0f; //Minimum gap between two dashes. 0 lets you spend both charges back to back.
 
     [Space(20)]
 

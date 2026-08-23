@@ -38,6 +38,8 @@ public class PlayerActiveAbility : MonoBehaviour
         }
     }
 
+    public bool IsCharging => casting;
+
     public float CooldownPercent =>
         cooldownLength <= 0f ? 1f : Mathf.Clamp01((Time.time - cooldownStart) / cooldownLength);
 

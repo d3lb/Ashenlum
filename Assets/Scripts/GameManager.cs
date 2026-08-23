@@ -260,6 +260,7 @@ public class GameManager : MonoBehaviour
     {
         if (scene.name != menuScene) activeRun.currentArea = scene.name;
         TimeManager.ReleaseAll();
+        CheckPoint.ClearResting();
         StartCoroutine(NotifySceneReady());
 
         if (scene.name == pendingCheckpointScene)
@@ -336,6 +337,27 @@ public class GameManager : MonoBehaviour
     }
 
 
+    // Fast travel. SetCheckpoint can only ever mean "the one in this scene", so the
+    // destination has to be named outright.
+    public void TravelToCheckpoint(string scene, string entranceId)
+    {
+        if (string.IsNullOrEmpty(scene) || string.IsNullOrEmpty(entranceId))
+        {
+            Debug.LogError($"[GameManager] Travel to '{entranceId}' has no scene set.");
+            return;
+        }
+
+        activeRun.checkpointScene      = scene;
+        activeRun.checkpointEntranceId = entranceId;
+        activeRun.hasCheckpoint        = true;
+
+        SetResume(GameRunProfile.ResumeType.Checkpoint, scene, entranceId);
+        MarkDirty();
+
+        // No heal: the rest that opened this menu already did that.
+        GoToCheckpoint(false);
+    }
+
     public bool HasCheckpoint()
     {
         return activeRun.hasCheckpoint;
@@ -357,6 +379,21 @@ public class GameManager : MonoBehaviour
     public bool IsWallBroken(string wallID)
     {
         return activeRun.brokenWalls.Contains(wallID);
+    }
+
+    // EVENTS - one-off world flags: shortcuts opened, cutscenes watched.
+
+    public void RegisterEvent(string eventId)
+    {
+        if (string.IsNullOrEmpty(eventId)) return;
+
+        activeRun.seenEvents.Add(eventId);
+        MarkDirty();
+    }
+
+    public bool HasSeenEvent(string eventId)
+    {
+        return !string.IsNullOrEmpty(eventId) && activeRun.seenEvents.Contains(eventId);
     }
 
     public System.Action<int> OnLumensChanged;

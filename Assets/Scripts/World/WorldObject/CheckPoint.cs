@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class CheckPoint : Interactable
@@ -11,6 +12,29 @@ public class CheckPoint : Interactable
 
     private bool resting;
 
+    // Counted rather than a bool: the wave is a moment nothing else may open over,
+    // and two checkpoints resting at once must not clear each other's flag.
+    private static int restingCount;
+    public static bool Resting => restingCount > 0;
+
+    // Statics outlive the scene. A count stuck above zero would lock every panel shut,
+    // so it is cleared alongside the freeze stack on every load.
+    public static void ClearResting() => restingCount = 0;
+
+    // Standing at a lit checkpoint is what unlocks changing your loadout.
+    private static readonly HashSet<CheckPoint> nearby = new();
+
+    public static bool PlayerAtCheckpoint
+    {
+        get
+        {
+            foreach (CheckPoint c in nearby)
+                if (c != null && c.Discovered) return true;
+
+            return false;
+        }
+    }
+
     public string CheckpointEntranceId => checkpointEntranceId;
 
     private bool Discovered =>
@@ -19,6 +43,10 @@ public class CheckPoint : Interactable
     protected override bool CanInteract => !resting;
 
     protected override string PromptVerb => Discovered ? "Rest" : "Discover";
+
+    // Added regardless of discovery, since it can be lit while standing here.
+    protected override void OnPlayerEnter() => nearby.Add(this);
+    protected override void OnPlayerExit()  => nearby.Remove(this);
 
     protected override void Interact()
     {
@@ -32,12 +60,19 @@ public class CheckPoint : Interactable
             return;
         }
 
+        BeginRest();
+    }
+
+    public void BeginRest()
+    {
+        if (resting) return;
         StartCoroutine(Rest());
     }
 
     private IEnumerator Rest()
     {
         resting = true;
+        restingCount++;
         TimeManager.Freeze(this);
 
         PlayerHealth player = FindFirstObjectByType<PlayerHealth>();
@@ -62,14 +97,21 @@ public class CheckPoint : Interactable
 
         TimeManager.Release(this);
         resting = false;
+        restingCount--;
+
+        // Sitting down is the rest. The menu is what you do while sitting there.
+        if (RestPointUI.Instance != null) RestPointUI.Instance.Open(this);
     }
 
     // Never leave the game frozen if this is torn down mid-rest.
     private void OnDisable()
     {
+        nearby.Remove(this);
+
         if (!resting) return;
 
         resting = false;
+        restingCount--;
         TimeManager.Release(this);
     }
 }

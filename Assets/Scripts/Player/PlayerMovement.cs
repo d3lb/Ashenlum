@@ -54,8 +54,18 @@ public class PlayerMovement : MonoBehaviour
     // physicsData is a shared asset - a purchase must never write to it.
     private int MaxDashes => physicsData.dashAmount +
         (GameManager.Instance != null ? GameManager.Instance.activeRun.bonusDashes : 0);
-    private bool dashRefilling;
+    private float dashRefillTimer;
     private Vector2 lastDashDir;
+
+    // For the HUD pips.
+    public int DashCharges => dashesLeft;
+    public int DashChargesMax => MaxDashes;
+
+    // How far the charge currently refilling has got. 0 when they are all full.
+    public float DashRefillPercent =>
+        dashesLeft >= MaxDashes || physicsData.dashRefillTime <= 0f
+            ? 0f
+            : Mathf.Clamp01(dashRefillTimer / physicsData.dashRefillTime);
 
         
     //Input
@@ -92,6 +102,14 @@ public class PlayerMovement : MonoBehaviour
         SetGravityScale(physicsData.gravityScale);
         state.IsFacingRight = true;
         LastSafeGround = transform.position;
+    }
+
+    // dashesLeft defaults to 0, so without this you spawn with no dash and have to wait
+    // one refill for your first one. Runs on re-enable too, so respawning restores them.
+    private void OnEnable()
+    {
+        dashesLeft = MaxDashes;
+        dashRefillTimer = 0f;
     }
 
     private void Update()
@@ -269,6 +287,7 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         TryCutJump();
+        TickDashRefill();
 
         UpdateState();
     }
@@ -352,6 +371,10 @@ public class PlayerMovement : MonoBehaviour
     private void OnDisable()
     {
         TimeManager.Release(this);
+
+        // StartDash clears this at the end of its coroutine, and a coroutine dies with a
+        // disabled object. Left true it makes IsBusy permanent: no dash, no attack, ever.
+        if (state != null) state.IsDashing = false;
     }
     #endregion
 
@@ -513,13 +536,29 @@ public class PlayerMovement : MonoBehaviour
         state.IsDashing = false;
     }
 
-    //Short period before the player is able to dash again
-    private IEnumerator RefillDash(int amount)
+    // Charges come back one at a time, never in parallel: the timer refills a single
+    // charge, then starts over for the next. Without this, holding two charges felt
+    // exactly like holding one, because the refill only ticked while the button was
+    // being pressed and the charge was spent the moment it arrived.
+    private void TickDashRefill()
     {
-        dashRefilling = true;
-        yield return new WaitForSeconds(physicsData.dashRefillTime);
-        dashRefilling = false;
-        dashesLeft = Mathf.Min(MaxDashes, dashesLeft + 1);
+        if (dashesLeft > MaxDashes) dashesLeft = MaxDashes;
+
+        // Deliberately keeps counting during the dash itself. Pausing here made the real
+        // gap dashTime + dashRefillTime, so the asset said 0.4 and you waited 0.5.
+        if (dashesLeft >= MaxDashes)
+        {
+            dashRefillTimer = 0f;
+            return;
+        }
+
+        dashRefillTimer += Time.deltaTime;
+        if (dashRefillTimer < physicsData.dashRefillTime) return;
+
+        // Carries the overshoot instead of dropping it, so the second charge takes the
+        // same time as the first rather than an extra frame.
+        dashRefillTimer -= physicsData.dashRefillTime;
+        dashesLeft++;
     }
     #endregion
 
@@ -559,11 +598,6 @@ public class PlayerMovement : MonoBehaviour
         // Separate from refilling a charge: with more than one charge you could
         // otherwise chain dashes with no gap at all.
         if (Time.time < lastDashTime + physicsData.dashCooldown) return false;
-
-        if (state.CurrentState != PlayerStateType.Dash && dashesLeft < MaxDashes && !dashRefilling)
-        {
-            StartCoroutine(nameof(RefillDash), 1);
-        }
 
         return !state.IsBusy && dashesLeft > 0 && LastPressedDashTime > 0;
 

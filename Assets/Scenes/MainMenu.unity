@@ -820,7 +820,7 @@ MonoBehaviour:
   - {fileID: 723525402}
   areaNames:
   - scene: Start
-    display: Ash Fall
+    display: AshenFall
   - scene: Right
     display: Bloom
 --- !u!1001 &963997843

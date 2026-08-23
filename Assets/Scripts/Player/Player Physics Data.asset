@@ -30,6 +30,7 @@ MonoBehaviour:
   jumpForce: 32.307693
   jumpHangGravityMult: 1
   jumpHangTimeThreshold: 1
+  jumpCutMultiplier: 0.5
   jumpHangAccelerationMult: 1
   jumpHangMaxSpeedMult: 1
   wallJumpForce: {x: 15, y: 20}
@@ -43,8 +44,9 @@ MonoBehaviour:
   slideAccel: 6
   dashAmount: 1
   dashSpeed: 30
-  dashTime: 0.1
-  dashRefillTime: 0.4
+  dashTime: 0.12
+  dashRefillTime: 0.6
+  dashCooldown: 0.3
   coyoteTime: 0.15
   jumpInputBufferTime: 0.15
   dashInputBufferTime: 0.15

@@ -23,6 +23,9 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private AbilitySocketUI abilitySocket;
     [SerializeField] private TalismanSocketUI[] talismanSockets;
 
+    // Shown when the panel is opened away from a checkpoint, where the loadout is read-only.
+    [SerializeField] private GameObject loadoutLockedHint;
+
     [Header("Owned list")]
     // The grid inside each section; the sections themselves are laid out in the editor.
     [SerializeField] private Transform abilityListParent;
@@ -78,10 +81,8 @@ public class InventoryUI : MonoBehaviour
     {
         if (IsOpen) return;
 
-        // Don't stack on top of the pause menu or a conversation.
-        if (PauseManager.Instance != null && PauseManager.Instance.IsPaused) return;
-        if (DialogueManager.IsDialogueActive) return;
-        if (ShopUI.IsOpen) return;
+        // One gate for every panel, so a new panel never has to be added here.
+        if (UIState.Busy) return;
 
         IsOpen = true;
         if (inventoryPanel != null) inventoryPanel.SetActive(true);
@@ -112,8 +113,13 @@ public class InventoryUI : MonoBehaviour
         else        Open();
     }
 
+    // Consumables stay usable anywhere; only the loadout is checkpoint-bound.
+    private static bool CanEditLoadout => CheckPoint.PlayerAtCheckpoint;
+
     public void Refresh()
     {
+        if (loadoutLockedHint != null) loadoutLockedHint.SetActive(!CanEditLoadout);
+
         RefreshAbilities();
         RefreshSockets();
         RefreshOwnedList();
@@ -147,23 +153,26 @@ public class InventoryUI : MonoBehaviour
     private void RefreshSockets()
     {
         var run = GameManager.Instance.activeRun;
+        bool editable = CanEditLoadout;
 
         if (abilitySocket != null)
             abilitySocket.Bind(run.equippedAbility,
-                run.equippedAbility == null ? null : UnequipAbility);
+                run.equippedAbility == null || !editable ? null : UnequipAbility);
 
         for (int i = 0; i < talismanSockets.Length; i++)
         {
             int slot = i;
             Talisman equipped = i < run.equippedTalismans.Length ? run.equippedTalismans[i] : null;
 
-            talismanSockets[i].Bind(equipped, equipped == null ? null : () => Unequip(slot));
+            talismanSockets[i].Bind(equipped,
+                equipped == null || !editable ? null : () => Unequip(slot));
         }
     }
 
     private void RefreshOwnedList()
     {
         var run = GameManager.Instance.activeRun;
+        bool editable = CanEditLoadout;
 
         ClearSpawned();
 
@@ -171,7 +180,8 @@ public class InventoryUI : MonoBehaviour
         {
             ActiveAbility captured = a;
             bool equipped = run.equippedAbility == a;
-            Spawn(abilityListParent, a.icon, 1, equipped, equipped ? null : () => EquipAbility(captured));
+            Spawn(abilityListParent, a.icon, 1, equipped || !editable,
+                  equipped || !editable ? null : () => EquipAbility(captured));
         }
         if (run.ownedAbilities.Count == 0) SpawnEmpty(abilityListParent);
 
@@ -179,7 +189,8 @@ public class InventoryUI : MonoBehaviour
         {
             Talisman captured = t;
             bool equipped = run.IsEquipped(t);
-            Spawn(talismanListParent, t.icon, 1, equipped, equipped ? null : () => Equip(captured));
+            Spawn(talismanListParent, t.icon, 1, equipped || !editable,
+                  equipped || !editable ? null : () => Equip(captured));
         }
         if (run.ownedTalismans.Count == 0) SpawnEmpty(talismanListParent);
 
@@ -230,6 +241,8 @@ public class InventoryUI : MonoBehaviour
 
     private void Equip(Talisman talisman)
     {
+        if (!CanEditLoadout) return;
+
         // Both sockets full - free one first rather than silently swapping.
         if (!GameManager.Instance.activeRun.Equip(talisman)) return;
 
@@ -240,6 +253,8 @@ public class InventoryUI : MonoBehaviour
 
     private void Unequip(int slot)
     {
+        if (!CanEditLoadout) return;
+
         var run = GameManager.Instance.activeRun;
         if (slot < 0 || slot >= run.equippedTalismans.Length) return;
 
@@ -252,6 +267,7 @@ public class InventoryUI : MonoBehaviour
 
     private void EquipAbility(ActiveAbility ability)
     {
+        if (!CanEditLoadout) return;
         if (!GameManager.Instance.activeRun.EquipAbility(ability)) return;
 
         GameManager.Instance.MarkDirty();
@@ -260,7 +276,10 @@ public class InventoryUI : MonoBehaviour
 
     private void UnequipAbility()
     {
+        if (!CanEditLoadout) return;
+
         GameManager.Instance.activeRun.UnequipAbility();
+        GameManager.Instance.MarkDirty();
         Refresh();
     }
 

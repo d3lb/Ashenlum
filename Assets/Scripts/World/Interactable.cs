@@ -8,6 +8,7 @@ public abstract class Interactable : MonoBehaviour
     private InteractPrompt prompt;
     private PlayerInput input;
     private bool inRange;
+    private Transform player;
 
     protected virtual void Awake()
     {
@@ -20,7 +21,9 @@ public abstract class Interactable : MonoBehaviour
 
     private void Update()
     {
-        bool available = inRange && input != null && CanInteract;
+        // Update runs at timeScale 0, so without this an open panel still passes E
+        // through to whatever the player happens to be standing on.
+        bool available = inRange && input != null && !UIState.Busy && CanInteract;
 
         if (prompt != null)
         {
@@ -34,13 +37,24 @@ public abstract class Interactable : MonoBehaviour
     protected virtual bool CanInteract => true;
     protected virtual string PromptVerb => "Interact";
 
+    protected bool PlayerInRange => inRange;
+
+    // Null unless the player is inside the trigger. For things that care which side.
+    protected Transform Player => player;
+
     protected abstract void Interact();
+
+    // For things that care about proximity itself, not just the E press.
+    protected virtual void OnPlayerEnter() { }
+    protected virtual void OnPlayerExit() { }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (!other.CompareTag("Player")) return;
         input = other.GetComponent<PlayerInput>();
+        player = other.transform;
         inRange = true;
+        OnPlayerEnter();
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -48,5 +62,7 @@ public abstract class Interactable : MonoBehaviour
         if (!other.CompareTag("Player")) return;
         inRange = false;
         input = null;
+        player = null;
+        OnPlayerExit();
     }
 }
