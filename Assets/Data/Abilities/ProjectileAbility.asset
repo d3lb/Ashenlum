@@ -17,7 +17,7 @@ MonoBehaviour:
   description: Shoots a light orb
   icon: {fileID: -1229858627709956937, guid: 6a213ebc3254de244ac94a149f53cee5, type: 3}
   chargeTime: 0.5
-  cooldown: 3
+  cooldown: 10
   projectilePrefab: {fileID: 7663735010151138270, guid: d551f6a6447713346aa7f705ec5901e9, type: 3}
   speed: 20
   damage: 10

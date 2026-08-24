@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DashPipUI
   front: {fileID: 2578435244380603174}
-  animateRefill: 1
+  animateRefill: 0
 --- !u!1 &541726695142793499
 GameObject:
   m_ObjectHideFlags: 0
@@ -954,7 +954,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DashPipUI
   front: {fileID: 7136349930956125633}
-  animateRefill: 1
+  animateRefill: 0
 --- !u!1 &1510486162257423767
 GameObject:
   m_ObjectHideFlags: 0
@@ -2780,10 +2780,10 @@ RectTransform:
   - {fileID: 6351192225362370892}
   m_Father: {fileID: 2549667530568788222}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -450, y: 65}
+  m_SizeDelta: {x: 100, y: 65}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2769819719963656763
 MonoBehaviour:
@@ -2802,7 +2802,7 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 0
+  m_ChildAlignment: 4
   m_StartCorner: 0
   m_StartAxis: 1
   m_CellSize: {x: 50, y: 65}
