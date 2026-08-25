@@ -1,79 +1,83 @@
 using UnityEngine;
 
-// A gate that only opens from the far side, and stays open once it has been.
-// The long way round is the price of the shortcut.
+// Opens once, from one side only, and stays open forever.
 public class ShortcutDoor : Interactable
 {
     [SerializeField] private string doorId;
 
-    [Header("Parts")]
-    // Left on until the door opens. Separate from the trigger this script needs.
+    // The solid collider. Must be on a child: Interactable turns the collider on this
+    // object into a trigger, and with two here it may pick the wrong one.
     [SerializeField] private Collider2D blocker;
-    [SerializeField] private GameObject closedVisual;
-    [SerializeField] private GameObject openVisual;
+
+    [SerializeField] private SpriteRenderer visual;
+
+    // Optional. Set one and it owns the picture instead of the sprite being switched off.
+    [SerializeField] private Animator animator;
 
     [Header("Side")]
-    // The side the player has to be standing on to open it.
     [SerializeField] private bool opensFromRight = true;
+    [SerializeField] private string wrongSideMessage = "Does not open from this side";
 
     private bool opened;
+    private Collider2D range;
 
     protected override void Awake()
     {
         base.Awake();
+        range = GetComponent<Collider2D>();
 
         if (string.IsNullOrEmpty(doorId))
             Debug.LogError($"[ShortcutDoor] '{name}' has no Door Id, so it cannot be saved.", this);
     }
 
-    // Start, not Awake, so GameManager is guaranteed up - same as BreakableWall.
+    // Start, not Awake, so GameManager is up - same as BreakableWall.
     private void Start()
     {
-        bool already = GameManager.Instance != null && GameManager.Instance.HasSeenEvent(doorId);
-        Apply(already);
+        opened = GameManager.Instance != null && GameManager.Instance.HasSeenEvent(doorId);
+        Apply();
     }
 
-    private bool OnOpeningSide
-    {
-        get
-        {
-            if (Player == null) return false;
+    // Measured from the trigger, not transform.position. The root pivot is often not in
+    // the doorway, and then every approach is on the same side of it and both read wrong.
+    private float DividingX => range != null ? range.bounds.center.x : transform.position.x;
 
-            return opensFromRight
-                ? Player.position.x > transform.position.x
-                : Player.position.x < transform.position.x;
-        }
-    }
+    private bool OnOpeningSide =>
+        Player != null && (opensFromRight ? Player.position.x > DividingX
+                                          : Player.position.x < DividingX);
 
-    // From the wrong side there is no prompt at all, rather than a prompt that refuses.
     protected override bool CanInteract => !opened && OnOpeningSide;
-
     protected override string PromptVerb => "Open";
+    protected override string BlockedMessage => opened ? null : wrongSideMessage;
 
     protected override void Interact()
     {
+        opened = true;
         GameManager.Instance.RegisterEvent(doorId);
-        Apply(true);
+        Apply();
     }
 
-    private void Apply(bool isOpen)
+    private void Apply()
     {
-        opened = isOpen;
+        if (blocker != null) blocker.enabled = !opened;
 
-        if (blocker != null)       blocker.enabled = !isOpen;
-        if (closedVisual != null)  closedVisual.SetActive(!isOpen);
-        if (openVisual != null)    openVisual.SetActive(isOpen);
+        if (animator != null) animator.SetBool("IsOpen", opened);
+        else if (visual != null) visual.enabled = !opened;
     }
 
-    // Green arrow points at the side you can open it from.
-    private void OnDrawGizmosSelected()
+    // Red line is the split, green ball is the side that opens it. If the red line is
+    // not in the doorway, that is the bug.
+    private void OnDrawGizmos()
     {
+        Collider2D c = range != null ? range : GetComponent<Collider2D>();
+        float x = c != null ? c.bounds.center.x : transform.position.x;
+        float y = transform.position.y;
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(new Vector3(x, y - 2f, 0f), new Vector3(x, y + 2f, 0f));
+
         Gizmos.color = Color.green;
-
-        Vector3 from = transform.position;
-        Vector3 to = from + Vector3.right * (opensFromRight ? 1.5f : -1.5f);
-
-        Gizmos.DrawLine(from, to);
-        Gizmos.DrawSphere(to, 0.15f);
+        Vector3 side = new Vector3(x + (opensFromRight ? 1.5f : -1.5f), y, 0f);
+        Gizmos.DrawLine(new Vector3(x, y, 0f), side);
+        Gizmos.DrawSphere(side, 0.15f);
     }
 }
