@@ -55,6 +55,7 @@ public class CheatMenu : MonoBehaviour
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         PlayerHealth ph = player?.GetComponent<PlayerHealth>();
+        PlayerCombat pc = player?.GetComponent<PlayerCombat>();
 
         scrollPos = GUILayout.BeginScrollView(scrollPos);
 
@@ -88,6 +89,23 @@ public class CheatMenu : MonoBehaviour
         else
         {
             GUILayout.Label("Player not found.");
+        }
+
+        //  STABILITY
+        if (ph != null && pc != null)
+        {
+            Section("Stability");
+
+            GUILayout.Label($"Tier: {pc.CurrentStability}   " +
+                            $"hitbox {pc.CurrentAttackScale:0.00}x   " +
+                            $"cooldown {pc.CurrentCooldown:0.000}s");
+
+            // Lands mid-band, so a stray hit does not tip it into the next tier.
+            GUILayout.BeginHorizontal();
+            if (GUILayout.Button("High"))  SetPercent(ph, 1.00f);
+            if (GUILayout.Button("Mid"))   SetPercent(ph, 0.50f);
+            if (GUILayout.Button("Low"))   SetPercent(ph, 0.20f);
+            GUILayout.EndHorizontal();
         }
 
         int typedLumens = IntField("Lumens", run.lumens);
@@ -172,6 +190,19 @@ public class CheatMenu : MonoBehaviour
     }
 
     //  HELPERS 
+
+    // Heal to full first, so this sets an absolute level rather than subtracting from
+    // wherever you happened to be. Damage is dealt through TakeDamage on purpose: it is
+    // the same path the game uses, so it cannot drift from real behaviour.
+    private void SetPercent(PlayerHealth ph, float percent)
+    {
+        ph.Heal(ph.MaxHP);
+
+        int target = Mathf.RoundToInt(ph.MaxHP * Mathf.Clamp01(percent));
+        int loss = ph.CurrentHP - target;
+
+        if (loss > 0) ph.TakeDamage(loss, ph.transform.position);
+    }
 
     private void Section(string label)
     {

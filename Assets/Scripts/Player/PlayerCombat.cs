@@ -35,6 +35,23 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float attackCooldown = 0.2f;
     [SerializeField] private float attackDuration = 0.1f;
     [SerializeField] private float attackSpeed = 1f;
+
+    // The worse your stability, the wilder the swing. Same direction as the damage
+    // tiers above, so the whole mechanic reads one way: hurt hits harder.
+    [Header("Stability - hitbox size")]
+    [SerializeField] private float highSize = 1f;
+    [SerializeField] private float midSize = 1.1f;
+    [SerializeField] private float lowSize = 1.25f;
+
+    // Shortens the gap between swings only. attackDuration stays fixed, so breaking
+    // down never shrinks the window you have to connect in.
+    [Header("Stability - swing rate")]
+    [SerializeField] private float highRate = 1f;
+    [SerializeField] private float midRate = 1.1f;
+    [SerializeField] private float lowRate = 1.2f;
+
+    // Scene view only. The hitbox is live for 0.1s, which is too short to judge by eye.
+    [SerializeField] private bool drawHitboxGizmo = true;
     [Space(2)]
     [SerializeField] private float recoilForceX = 5f;
     [SerializeField] private float recoilForceY = 2f;
@@ -69,6 +86,21 @@ public class PlayerCombat : MonoBehaviour
     private AttackType currentAttackType;
     private int attackDir;
 
+    // Scale is written as an absolute value off these, never multiplied onto the
+    // current scale, so repeated swings cannot compound.
+    private Transform[] attackScalers;
+    private Vector3[] attackBaseScales;
+    private Vector3[] attackBasePositions;
+
+    private float CooldownNow => attackCooldown / (attackSpeed * RateFor(Stability));
+
+    private StabilityState Stability => health.CurrentStabilityState;
+
+    // For the cheat menu and any HUD readout.
+    public StabilityState CurrentStability => Stability;
+    public float CurrentAttackScale => SizeFor(Stability);
+    public float CurrentCooldown => CooldownNow;
+
     private void Awake()
     {
         // Disable Colliders on start
@@ -76,6 +108,21 @@ public class PlayerCombat : MonoBehaviour
         attackColliderLeft.enabled = false;
         attackColliderUp.enabled = false;
         attackColliderDown.enabled = false;
+
+        attackScalers = new[]
+        {
+            attackColliderRight.transform, attackColliderLeft.transform,
+            attackColliderUp.transform,    attackColliderDown.transform
+        };
+
+        attackBaseScales = new Vector3[attackScalers.Length];
+        attackBasePositions = new Vector3[attackScalers.Length];
+
+        for (int i = 0; i < attackScalers.Length; i++)
+        {
+            attackBaseScales[i] = attackScalers[i].localScale;
+            attackBasePositions[i] = attackScalers[i].localPosition;
+        }
 
         filter = new ContactFilter2D();
         filter.SetLayerMask(enemyLayer | breakableLayer | spikeLayer);
@@ -98,7 +145,7 @@ public class PlayerCombat : MonoBehaviour
 
     private void Update()
     {
-        float cooldown = attackCooldown / attackSpeed;
+        float cooldown = CooldownNow;
 
         if (input.AttackPressed && Time.time >= lastAttackTime + cooldown && !state.IsBusy)
         {
@@ -112,6 +159,8 @@ public class PlayerCombat : MonoBehaviour
     {
         attackDir = state.IsFacingRight ? 1 : -1;
 
+        // Not scaled by stability: the swing comes round faster, but the window you
+        // have to land it in never shrinks.
         float active = attackDuration / attackSpeed;
 
         var (activeCollider, attackType) = GetAttackData();
@@ -142,6 +191,10 @@ public class PlayerCombat : MonoBehaviour
         if (GameManager.Instance != null)
             damage += GameManager.Instance.activeRun.strengthLevel * damagePerStrengthLevel;
 
+        // Per swing rather than on a health event, so healing, resting, respawning and
+        // loading a save all resolve on their own with no wiring.
+        ApplyAttackSize(SizeFor(Stability));
+
         SpawnSlash(attackType);
         activeCollider.enabled = true;
 
@@ -153,7 +206,87 @@ public class PlayerCombat : MonoBehaviour
         state.IsAttacking = false;
     }
 
-    // Process the attack 
+    private float SizeFor(StabilityState s) =>
+        s == StabilityState.High ? highSize : s == StabilityState.Mid ? midSize : lowSize;
+
+    private float RateFor(StabilityState s) =>
+        s == StabilityState.High ? highRate : s == StabilityState.Mid ? midRate : lowRate;
+
+    private void ApplyAttackSize(float scale)
+    {
+        if (attackScalers == null) return;
+
+        // Position scales as well as size, so the whole arrangement grows outward from
+        // the player instead of each box puffing up around its own centre. Because the
+        // offsets already point the right way (+2.5 right, -2.5 left, and so on), one
+        // multiply gives the correct direction for all four with no per-side handling.
+        for (int i = 0; i < attackScalers.Length; i++)
+        {
+            if (attackScalers[i] == null) continue;
+
+            attackScalers[i].localScale = attackBaseScales[i] * scale;
+            attackScalers[i].localPosition = attackBasePositions[i] * scale;
+        }
+
+        // Physics caches collider shapes and only refreshes on its own step. Overlap
+        // runs later this same frame, so without this the swing that crosses a
+        // stability threshold would still use the previous size.
+        Physics2D.SyncTransforms();
+    }
+
+    // Draws all four hitboxes at the size the CURRENT stability tier would give them,
+    // not the size the last swing left behind, so it previews before you attack.
+    // White = High, yellow = Mid, red = Low.
+    private void OnDrawGizmos()
+    {
+        if (!drawHitboxGizmo || health == null) return;
+
+        StabilityState tier = Stability;
+        float scale = SizeFor(tier);
+
+        Gizmos.color = tier == StabilityState.High ? Color.white
+                     : tier == StabilityState.Mid  ? Color.yellow
+                     : Color.red;
+
+        DrawHitbox(attackColliderRight, scale, 0);
+        DrawHitbox(attackColliderLeft,  scale, 1);
+        DrawHitbox(attackColliderUp,    scale, 2);
+        DrawHitbox(attackColliderDown,  scale, 3);
+    }
+
+    private void DrawHitbox(Collider2D col, float scale, int index)
+    {
+        if (col == null) return;
+
+        Transform t = col.transform;
+
+        // Base values, not current: ApplyAttackSize has already written the last swing's
+        // size and position onto the transform, and drawing those would echo them back
+        // instead of previewing the tier you are on now.
+        bool cached = attackBaseScales != null && index < attackBaseScales.Length;
+
+        Vector3 baseScale = cached ? attackBaseScales[index] : t.localScale;
+        Vector3 localPos = (cached ? attackBasePositions[index] : t.localPosition) * scale;
+
+        Vector3 worldPos = t.parent != null ? t.parent.TransformPoint(localPos) : localPos;
+
+        Gizmos.matrix = Matrix4x4.TRS(worldPos, t.rotation, baseScale * scale);
+
+        if (col is PolygonCollider2D poly && poly.points.Length > 1)
+        {
+            Vector2[] p = poly.points;
+            for (int i = 0; i < p.Length; i++)
+                Gizmos.DrawLine(p[i] + poly.offset, p[(i + 1) % p.Length] + poly.offset);
+        }
+        else if (col is BoxCollider2D box)
+        {
+            Gizmos.DrawWireCube(box.offset, box.size);
+        }
+
+        Gizmos.matrix = Matrix4x4.identity;
+    }
+
+    // Process the attack
     private void ProcessAttackHit(Collider2D activeCollider, AttackType attackType)
     {
         bool recoilApplied = false;
@@ -333,6 +466,10 @@ public class PlayerCombat : MonoBehaviour
 
         slash.transform.localPosition = point.localPosition;
         slash.transform.localRotation = rot;
+
+        // Off the prefab's scale, not the instance's, so it cannot compound. A bigger
+        // hitbox with the same slash just reads as inconsistent range.
+        slash.transform.localScale = slashPrefab.transform.localScale * SizeFor(Stability);
 
         Animator anim = slash.GetComponent<Animator>();
 
