@@ -69,6 +69,18 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float killShakeAmplitude = 3f;
     [SerializeField] private float killShakeFrequency = 2.5f;
 
+    // Every swing, hit or miss. Nothing at High on purpose: if all three tiers shook,
+    // the shake would stop meaning "you are hurt" and just become noise.
+    // Kept below hitShakeAmplitude so connecting still reads as a step up, not down.
+    [Header("Swing Shake - by stability")]
+    [SerializeField] private float midSwingDuration = 0.05f;
+    [SerializeField] private float midSwingAmplitude = 0.8f;
+    [SerializeField] private float midSwingFrequency = 2f;
+
+    [SerializeField] private float lowSwingDuration = 0.07f;
+    [SerializeField] private float lowSwingAmplitude = 1.5f;
+    [SerializeField] private float lowSwingFrequency = 2.5f;
+
     [Header("Layers")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private LayerMask enemyLayer;
@@ -194,6 +206,10 @@ public class PlayerCombat : MonoBehaviour
         // Per swing rather than on a health event, so healing, resting, respawning and
         // loading a save all resolve on their own with no wiring.
         ApplyAttackSize(SizeFor(Stability));
+
+        // Before ProcessAttackHit, so landing a hit overrides this with the stronger
+        // hit shake rather than the two fighting over the camera.
+        ShakeSwing();
 
         SpawnSlash(attackType);
         activeCollider.enabled = true;
@@ -355,6 +371,25 @@ public class PlayerCombat : MonoBehaviour
             return (attackColliderDown, AttackType.Down);
 
         return (attackDir == 1 ? attackColliderRight : attackColliderLeft, AttackType.Side);
+    }
+
+    // Fires on the swing itself, whether or not anything is there to hit.
+    private void ShakeSwing()
+    {
+        if (CameraShakeManager.Instance == null) return;
+
+        switch (Stability)
+        {
+            case StabilityState.Mid:
+                CameraShakeManager.Instance.Shake(
+                    midSwingDuration, midSwingAmplitude, midSwingFrequency);
+                break;
+
+            case StabilityState.Low:
+                CameraShakeManager.Instance.Shake(
+                    lowSwingDuration, lowSwingAmplitude, lowSwingFrequency);
+                break;
+        }
     }
 
     // shake screen

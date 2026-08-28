@@ -565,6 +565,11 @@ MonoBehaviour:
   smallHitPrefab: {fileID: 6872354023078328444, guid: 1733307614a0ed54fa5af38193ea8f4d, type: 3}
   smallOffset: 0.15
   randomAngle: 15
+  landDustPrefab: {fileID: 7861897511864097044, guid: a7bfe0d861cfd7a41b965a2e987f2b4b, type: 3}
+  dashDustPrefab: {fileID: 7861897511864097044, guid: a7bfe0d861cfd7a41b965a2e987f2b4b, type: 3}
+  slideDustPrefab: {fileID: 0}
+  minLandSpeed: 8
+  slideDustInterval: 0.12
 --- !u!1 &8849866329559990079
 GameObject:
   m_ObjectHideFlags: 0
@@ -786,6 +791,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   physicsData: {fileID: 11400000, guid: d7f2cb8d92e57f94a9e08187c5b3c6f7, type: 2}
   state: {fileID: 9070195286219344354}
+  effectSpawner: {fileID: 6188443945364886173}
   _groundCheckPoint: {fileID: 8719789730045427767}
   _groundCheckSize: {x: 0.9, y: 0.1}
   _frontWallCheckPoint: {fileID: 7813412877864477775}
@@ -852,6 +858,13 @@ MonoBehaviour:
   attackCooldown: 0.4
   attackDuration: 0.1
   attackSpeed: 1
+  highSize: 1
+  midSize: 1.1
+  lowSize: 1.25
+  highRate: 1
+  midRate: 1.1
+  lowRate: 1.2
+  drawHitboxGizmo: 1
   recoilForceX: 6
   recoilForceY: 3
   pogoForce: 20
@@ -859,10 +872,16 @@ MonoBehaviour:
   killPauseTime: 0.08
   hitShakeDuration: 0.04
   hitShakeAmplitude: 2
-  hitShakeFrequency: 2
+  hitShakeFrequency: 3
   killShakeDuration: 0.08
-  killShakeAmplitude: 3
-  killShakeFrequency: 2.5
+  killShakeAmplitude: 4
+  killShakeFrequency: 2
+  midSwingDuration: 0.05
+  midSwingAmplitude: 2
+  midSwingFrequency: 2
+  lowSwingDuration: 0.07
+  lowSwingAmplitude: 3
+  lowSwingFrequency: 2
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -969,3 +988,4 @@ MonoBehaviour:
   animator: {fileID: 0}
   postHitLockTime: 0.5
   recoverTime: 0.2
+  slowTime: 0.5
