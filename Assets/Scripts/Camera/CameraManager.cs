@@ -128,7 +128,20 @@ public class CameraManager : MonoBehaviour
         forcingYOffset = true;
     }
 
-    public void LookUp() { lookOffsetY = lookDistance; currentLookSpeed = lookSnapSpeed; lookVelocity = 0f; }
-    public void LookDown() { lookOffsetY = -lookDistance; currentLookSpeed = lookSnapSpeed; lookVelocity = 0f; }
+    // Distance comes from the room. lookDistance is only a fallback for a caller that
+    // somehow looks with no room set.
+    public void LookUp()
+    {
+        lookOffsetY = currentRoom != null ? currentRoom.LookUpDistance : lookDistance;
+        currentLookSpeed = lookSnapSpeed;
+        lookVelocity = 0f;
+    }
+
+    public void LookDown()
+    {
+        lookOffsetY = -(currentRoom != null ? currentRoom.LookDownDistance : lookDistance);
+        currentLookSpeed = lookSnapSpeed;
+        lookVelocity = 0f;
+    }
     public void ResetLook() { lookOffsetY = 0f; currentLookSpeed = lookSnapSpeed; }
 }

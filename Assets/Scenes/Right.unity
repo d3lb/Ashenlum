@@ -172,6 +172,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 1
   lockX: 1
   minX: 0
@@ -311,6 +313,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 4
   lockX: 0
   minX: 0
@@ -410,6 +414,63 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7074766e4aab524d9c072784d7362a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+--- !u!1001 &63373499
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2695724242514254178, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_Name
+      value: Mushroom (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 305.46085
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -97.61957
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
 --- !u!1 &64252120
 GameObject:
   m_ObjectHideFlags: 0
@@ -541,6 +602,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 0
   lockX: 0
   minX: 0
@@ -642,6 +705,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: -2
   lockX: 0
   minX: 0
@@ -1261,6 +1326,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 1
   lockX: 0
   minX: 0
@@ -1588,6 +1655,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 0
   lockX: 0
   minX: 0
@@ -2230,6 +2299,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 4
   lockX: 0
   minX: 0
@@ -2331,6 +2402,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 4
   lockX: 0
   minX: 0
@@ -2432,6 +2505,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 307
@@ -2669,6 +2744,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 4
   lockX: 0
   minX: 0
@@ -2977,6 +3054,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 0
   lockX: 0
   minX: 0
@@ -3078,7 +3157,9 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 0
-  trackedYOffset: -1
+  lookUpDistance: 6
+  lookDownDistance: 6
+  trackedYOffset: -3
   lockX: 0
   minX: 0
   maxX: 0
@@ -3179,6 +3260,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 4
   lockX: 1
   minX: 0
@@ -3280,6 +3363,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 1
   lockX: 1
   minX: 198
@@ -3663,6 +3748,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 0
@@ -6516,6 +6603,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 0
@@ -6674,6 +6763,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 2
   lockX: 1
   minX: 167
@@ -6872,6 +6963,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 0
   lockX: 0
   minX: 0
@@ -6973,7 +7066,9 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 1
-  trackedYOffset: -1
+  lookUpDistance: 6
+  lookDownDistance: 7
+  trackedYOffset: -3
   lockX: 1
   minX: 0
   maxX: 295
@@ -7014,7 +7109,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 41.000015, y: 2.5}
+  m_Offset: {x: 43.000015, y: -3.5}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -7024,7 +7119,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 21.000122, y: 16}
+  m_Size: {x: 17.000122, y: 4}
   m_EdgeRadius: 0
 --- !u!1 &1417509047
 GameObject:
@@ -7074,6 +7169,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 6
   lockX: 1
   minX: 0
@@ -7175,6 +7272,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 0
@@ -7689,22 +7788,6 @@ CompositeCollider2D:
         Y: -140000000
       - X: 2729999872
         Y: -140000000
-    - - X: 1240000000
-        Y: -290000000
-      - X: 1170000000
-        Y: -290000000
-      - X: 1170000000
-        Y: -300000000
-      - X: 1240000000
-        Y: -300000000
-    - - X: 1350000000
-        Y: -490000000
-      - X: 1290000000
-        Y: -490000000
-      - X: 1290000000
-        Y: -500000000
-      - X: 1350000000
-        Y: -500000000
   m_CompositePaths:
     m_Paths:
     - - {x: 179.99997, y: -62}
@@ -7899,14 +7982,6 @@ CompositeCollider2D:
       - {x: 269.99997, y: -8}
       - {x: 242, y: -8.00003}
       - {x: 242.00003, y: -14}
-    - - {x: 123.99998, y: -30}
-      - {x: 123.99998, y: -29}
-      - {x: 117, y: -29.000029}
-      - {x: 117.00003, y: -30}
-    - - {x: 134.99997, y: -50}
-      - {x: 134.99997, y: -49}
-      - {x: 129, y: -49.00003}
-      - {x: 129.00003, y: -50}
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
@@ -21882,66 +21957,6 @@ Tilemap:
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
   - first: {x: 126, y: -50, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 129, y: -50, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 130, y: -50, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 131, y: -50, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 132, y: -50, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 133, y: -50, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 134, y: -50, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 0
@@ -49592,76 +49607,6 @@ Tilemap:
       dummyAlignment: 0
       m_AllTileFlags: 1073741825
   - first: {x: 82, y: -30, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 117, y: -30, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 118, y: -30, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 119, y: -30, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 120, y: -30, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 121, y: -30, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 122, y: -30, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 1
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 1073741825
-  - first: {x: 123, y: -30, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 0
@@ -247663,13 +247608,13 @@ Tilemap:
       m_AllTileFlags: 1073741825
   m_AnimatedTiles: {}
   m_TileAssetArray:
-  - m_RefCount: 23962
+  - m_RefCount: 23949
     m_Data: {fileID: 11400000, guid: 480a3e6079a1e35438bc228803671e8d, type: 2}
   m_TileSpriteArray:
-  - m_RefCount: 23962
+  - m_RefCount: 23949
     m_Data: {fileID: 7482667652216324306, guid: bb511f362fe3afa4aa48f354608def73, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 23962
+  - m_RefCount: 23949
     m_Data:
       e00: 1
       e01: 0
@@ -247708,7 +247653,7 @@ Tilemap:
   m_TileColorArray:
   - m_RefCount: 0
     m_Data: {r: 0, g: 0, b: 0, a: 0}
-  - m_RefCount: 23962
+  - m_RefCount: 23949
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -248341,6 +248286,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 0
   lockX: 0
   minX: 0
@@ -248473,6 +248420,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: -2
   lockX: 1
   minX: 380
@@ -248574,6 +248523,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 0
   lockX: 1
   minX: 0
@@ -248675,6 +248626,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 0
   lockX: 0
   minX: 0
@@ -248776,6 +248729,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 0
   lockX: 0
   minX: 0
@@ -249176,9 +249131,11 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 1
-  minX: 307
+  minX: 0
   maxX: 320
   lockY: 0
   minY: 0
@@ -249277,6 +249234,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 0
@@ -249552,6 +249511,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 1
   minX: 267
@@ -249593,7 +249554,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 44.000015, y: 15}
+  m_Offset: {x: 44.000015, y: 10.5}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -249603,7 +249564,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 41.000122, y: 17}
+  m_Size: {x: 41.000122, y: 8}
   m_EdgeRadius: 0
 --- !u!1001 &1973449357
 PrefabInstance:
@@ -249773,6 +249734,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 3
   lockX: 1
   minX: 166
@@ -249980,6 +249943,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 3
   lockX: 1
   minX: 167
@@ -250138,6 +250103,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 0
@@ -250179,7 +250146,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 29.500015, y: 8}
+  m_Offset: {x: 31.500015, y: 8}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -250189,7 +250156,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 14.000122, y: 5}
+  m_Size: {x: 18.000122, y: 5}
   m_EdgeRadius: 0
 --- !u!1 &2095595153
 GameObject:
@@ -250277,6 +250244,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 0
   lockX: 0
   minX: 0
@@ -250378,6 +250347,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 8
   lockX: 0
   minX: 0
@@ -250549,6 +250520,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 0
@@ -250650,6 +250623,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1477394369}
   allowLookUp: 1
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 4
   lockX: 0
   minX: 0
@@ -250817,6 +250792,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c30d090d6357d8b4fb7c0e2499222f88, type: 3}
+--- !u!1001 &3670616654516127128
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 2695724242514254178, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_Name
+      value: Mushroom
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 295.1983
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -77.83536
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5227768211381826097, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 540f41acede9bd945a7a31de085f895a, type: 3}
 --- !u!1001 &8792971473202323278
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -250901,3 +250933,5 @@ SceneRoots:
   - {fileID: 427714334}
   - {fileID: 244221631}
   - {fileID: 527554043}
+  - {fileID: 3670616654516127128}
+  - {fileID: 63373499}

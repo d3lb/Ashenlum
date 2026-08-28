@@ -10,6 +10,12 @@ public class CameraRoomBounds : MonoBehaviour
     [SerializeField] private bool allowLookUp;
     [SerializeField] private bool allowLookDown;
 
+    // How far the camera travels when looking. 6 was the single hardcoded value for
+    // every room, so rooms that already exist keep behaving exactly as they did.
+    // Down is entered as a positive number; the camera manager negates it.
+    [SerializeField] private float lookUpDistance = 6f;
+    [SerializeField] private float lookDownDistance = 6f;
+
     [Header("Settings")]
     [SerializeField] private float trackedYOffset;
 
@@ -28,6 +34,10 @@ public class CameraRoomBounds : MonoBehaviour
 
     public bool AllowLookUp => allowLookUp;
     public bool AllowLookDown => allowLookDown;
+
+    public float LookUpDistance => lookUpDistance;
+    public float LookDownDistance => lookDownDistance;
+
 
     public bool LockX => lockX;
 
