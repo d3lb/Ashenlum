@@ -114,6 +114,8 @@ public class KingHealth : MonoBehaviour, IDamageable
 
         state.CurrentState = KingState.KingStateType.Dead;
 
+        GameManager.Instance?.CountKill();
+
         if (deathEffect != null)
             Instantiate(deathEffect, transform.position, Quaternion.identity);
 

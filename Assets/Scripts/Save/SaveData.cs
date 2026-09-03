@@ -10,6 +10,7 @@ public class ProfileEntry
     public bool   slotUsed;
     public float  playTime;
     public int    deaths;
+    public int    kills;
     public string saveFile;
 }
 

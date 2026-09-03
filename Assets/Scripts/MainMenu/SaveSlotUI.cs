@@ -11,6 +11,7 @@ public class SlotSummary
     public int    maxHp;
     public int    lumens;
     public int    deaths;
+    public int    kills;
     public float  playTime;
     public string area;
 
@@ -34,6 +35,7 @@ public class SaveSlotUI : MonoBehaviour
     [Header("Run")]
     [SerializeField] private TMP_Text playTimeText;
     [SerializeField] private TMP_Text deathsText;
+    [SerializeField] private TMP_Text killsText;
     [SerializeField] private TMP_Text areaText;
 
     [Header("States")]
@@ -108,6 +110,7 @@ public class SaveSlotUI : MonoBehaviour
         if (lumenText != null)    lumenText.text = summary.lumens.ToString();
         if (playTimeText != null) playTimeText.text = FormatTime(summary.playTime);
         if (deathsText != null)   deathsText.text = $"{summary.deaths} deaths";
+        if (killsText != null)    killsText.text = $"{summary.kills} kills";
         if (areaText != null)     areaText.text = summary.area;
 
         SetIcon(abilityIcon, summary.ability);

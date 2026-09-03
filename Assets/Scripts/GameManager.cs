@@ -84,6 +84,7 @@ public class GameManager : MonoBehaviour
         entry.slotUsed = true;
         entry.playTime = 0f;
         entry.deaths   = 0;
+        entry.kills    = 0;
 
         index.lastUsedProfile = profileId;
         SaveSystem.SaveIndex(index);
@@ -174,6 +175,12 @@ public class GameManager : MonoBehaviour
         SaveSystem.SaveIndex(index);
     }
 
+    // Counted in memory and written by SaveNow, which already rewrites the index for
+    // playTime. Writing the whole index file once per enemy killed would be absurd.
+    private int pendingKills;
+
+    public void CountKill() => pendingKills++;
+
     private ProfileEntry NewEntry(ProfileIndex index, int profileId)
     {
         ProfileEntry entry = new ProfileEntry
@@ -202,6 +209,9 @@ public class GameManager : MonoBehaviour
         entry.slotUsed  = true;
         entry.playTime += Time.unscaledTime - sessionStart;
         sessionStart    = Time.unscaledTime;
+
+        entry.kills += pendingKills;
+        pendingKills = 0;
 
         index.lastUsedProfile = CurrentProfileId;
         SaveSystem.SaveIndex(index);

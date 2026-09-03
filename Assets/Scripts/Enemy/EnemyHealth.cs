@@ -170,6 +170,8 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     // death
     private void Die()
     {
+        GameManager.Instance?.CountKill();
+
         GetComponentInChildren<LumenDropper>()?.Drop();
 
         if (corpsePrefab != null)

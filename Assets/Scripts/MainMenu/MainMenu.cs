@@ -109,6 +109,7 @@ public class MainMenu : MonoBehaviour
         {
             summary.playTime = entry.playTime;
             summary.deaths   = entry.deaths;
+            summary.kills    = entry.kills;
         }
 
         RunSave save = SaveSystem.LoadRun(profileId);

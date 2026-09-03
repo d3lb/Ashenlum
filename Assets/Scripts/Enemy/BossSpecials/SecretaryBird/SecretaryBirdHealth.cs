@@ -85,6 +85,8 @@ public class SecretaryBirdHealth : MonoBehaviour, IDamageable
 
         state.CurrentState = SecretaryBirdState.BossStateType.Dead;
 
+        GameManager.Instance?.CountKill();
+
         if (deathEffect != null)
             Instantiate(deathEffect, transform.position, Quaternion.identity);
 
