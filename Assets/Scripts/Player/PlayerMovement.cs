@@ -30,6 +30,12 @@ public class PlayerMovement : MonoBehaviour
     //Ground
     private bool wasGroundedLastFrame;
 
+    // Footsteps are spaced by distance travelled, not by a timer. A timer plays at the
+    // same rate whether you are creeping or sprinting, which reads as wrong immediately.
+    [Header("Footsteps")]
+    [SerializeField] private float stepDistance = 2.2f;
+    private float stepTravelled;
+
     //Jump
     private int jumpNumber;
     public int JumpNumber => jumpNumber;
@@ -207,6 +213,9 @@ public class PlayerMovement : MonoBehaviour
             jumpNumber = 0;
         }
 
+        // Landing, read before the flag updates.
+        if (state.IsGrounded && !wasGroundedLastFrame) SoundManager.Play(SoundId.Land);
+
         wasGroundedLastFrame = state.IsGrounded;
 
         // Jump
@@ -219,6 +228,7 @@ public class PlayerMovement : MonoBehaviour
         else if (CanJump() && LastPressedJumpTime > 0)
         {
             jumpNumber++;
+            SoundManager.Play(jumpNumber > 1 ? SoundId.DoubleJump : SoundId.Jump);
             Jump();
             LastPressedJumpTime = 0;
         }
@@ -288,6 +298,7 @@ public class PlayerMovement : MonoBehaviour
 
         TryCutJump();
         TickDashRefill();
+        TickFootsteps();
 
         UpdateState();
     }
@@ -516,6 +527,7 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator StartDash(Vector2 dir)
     {
         state.IsDashing = true;
+        SoundManager.Play(SoundId.Dash);
 
         dashesLeft--;
         lastDashTime = Time.time;
@@ -540,6 +552,28 @@ public class PlayerMovement : MonoBehaviour
     // charge, then starts over for the next. Without this, holding two charges felt
     // exactly like holding one, because the refill only ticked while the button was
     // being pressed and the charge was spent the moment it arrived.
+    private void TickFootsteps()
+    {
+        bool walking = state.IsGrounded
+                       && !state.IsBusy
+                       && Mathf.Abs(moveInput.x) > 0.1f
+                       && Mathf.Abs(rb.linearVelocity.x) > 0.5f;
+
+        if (!walking)
+        {
+            // Primed, so the first step lands as you start moving rather than a full
+            // stride later. Stopping and starting should not feel silent.
+            stepTravelled = stepDistance;
+            return;
+        }
+
+        stepTravelled += Mathf.Abs(rb.linearVelocity.x) * Time.deltaTime;
+        if (stepTravelled < stepDistance) return;
+
+        stepTravelled = 0f;
+        SoundManager.Play(SoundId.Footstep);
+    }
+
     private void TickDashRefill()
     {
         if (dashesLeft > MaxDashes) dashesLeft = MaxDashes;

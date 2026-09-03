@@ -88,6 +88,11 @@ public class LumenPickup : MonoBehaviour
         if (!other.CompareTag("Player")) return;
 
         GameManager.Instance.AddLumens(value);
+
+        // Positional: a pile collected across the room should not be as loud as one
+        // picked up at your feet.
+        SoundManager.PlayAt(SoundId.Pickup, transform.position);
+
         Destroy(gameObject);
     }
 

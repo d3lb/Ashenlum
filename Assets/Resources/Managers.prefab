@@ -201,6 +201,59 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbca718b999d76941a469b311c69ee7e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+--- !u!1 &3691655598093867858
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1570068526389221435}
+  - component: {fileID: 6725197873038172099}
+  m_Layer: 0
+  m_Name: SoundManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1570068526389221435
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3691655598093867858}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 747.39374, y: 351.96924, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8566483509320771050}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6725197873038172099
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3691655598093867858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 683fa4884d6511244af0179a9b3ad1cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SoundManager
+  bank: {fileID: 11400000, guid: 936e3202555c2e846b76dc930f965e2d, type: 2}
+  mixer: {fileID: 24100000, guid: dfb4d36fe6fce4543aa9fb6c3e11f795, type: 2}
+  sfxGroup: {fileID: 4878298254615540273, guid: dfb4d36fe6fce4543aa9fb6c3e11f795, type: 2}
+  musicGroup: {fileID: -7066742503689505541, guid: dfb4d36fe6fce4543aa9fb6c3e11f795, type: 2}
+  voices: 8
+  musicCrossfade: 1.5
+  masterParam: MasterVolume
+  sfxParam: SFXVolume
+  musicParam: MusicVolume
 --- !u!1 &3728173432995252981
 GameObject:
   m_ObjectHideFlags: 0
@@ -339,6 +392,7 @@ Transform:
   - {fileID: 3844316543003960332}
   - {fileID: 7908997602910342942}
   - {fileID: 1052459550527342081}
+  - {fileID: 1570068526389221435}
   - {fileID: 8134305617887049489}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

@@ -211,6 +211,8 @@ public class PlayerCombat : MonoBehaviour
         // hit shake rather than the two fighting over the camera.
         ShakeSwing();
 
+        SoundManager.Play(SoundId.Attack);
+
         SpawnSlash(attackType);
         activeCollider.enabled = true;
 
@@ -321,6 +323,8 @@ public class PlayerCombat : MonoBehaviour
                 hitDamageables.Add(damageable);
 
                 bool destroyed = damageable.TakeDamage( damage, transform.position  );
+
+                SoundManager.Play(destroyed ? SoundId.Kill : SoundId.HitDealt);
 
                 Transform hitTransform = ((MonoBehaviour)damageable).transform;
 

@@ -223,6 +223,8 @@ GameObject:
   - component: {fileID: 140726873}
   - component: {fileID: 140726875}
   - component: {fileID: 140726872}
+  - component: {fileID: 140726878}
+  - component: {fileID: 140726877}
   - component: {fileID: 140726871}
   - component: {fileID: 140726870}
   - component: {fileID: 140726869}
@@ -583,10 +585,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e7a8bc3702e3d54c845ab58d9ac0b80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KingSpike
-  label: 
+  label: spike-1
   weight: 1
   minPhase: 1
-  maxPhase: 0
+  maxPhase: 1
   recovery: 0.6
   timeout: 8
   arena: {fileID: 538991416}
@@ -681,6 +683,54 @@ MonoBehaviour:
   brain: {fileID: 140726863}
   state: {fileID: 140726864}
   health: {fileID: 140726862}
+--- !u!114 &140726877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140726859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e7a8bc3702e3d54c845ab58d9ac0b80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KingSpike
+  label: spike-3
+  weight: 1
+  minPhase: 3
+  maxPhase: 3
+  recovery: 0.6
+  timeout: 8
+  arena: {fileID: 538991416}
+  count: 3
+  burstGap: 0.35
+  spikeSize: {x: 1.37, y: 4.64}
+  telegraphTime: 0.55
+  activeTime: 0.25
+--- !u!114 &140726878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 140726859}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e7a8bc3702e3d54c845ab58d9ac0b80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KingSpike
+  label: spike-2
+  weight: 1
+  minPhase: 2
+  maxPhase: 2
+  recovery: 0.6
+  timeout: 8
+  arena: {fileID: 538991416}
+  count: 2
+  burstGap: 0.35
+  spikeSize: {x: 1.37, y: 4.64}
+  telegraphTime: 0.55
+  activeTime: 0.25
 --- !u!1001 &215391271
 PrefabInstance:
   m_ObjectHideFlags: 0

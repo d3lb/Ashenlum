@@ -116,6 +116,8 @@ public class PlayerHealth : MonoBehaviour
         lastHitTime = Time.time;
         regenBuffer = 0f;
         hp -= dmg;
+
+        SoundManager.Play(SoundId.HitTaken);
         isInvincible = true;
         iFrameTimer = iFrameTime;
 
@@ -176,6 +178,8 @@ public class PlayerHealth : MonoBehaviour
     {
         if (state != null && state.CurrentState == PlayerStateType.Dead) return;
         if (state != null) state.CurrentState = PlayerStateType.Dead;
+
+        SoundManager.Play(SoundId.Death);
 
         if (rb != null)
         {
