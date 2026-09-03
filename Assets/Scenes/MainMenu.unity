@@ -823,6 +823,8 @@ MonoBehaviour:
     display: AshenFall
   - scene: Right
     display: Bloom
+  - scene: Finish
+    display: Sunlight
 --- !u!1001 &963997843
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -65,7 +65,7 @@ public class DialogueManager : MonoBehaviour
         if (closeRoutine != null) return;
         if (PauseManager.Instance != null && PauseManager.Instance.IsPaused) return;
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (UIInput.AdvancePressed)
             HandleAdvance();
     }
 

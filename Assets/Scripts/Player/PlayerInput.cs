@@ -23,8 +23,10 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
-        if (IsPaused || DialogueManager.IsDialogueActive || InventoryUI.IsOpen
-            || ShopUI.IsOpen || ConfirmModal.IsOpen)
+        // One gate, shared with Interactable and PauseManager. Keeping a private list
+        // here is how the rest menu, the rest wave and the credits all ended up able
+        // to flip the player and buffer a jump while he was meant to be frozen.
+        if (UIState.Busy)
         {
             Movement = Vector2.zero;
 

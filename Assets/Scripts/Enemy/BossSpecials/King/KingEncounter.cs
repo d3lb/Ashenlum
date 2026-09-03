@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 // Doors, camera and King wake as one moment, so one thing has to order them.
@@ -13,6 +14,10 @@ public class KingEncounter : MonoBehaviour
 
     [Header("Camera")]
     [SerializeField] private CameraSwitcher cameraSwitcher;
+
+    [Header("Ending")]
+    [SerializeField] private KingCredits credits;
+    [SerializeField] private Conversation lastWords;
 
     // Cached: the King deletes himself once beaten, and the throne still asks after that.
     private string bossId;
@@ -57,11 +62,25 @@ public class KingEncounter : MonoBehaviour
         // Beating the final boss is the least acceptable thing to lose to a crash.
         if (GameManager.Instance != null) GameManager.Instance.SaveNow();
 
+        StartCoroutine(Ending());
+    }
+
+    private IEnumerator Ending()
+    {
+        if (lastWords != null && DialogueManager.Instance != null)
+        {
+            bool done = false;
+            DialogueManager.Instance.StartDialogue(lastWords, () => done = true);
+            yield return new WaitUntil(() => done);
+        }
+
+        if (credits != null) yield return credits.Play();
+
+        // Doors and camera only after the card, so the room is still sealed behind
+        // the black and you come back to the arena rather than mid-transition.
         SetDoorsClosed(false);
 
         if (cameraSwitcher != null) cameraSwitcher.SwitchToGameplayCam();
-
-        // Ending / credits hook goes here once that scene exists.
     }
 
     private void SetDoorsClosed(bool closed)

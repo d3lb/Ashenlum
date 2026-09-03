@@ -24,12 +24,33 @@ public class KingBrain : MonoBehaviour
     [SerializeField] private int punishHitCount = 4;
     [SerializeField] private float punishWindow = 2f;
 
+    // Without this he answers every burst, so staying on him turns the fight into the
+    // punish on repeat. It is a warning, not a wall.
+    [SerializeField] private float punishCooldown = 8f;
+
     // The whole point of the fight: the worse your stability, the less time he gives
     // you. Low is where you hit hardest, so it is also where he is most relentless.
     [Header("Greed")]
     [SerializeField] private float highStabilityScale = 1.4f;
     [SerializeField] private float midStabilityScale = 1f;
     [SerializeField] private float lowStabilityScale = 0.6f;
+
+    // Shared by every attack, so damage and the player layer are set in one place
+    // rather than repeated on each one where they would drift apart.
+    [Header("Light")]
+    [SerializeField] private int lightDamage = 15;
+    [SerializeField] private LayerMask playerLayer;
+
+    // Left empty a plain white square is generated in code, so the fight is visible
+    // and tunable before any art exists. Drop a sprite in later and nothing changes.
+    [SerializeField] private Sprite lightSprite;
+
+    [SerializeField] private Color telegraphColor = new Color(1f, 0.93f, 0.55f, 0.30f);
+    [SerializeField] private Color activeColor = new Color(1f, 1f, 0.85f, 0.95f);
+
+    // Must beat the tilemap's order or every attack draws behind the floor.
+    [SerializeField] private string sortingLayer = "Default";
+    [SerializeField] private int sortingOrder = 50;
 
     [Header("Intro")]
     [SerializeField] private string bossId = "KingOfLum";
@@ -54,15 +75,36 @@ public class KingBrain : MonoBehaviour
     private int recentHits;
     private float recentHitsExpire;
     private bool punishQueued;
+    private float punishReadyAt;
 
     public string BossId => bossId;
     public bool Active => active;
     public Transform Player => player;
 
+    // Read by KingDebugHUD. Nothing in the fight depends on these.
+    public KingAttack CurrentMain { get; private set; }
+    public KingAttack CurrentExtra { get; private set; }
+    public KingAttack TransitionAttack => transitionAttack;
+    public KingAttack PunishAttack => punishAttack;
+    public IReadOnlyList<KingAttack> Pool => pool;
+    public int PunishHitsNeeded => punishHitCount;
+    public int PunishProgress => Time.time > recentHitsExpire ? 0 : recentHits;
+    public float GreedNow => GreedScale;
+    public KingPhaseTuning PaceNow => Pace;
+
     private KingPhaseTuning Pace => pacing != null ? pacing.For(state.Phase) : fallbackPace;
     private static readonly KingPhaseTuning fallbackPace = new();
 
     public float TelegraphScale => Pace.telegraphScale;
+
+    public int LightDamage => lightDamage;
+    public LayerMask PlayerLayer => playerLayer;
+
+    public Sprite LightSprite => lightSprite;
+    public Color TelegraphColor => telegraphColor;
+    public Color ActiveColor => activeColor;
+    public string SortingLayer => sortingLayer;
+    public int SortingOrder => sortingOrder;
 
     // 1 when there is no player to read, so a missing reference cannot break pacing.
     private float GreedScale
@@ -134,13 +176,30 @@ public class KingBrain : MonoBehaviour
     {
         state.CurrentState = KingState.KingStateType.Intro;
 
-        if (introConversation != null && DialogueManager.Instance != null)
+        // FirstTime last: it marks the line as seen, so calling it before the null
+        // checks would burn the intro on a run where no conversation was assigned yet.
+        if (introConversation != null && DialogueManager.Instance != null && FirstTime("intro"))
             yield return Say(introConversation);
         else if (introDelay > 0f)
             yield return new WaitForSeconds(introDelay);
 
         // Nested, not StartCoroutine, so Deactivate's StopCoroutine(loop) still reaches it.
         yield return FightLoop();
+    }
+
+    // Saved in seenEvents, so a line never plays twice even across deaths and reloads.
+    // Marks it as seen on the way out, so asking is also answering.
+    private bool FirstTime(string key)
+    {
+        var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
+        if (run == null) return true;
+
+        string id = $"{bossId}_{key}";
+        if (run.seenEvents.Contains(id)) return false;
+
+        run.seenEvents.Add(id);
+        GameManager.Instance.MarkDirty();
+        return true;
     }
 
     private IEnumerator Say(Conversation conversation)
@@ -165,12 +224,18 @@ public class KingBrain : MonoBehaviour
 
             if (player == null) { yield return null; continue; }
 
-            if (punishQueued && punishAttack != null)
+            if (punishQueued && punishAttack != null && Time.time >= punishReadyAt)
             {
                 punishQueued = false;
+                punishReadyAt = Time.time + punishCooldown;
+
                 yield return RunAttacks(punishAttack, null);
                 continue;
             }
+
+            // Queued but still cooling down: drop it rather than saving it up, or he
+            // fires a stale punish long after the greed that earned it.
+            punishQueued = false;
 
             state.CurrentState = KingState.KingStateType.Choosing;
 
@@ -187,7 +252,13 @@ public class KingBrain : MonoBehaviour
                 Debug.Log($"[King] phase {state.Phase} -> {main.DisplayName}" +
                           (extra != null ? $" + {extra.DisplayName}" : ""), this);
 
+            CurrentMain = main;
+            CurrentExtra = extra;
+
             yield return RunAttacks(main, extra);
+
+            CurrentMain = null;
+            CurrentExtra = null;
 
             state.CurrentState = KingState.KingStateType.Recover;
             yield return new WaitForSeconds(main.Recovery * Pace.recoveryScale * GreedScale);
@@ -198,7 +269,8 @@ public class KingBrain : MonoBehaviour
     {
         state.CurrentState = KingState.KingStateType.Transition;
 
-        if (state.Phase == 3 && phase3Conversation != null && DialogueManager.Instance != null)
+        if (state.Phase == 3 && phase3Conversation != null &&
+            DialogueManager.Instance != null && FirstTime("phase3"))
             yield return Say(phase3Conversation);
 
         if (transitionAttack != null)
@@ -263,11 +335,14 @@ public class KingBrain : MonoBehaviour
     private bool UpdatePhase()
     {
         float f = health != null ? health.Normalized : 1f;
-        int p = f <= phase3At ? 3 : f <= phase2At ? 2 : 1;
+        int target = f <= phase3At ? 3 : f <= phase2At ? 2 : 1;
 
-        if (p == state.Phase) return false;
+        // Never backwards, and never more than one step at a time. A single big hit can
+        // cross both thresholds, and jumping straight to 3 would skip phase 2's
+        // transition burst and its dialogue entirely.
+        if (target <= state.Phase) return false;
 
-        state.Phase = p;
+        state.Phase++;
         bag.Clear();
         return true;
     }

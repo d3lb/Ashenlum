@@ -2465,6 +2465,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 1
   minX: 77
@@ -2909,6 +2911,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 0
@@ -6443,6 +6447,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 3.2
   lockX: 0
   minX: 0
@@ -11548,6 +11554,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 1
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 0
   lockX: 0
   minX: 0
@@ -13633,6 +13641,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 0
@@ -14007,6 +14017,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 2
   lockX: 0
   minX: 0
@@ -19064,6 +19076,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 0
@@ -24053,6 +24067,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 0
@@ -26885,7 +26901,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Cinemachine::Cinemachine.CinemachineBasicMultiChannelPerlin
   m_NoiseProfile: {fileID: 11400000, guid: 26751e8c441eeab45a5c0b91d70c783d, type: 2}
   m_PivotOffset: {x: 0, y: 0, z: 0}
-  m_AmplitudeGain: 1
+  m_AmplitudeGain: 0
   m_FrequencyGain: 1
   mNoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!1 &939849335
@@ -27698,6 +27714,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 1
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: -1
   lockX: 1
   minX: -78.7
@@ -28684,6 +28702,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 6
   lockX: 0
   minX: 0
@@ -29830,6 +29850,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 3
   lockX: 1
   minX: 0
@@ -30386,6 +30408,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 1
   minX: 0
@@ -38563,6 +38587,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 1
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 3
   lockX: 1
   minX: -78.7
@@ -40305,6 +40331,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: -1
   lockX: 0
   minX: 0
@@ -222940,6 +222968,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 1
   lockX: 1
   minX: 40
@@ -225538,6 +225568,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 5
   lockX: 0
   minX: 0
@@ -229481,6 +229513,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 4
   lockX: 0
   minX: 0
@@ -232765,6 +232799,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 1
   allowLookDown: 1
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 0
   lockX: 1
   minX: 0
@@ -233481,6 +233517,8 @@ MonoBehaviour:
   cameraManager: {fileID: 1299769776}
   allowLookUp: 0
   allowLookDown: 0
+  lookUpDistance: 6
+  lookDownDistance: 6
   trackedYOffset: 4.3
   lockX: 0
   minX: 0

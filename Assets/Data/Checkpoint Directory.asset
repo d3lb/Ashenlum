@@ -19,3 +19,6 @@ MonoBehaviour:
   - id: bloomy_checkpoint
     displayName: Bloom
     scene: Right
+  - id: checkpoint_king
+    displayName: Sunlight
+    scene: Finish

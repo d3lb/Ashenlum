@@ -335,11 +335,11 @@ Transform:
   - {fileID: 1176870655372837749}
   - {fileID: 8267372560368296743}
   - {fileID: 616935105071966447}
-  - {fileID: 8134305617887049489}
   - {fileID: 5141640778995938787}
   - {fileID: 3844316543003960332}
   - {fileID: 7908997602910342942}
   - {fileID: 1052459550527342081}
+  - {fileID: 8134305617887049489}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5343640974461400553
@@ -530,6 +530,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   assetDatabase: {fileID: 11400000, guid: a5e5830cc9958884c8a8094812ef37ba, type: 2}
+  menuScene: MainMenu
   saveInterval: 1
 --- !u!1 &7112116317106351911
 GameObject:

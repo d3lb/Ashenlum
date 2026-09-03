@@ -49,6 +49,28 @@ public class KingHealth : MonoBehaviour, IDamageable
             mat = sprite.material = new Material(sprite.material);
     }
 
+    // Lets maxHp be edited during Play and actually take effect. Without it, hp keeps
+    // the value Awake copied and you get nonsense like 150/10.
+    private void OnValidate()
+    {
+        if (!Application.isPlaying) return;
+
+        hp = Mathf.Clamp(hp, 0, Mathf.Max(1, maxHp));
+        OnHealthChanged?.Invoke(Normalized);
+    }
+
+    // For the debug HUD. Goes through the same death path a real killing blow does,
+    // so testing the ending cannot diverge from the real thing.
+    public void DebugSetHealth(int value)
+    {
+        if (state.IsDead) return;
+
+        hp = Mathf.Clamp(value, 0, maxHp);
+        OnHealthChanged?.Invoke(Normalized);
+
+        if (hp <= 0) StartCoroutine(Die());
+    }
+
     private void Update()
     {
         if (state.IsDead || !isInvincible) return;

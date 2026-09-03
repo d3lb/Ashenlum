@@ -13,8 +13,13 @@ public static class UIState
         DialogueManager.IsDialogueActive ||
         (PauseManager.Instance != null && PauseManager.Instance.IsPaused);
 
+    // Set by anything that takes the screen for a moment and is not a panel: credits,
+    // cutscenes. A plain flag so this file never has to know what those things are.
+    public static bool CutsceneActive;
+
     // Adds the moments the world is mid-animation and must not be interrupted.
-    public static bool Busy => PanelOpen || CheckPoint.Resting || Transitioning;
+    public static bool Busy =>
+        PanelOpen || CutsceneActive || CheckPoint.Resting || Transitioning;
 
     private static bool Transitioning =>
         GameManager.Instance != null &&
