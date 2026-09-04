@@ -12,16 +12,13 @@ public class CheckPoint : Interactable
 
     private bool resting;
 
-    // Counted rather than a bool: the wave is a moment nothing else may open over,
-    // and two checkpoints resting at once must not clear each other's flag.
+    // Counted, so two checkpoints resting at once cannot clear each other's flag.
     private static int restingCount;
     public static bool Resting => restingCount > 0;
 
-    // Statics outlive the scene. A count stuck above zero would lock every panel shut,
-    // so it is cleared alongside the freeze stack on every load.
+    // Statics outlive the scene, and a stuck count would lock every panel shut.
     public static void ClearResting() => restingCount = 0;
 
-    // Standing at a lit checkpoint is what unlocks changing your loadout.
     private static readonly HashSet<CheckPoint> nearby = new();
 
     public static bool PlayerAtCheckpoint
@@ -44,7 +41,7 @@ public class CheckPoint : Interactable
 
     protected override string PromptVerb => Discovered ? "Rest" : "Discover";
 
-    // Added regardless of discovery, since it can be lit while standing here.
+    // Added regardless of discovery - it can be lit while standing here.
     protected override void OnPlayerEnter() => nearby.Add(this);
     protected override void OnPlayerExit()  => nearby.Remove(this);
 
@@ -77,14 +74,13 @@ public class CheckPoint : Interactable
 
         PlayerHealth player = FindFirstObjectByType<PlayerHealth>();
 
-        // The wave comes off the player, not the checkpoint - it is their rest.
         Vector3 origin = player != null ? player.transform.position : transform.position;
 
         if (player != null) player.Heal(player.MaxHP);
 
         WorldReset.ResetAll();
 
-        // Held for the whole wave; the wave destroying itself is the cue to release.
+        // The wave destroying itself is the cue to release.
         if (restWavePrefab != null)
         {
             RestWave wave = Instantiate(restWavePrefab, origin, Quaternion.identity);
@@ -99,11 +95,11 @@ public class CheckPoint : Interactable
         resting = false;
         restingCount--;
 
-        // Sitting down is the rest. The menu is what you do while sitting there.
+        // Sitting down is the rest; the menu comes after.
         if (RestPointUI.Instance != null) RestPointUI.Instance.Open(this);
     }
 
-    // Never leave the game frozen if this is torn down mid-rest.
+    // Torn down mid-rest must not leave the game frozen.
     private void OnDisable()
     {
         nearby.Remove(this);

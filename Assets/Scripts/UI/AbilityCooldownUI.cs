@@ -1,21 +1,17 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// HUD readout for the equipped ability and the dash charges.
-// This script only ever sets fillAmount on the meter. Its colour stays yours.
+// Sets fillAmount on the meter only; its colour is left alone.
 public class AbilityCooldownUI : MonoBehaviour
 {
     [Header("Ability")]
-    // Hidden as a whole when no ability is equipped.
     [SerializeField] private GameObject abilityGroup;
     [SerializeField] private Image abilityIcon;
 
-    // The dark copy sitting on top of the icon. Image Type must be Filled or nothing
-    // will move, and it must not be the same Image as the icon above.
+    // The dark copy over the icon. Image Type must be Filled, and not the icon itself.
     [SerializeField] private Image abilityMeter;
 
-    // A cover shrinks away as the ability becomes ready. Untick if your meter is the
-    // bright part that grows instead.
+    // A cover shrinks as it becomes ready; untick for a meter that grows.
     [SerializeField] private bool meterCoversIcon = true;
 
     [SerializeField] private Color iconReady    = Color.white;
@@ -23,7 +19,7 @@ public class AbilityCooldownUI : MonoBehaviour
 
     [Header("Dash")]
     [SerializeField] private GameObject dashGroup;
-    // One per possible charge. Pips past the current maximum hide themselves.
+    // One per possible charge; spares hide themselves.
     [SerializeField] private DashPipUI[] dashPips;
 
     private PlayerActiveAbility ability;
@@ -39,7 +35,7 @@ public class AbilityCooldownUI : MonoBehaviour
 
     private void Update()
     {
-        // The player is respawned rather than kept, so the references go stale.
+        // The player is respawned, so these go stale.
         if (ability == null)  ability  = FindFirstObjectByType<PlayerActiveAbility>();
         if (movement == null) movement = FindFirstObjectByType<PlayerMovement>();
 
@@ -60,8 +56,7 @@ public class AbilityCooldownUI : MonoBehaviour
             abilityIcon.enabled = equipped.icon != null;
         }
 
-        // 0 while it is happening, 1 when it is done. Charging and cooling down read
-        // the same way, so the meter behaves consistently for both.
+        // 0 while happening, 1 when done - same for charging and cooling down.
         bool charging = ability.IsCharging;
         float progress = charging ? ability.ChargePercent : ability.CooldownPercent;
         bool ready = !charging && progress >= 1f;
@@ -84,8 +79,7 @@ public class AbilityCooldownUI : MonoBehaviour
         if (dashGroup != null) dashGroup.SetActive(show);
         if (dashPips == null) return;
 
-        // Driven even when locked, so pips can never linger in whatever state the
-        // editor left them just because the group was never assigned.
+        // Driven even when locked, or pips linger in whatever state the editor left.
         int max  = show ? movement.DashChargesMax : 0;
         int held = show ? movement.DashCharges : 0;
         float refill = show ? movement.DashRefillPercent : 0f;
@@ -95,12 +89,11 @@ public class AbilityCooldownUI : MonoBehaviour
             DashPipUI pip = dashPips[i];
             if (pip == null) continue;
 
-            // Talismans change the maximum, so spare pips have to come and go.
+            // Talismans change the maximum.
             bool exists = i < max;
             pip.gameObject.SetActive(exists);
             if (!exists) continue;
 
-            // Only the next charge in line refills; the rest wait their turn.
             pip.Set(i < held, i == held ? refill : 0f);
         }
     }

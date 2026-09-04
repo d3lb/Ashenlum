@@ -1,7 +1,6 @@
 using UnityEngine;
 
-// Every sound the game can make. Adding one means adding an enum entry and an entry in
-// the bank asset - the compiler then finds any call site you forgot.
+// A new sound needs an enum entry and a bank entry.
 public enum SoundId
 {
     None = 0,
@@ -37,17 +36,14 @@ public class SoundBank : ScriptableObject
     {
         public SoundId id;
 
-        // More than one clip is better variety than pitch alone. One is fine.
         public AudioClip[] clips;
 
         [Range(0f, 1f)] public float volume = 1f;
 
-        // Repeated identical samples machine-gun within seconds. This is the single
-        // cheapest thing that stops a sound grating.
+        // Repeated identical samples machine-gun.
         [Range(0f, 0.5f)] public float pitchVariance = 0.08f;
 
-        // Several things can ask for the same sound in one frame - overlapping lights,
-        // a multi-hit swing. Without this you get eight copies stacked and a click.
+        // One frame can ask several times: overlapping lights, a multi-hit swing.
         public float minInterval = 0.04f;
     }
 

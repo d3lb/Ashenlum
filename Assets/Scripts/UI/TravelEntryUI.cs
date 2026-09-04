@@ -21,7 +21,7 @@ public class TravelEntryUI : MonoBehaviour
 
         onClick = click;
 
-        // The checkpoint you are sitting at is listed, but travelling to it is pointless.
+        // Listed, but travelling to where you already are is pointless.
         if (button != null) button.interactable = !isHere && click != null;
     }
 }

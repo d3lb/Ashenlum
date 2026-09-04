@@ -5,6 +5,10 @@ public static class Bootstrapper
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     public static void Execute()
     {
+        // Before the managers, and outside the early-out below: settings must apply on
+        // every launch, not only the one where the managers happen to be created.
+        GameSettings.Load();
+
         if (GameManager.Instance != null)
             return;
 

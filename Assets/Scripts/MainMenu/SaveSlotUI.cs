@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// Already resolved, so the row never sees a RunSave or an id.
+// Resolved, so the row never sees a RunSave or an id.
 public class SlotSummary
 {
     public bool   used;
@@ -39,7 +39,7 @@ public class SaveSlotUI : MonoBehaviour
     [SerializeField] private TMP_Text areaText;
 
     [Header("States")]
-    // Everything above lives under this; the empty label replaces it on a free slot.
+    // The empty label replaces this on a free slot.
     [SerializeField] private GameObject filledGroup;
     [SerializeField] private GameObject emptyLabel;
 
@@ -50,7 +50,7 @@ public class SaveSlotUI : MonoBehaviour
     private System.Action onPlay;
     private System.Action onErase;
 
-    // Two rows sharing a button means only the last one bound ever responds.
+    // Two rows sharing a button: only the last one bound responds.
     private static readonly Dictionary<Button, SaveSlotUI> claimed = new();
 
     private void Awake()
@@ -100,7 +100,7 @@ public class SaveSlotUI : MonoBehaviour
         if (filledGroup != null) filledGroup.SetActive(used);
         if (emptyLabel != null)  emptyLabel.SetActive(!used);
 
-        // Play hides; erase greys, so rows keep their shape.
+        // Play hides, erase greys, so rows keep their shape.
         if (playButton != null)  playButton.gameObject.SetActive(used);
         if (eraseButton != null) eraseButton.interactable = used;
 
@@ -122,7 +122,7 @@ public class SaveSlotUI : MonoBehaviour
                             ? summary.talismans[i] : null);
     }
 
-    // An empty socket hides rather than showing a blank white box.
+    // Hidden rather than a blank white box.
     private static void SetIcon(Image image, Sprite sprite)
     {
         if (image == null) return;

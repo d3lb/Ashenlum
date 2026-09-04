@@ -13,6 +13,10 @@ public class CameraShakeManager : MonoBehaviour
 
     public void Shake(float duration, float amplitude, float frequency)
     {
+        // Every shake comes through here, so the setting is one multiply.
+        amplitude *= GameSettings.ScreenShake;
+        if (amplitude <= 0.001f) return;
+
         var brain = CinemachineCore.Instance.GetActiveBrain(0);
         if (brain == null) return;
 

@@ -34,7 +34,7 @@ public class KingHealth : MonoBehaviour, IDamageable
     public System.Action<float> OnHealthChanged;
     public System.Action OnDied;
 
-    // Fires on every hit that lands, so the brain can count aggression for Retribution.
+    // Drives the brain's aggression counter.
     public System.Action OnHit;
 
     private void Awake()
@@ -49,8 +49,7 @@ public class KingHealth : MonoBehaviour, IDamageable
             mat = sprite.material = new Material(sprite.material);
     }
 
-    // Lets maxHp be edited during Play and actually take effect. Without it, hp keeps
-    // the value Awake copied and you get nonsense like 150/10.
+    // Without this, editing maxHp during Play leaves hp at the value Awake copied.
     private void OnValidate()
     {
         if (!Application.isPlaying) return;
@@ -59,8 +58,7 @@ public class KingHealth : MonoBehaviour, IDamageable
         OnHealthChanged?.Invoke(Normalized);
     }
 
-    // For the debug HUD. Goes through the same death path a real killing blow does,
-    // so testing the ending cannot diverge from the real thing.
+    // Debug HUD. Uses the real death path so testing cannot diverge from it.
     public void DebugSetHealth(int value)
     {
         if (state.IsDead) return;
@@ -81,7 +79,7 @@ public class KingHealth : MonoBehaviour, IDamageable
 
     public bool TakeDamage(int damage, Vector2 attackerPos)
     {
-        // Untouchable on the throne, so a stray swing cannot start the fight by accident.
+        // Untouchable on the throne.
         if (state.IsDead || isInvincible) return false;
         if (state.CurrentState == KingState.KingStateType.Throne) return false;
 
@@ -92,7 +90,7 @@ public class KingHealth : MonoBehaviour, IDamageable
         if (flashCoroutine != null) StopCoroutine(flashCoroutine);
         flashCoroutine = StartCoroutine(HitFlash());
 
-        // No stagger and no state change. He is hit, and he does not care.
+        // No stagger, no state change.
         OnHit?.Invoke();
         OnHealthChanged?.Invoke(Normalized);
 

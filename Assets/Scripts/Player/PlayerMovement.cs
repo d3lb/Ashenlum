@@ -30,8 +30,7 @@ public class PlayerMovement : MonoBehaviour
     //Ground
     private bool wasGroundedLastFrame;
 
-    // Footsteps are spaced by distance travelled, not by a timer. A timer plays at the
-    // same rate whether you are creeping or sprinting, which reads as wrong immediately.
+    // Spaced by distance, not time - a timer ticks the same whether creeping or sprinting.
     [Header("Footsteps")]
     [SerializeField] private float stepDistance = 2.2f;
     private float stepTravelled;
@@ -52,12 +51,10 @@ public class PlayerMovement : MonoBehaviour
     private int dashesLeft;
     private float lastDashTime = -999f;
 
-    // A fast tap releases jump before the jump has been applied, so checking "am I in
-    // the Jump state right now" missed it and you got full height. Remember the release
-    // and spend it once the player is actually rising.
+    // A fast tap releases before the jump applies, so the release is remembered.
     private bool jumpCutQueued;
 
-    // physicsData is a shared asset - a purchase must never write to it.
+    // physicsData is shared; a purchase must not write to it.
     private int MaxDashes => physicsData.dashAmount +
         (GameManager.Instance != null ? GameManager.Instance.activeRun.bonusDashes : 0);
     private float dashRefillTimer;
@@ -67,7 +64,6 @@ public class PlayerMovement : MonoBehaviour
     public int DashCharges => dashesLeft;
     public int DashChargesMax => MaxDashes;
 
-    // How far the charge currently refilling has got. 0 when they are all full.
     public float DashRefillPercent =>
         dashesLeft >= MaxDashes || physicsData.dashRefillTime <= 0f
             ? 0f
@@ -94,7 +90,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask _groundLayer;
     #endregion
 
-    // Only written while grounded, so the shade never lands on a spike.
+    // Grounded only, so the shade never lands on a spike.
     public Vector2 LastSafeGround { get; private set; }
 
     private void Awake()
@@ -110,8 +106,7 @@ public class PlayerMovement : MonoBehaviour
         LastSafeGround = transform.position;
     }
 
-    // dashesLeft defaults to 0, so without this you spawn with no dash and have to wait
-    // one refill for your first one. Runs on re-enable too, so respawning restores them.
+    // dashesLeft defaults to 0, so without this you spawn with none. Also covers respawn.
     private void OnEnable()
     {
         dashesLeft = MaxDashes;
@@ -213,7 +208,6 @@ public class PlayerMovement : MonoBehaviour
             jumpNumber = 0;
         }
 
-        // Landing, read before the flag updates.
         if (state.IsGrounded && !wasGroundedLastFrame) SoundManager.Play(SoundId.Land);
 
         wasGroundedLastFrame = state.IsGrounded;
@@ -383,8 +377,7 @@ public class PlayerMovement : MonoBehaviour
     {
         TimeManager.Release(this);
 
-        // StartDash clears this at the end of its coroutine, and a coroutine dies with a
-        // disabled object. Left true it makes IsBusy permanent: no dash, no attack, ever.
+        // The dash coroutine dies with a disabled object, leaving IsBusy permanent.
         if (state != null) state.IsDashing = false;
     }
     #endregion
@@ -441,15 +434,14 @@ public class PlayerMovement : MonoBehaviour
         rb.AddForce(Vector2.up * force, ForceMode2D.Impulse);
     }
 
-    // Runs every frame instead of on the release event, so it still fires when the
-    // release arrived before the jump did.
+    // Every frame, not on the release event - the release can arrive before the jump.
     private void TryCutJump()
     {
         if (!jumpCutQueued) return;
 
         if (rb.linearVelocity.y <= 0f)
         {
-            // Already falling, so there is nothing left to cut.
+            // Already falling, nothing to cut.
             if (LastOnGroundTime > 0) jumpCutQueued = false;
             return;
         }
@@ -548,10 +540,7 @@ public class PlayerMovement : MonoBehaviour
         state.IsDashing = false;
     }
 
-    // Charges come back one at a time, never in parallel: the timer refills a single
-    // charge, then starts over for the next. Without this, holding two charges felt
-    // exactly like holding one, because the refill only ticked while the button was
-    // being pressed and the charge was spent the moment it arrived.
+    // One charge at a time, never in parallel.
     private void TickFootsteps()
     {
         bool walking = state.IsGrounded
@@ -561,8 +550,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (!walking)
         {
-            // Primed, so the first step lands as you start moving rather than a full
-            // stride later. Stopping and starting should not feel silent.
+            // Primed, so the first step lands as you start moving.
             stepTravelled = stepDistance;
             return;
         }
@@ -578,8 +566,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (dashesLeft > MaxDashes) dashesLeft = MaxDashes;
 
-        // Deliberately keeps counting during the dash itself. Pausing here made the real
-        // gap dashTime + dashRefillTime, so the asset said 0.4 and you waited 0.5.
+        // Counts during the dash too, or the real gap is dashTime + dashRefillTime.
         if (dashesLeft >= MaxDashes)
         {
             dashRefillTimer = 0f;
@@ -589,8 +576,7 @@ public class PlayerMovement : MonoBehaviour
         dashRefillTimer += Time.deltaTime;
         if (dashRefillTimer < physicsData.dashRefillTime) return;
 
-        // Carries the overshoot instead of dropping it, so the second charge takes the
-        // same time as the first rather than an extra frame.
+        // Carries the overshoot, so the second charge is not a frame slower.
         dashRefillTimer -= physicsData.dashRefillTime;
         dashesLeft++;
     }
@@ -629,8 +615,7 @@ public class PlayerMovement : MonoBehaviour
        
         if (!GameManager.Instance.activeRun.isDashUnlocked) return false;
 
-        // Separate from refilling a charge: with more than one charge you could
-        // otherwise chain dashes with no gap at all.
+        // Separate from the refill, or two charges chain with no gap.
         if (Time.time < lastDashTime + physicsData.dashCooldown) return false;
 
         return !state.IsBusy && dashesLeft > 0 && LastPressedDashTime > 0;

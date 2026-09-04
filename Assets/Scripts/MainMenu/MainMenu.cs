@@ -3,7 +3,6 @@ using UnityEngine.UI;
 
 public class MainMenu : MonoBehaviour
 {
-    [SerializeField] private GameObject settingsPanel;
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private GameObject slotPanel;
 
@@ -14,7 +13,7 @@ public class MainMenu : MonoBehaviour
     [Header("Slots")]
     [SerializeField] private SaveSlotUI[] slots;
 
-    // Scene names are not player-facing. "Right" means nothing; "Shattered Grove" does.
+    // Scene names are not player-facing.
     [SerializeField] private AreaName[] areaNames;
 
     [System.Serializable]
@@ -37,7 +36,7 @@ public class MainMenu : MonoBehaviour
 
     private void Start()
     {
-        if (settingsPanel != null) settingsPanel.SetActive(false);
+        // Settings hides itself in its own Awake.
         if (slotPanel != null)     slotPanel.SetActive(false);
         if (menuPanel != null)     menuPanel.SetActive(true);
 
@@ -99,7 +98,7 @@ public class MainMenu : MonoBehaviour
         }
     }
 
-    // Resolves ids to sprites here so the row never sees a save format.
+    // Resolved here, so the row never sees a save format.
     private SlotSummary Summarise(int profileId, ProfileEntry entry)
     {
         var summary = new SlotSummary { used = SaveSystem.HasRun(profileId) };
@@ -157,19 +156,14 @@ public class MainMenu : MonoBehaviour
         Application.Quit();
     }
 
-    public void EnterSettings()
+    public void OpenSettings()
     {
-        if (settingsPanel == null) return;
-
         if (menuPanel != null) menuPanel.SetActive(false);
-        settingsPanel.SetActive(true);
+
+        SettingsPanel.Open(() =>
+        {
+            if (menuPanel != null) menuPanel.SetActive(true);
+        });
     }
 
-    public void ExitSettings()
-    {
-        if (settingsPanel == null) return;
-
-        settingsPanel.SetActive(false);
-        if (menuPanel != null) menuPanel.SetActive(true);
-    }
 }

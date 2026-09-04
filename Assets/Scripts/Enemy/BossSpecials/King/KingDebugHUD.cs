@@ -1,7 +1,6 @@
 using UnityEngine;
 
-// Temporary tuning window for the King fight. Put it on him and press F2.
-// Reads only - nothing here changes the fight.
+// Tuning window for the King fight. F2. Reads only.
 public class KingDebugHUD : MonoBehaviour
 {
     [SerializeField] private KeyCode toggleKey = KeyCode.F2;
@@ -44,8 +43,7 @@ public class KingDebugHUD : MonoBehaviour
         {
             Bar($"HP  {health.CurrentHP}/{health.MaxHP}", health.Normalized);
 
-            // Jumping to just above a threshold rather than onto it, so the next hit
-            // is what crosses it and you see the transition fire properly.
+            // Just above each threshold, so the next hit is what crosses it.
             GUILayout.BeginHorizontal();
             if (GUILayout.Button("full")) SetPercent(1f);
             if (GUILayout.Button("ph2")) SetPercent(0.65f);
@@ -69,7 +67,6 @@ public class KingDebugHUD : MonoBehaviour
 
         Section("Greed  (your stability)");
 
-        // The whole point of the fight, so it is the number worth watching.
         GUILayout.Label($"  timing scale: {brain.GreedNow:0.00}x");
         GUILayout.Label($"  idle {brain.PaceNow.idleBeat * brain.GreedNow:0.00}s   " +
                         $"recovery x{brain.PaceNow.recoveryScale * brain.GreedNow:0.00}");
@@ -112,8 +109,7 @@ public class KingDebugHUD : MonoBehaviour
             GUILayout.Label($"  {a.DisplayName,-22} {tag}");
         }
 
-        // The bag draws without replacement and never repeats the last move, so the
-        // real odds drift from these. Close enough for tuning weights.
+        // The bag draws without replacement, so real odds drift from these.
         GUILayout.Label("  (weight share, not exact)");
     }
 

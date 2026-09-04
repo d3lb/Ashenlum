@@ -1,11 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// The phase-change burst. He floods the room with light from his own body and you run.
-//
-// Fires only when a phase boundary is crossed, never from the random draw. Using the
-// same move at both transitions is deliberate: the player learns "he glows, I run"
-// once and it pays off twice.
+// The phase-change burst. Same move at both transitions, so it is learned once.
 public class KingRadiance : KingAttack
 {
     public override bool Scripted => true;
@@ -15,7 +11,7 @@ public class KingRadiance : KingAttack
     [SerializeField] private KingArena arena;
 
     [Header("Reach")]
-    // Must stay well under the arena half-width or there is nowhere to escape to.
+    // Under the arena half-width, or there is nowhere to escape to.
     [SerializeField] private float maxRadius = 14f;
 
     [Header("Timing")]
@@ -24,7 +20,7 @@ public class KingRadiance : KingAttack
     [SerializeField] private float holdTime = 0.6f;
 
     [Header("Damage")]
-    // Lower than a normal light, because being caught means several ticks, not one.
+    // Lower than a normal light: being caught means several ticks.
     [SerializeField] private int tickDamage = 10;
     [SerializeField] private float tickInterval = 0.5f;
 
@@ -56,7 +52,7 @@ public class KingRadiance : KingAttack
         if (arena == null) arena = FindFirstObjectByType<KingArena>();
         if (arena == null) return;
 
-        // Green marks the floor you can still stand on once it is fully open.
+        // Green is the floor left once it is fully open.
         Gizmos.color = Color.green;
         Gizmos.DrawLine(new Vector3(arena.LeftX, arena.FloorY), new Vector3(transform.position.x - maxRadius, arena.FloorY));
         Gizmos.DrawLine(new Vector3(transform.position.x + maxRadius, arena.FloorY), new Vector3(arena.RightX, arena.FloorY));

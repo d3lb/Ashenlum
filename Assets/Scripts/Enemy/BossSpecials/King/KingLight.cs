@@ -1,15 +1,11 @@
 using System.Collections;
 using UnityEngine;
 
-// One piece of the King's light: warn, then hurt, then go away.
-//
-// Built entirely in code. With no sprite assigned on the brain it draws a generated
-// white square, so the fight is visible and tunable before any art exists.
+// Warn, hurt, vanish. Built in code; falls back to a generated white square.
 public class KingLight : MonoBehaviour
 {
     private static Sprite fallbackSprite;
 
-    // One 1x1 white pixel stretched by the visual's scale. Made once, reused forever.
     public static Sprite FallbackSprite
     {
         get
@@ -55,7 +51,7 @@ public class KingLight : MonoBehaviour
         light.filter.SetLayerMask(brain != null ? brain.PlayerLayer : ~0);
         light.filter.useTriggers = true;
 
-        // On a child, so scaling the picture never resizes the collider with it.
+        // On a child, or scaling the picture would resize the collider.
         GameObject art = new GameObject("Visual");
         art.transform.SetParent(go.transform, false);
         art.transform.localScale = new Vector3(size.x, size.y, 1f);
@@ -85,15 +81,14 @@ public class KingLight : MonoBehaviour
         {
             PlayerHealth player = results[i].GetComponentInParent<PlayerHealth>();
 
-            // No cooldown here on purpose - the player's own iFrames already stop a
-            // second hit, and a duplicate rule would drift out of sync with that one.
+            // No cooldown: the player's iFrames already rate-limit this.
             if (player != null) player.TakeDamage(damage, transform.position);
         }
     }
 
     private IEnumerator Run(float telegraphTime, float activeTime)
     {
-        // Collider stays off through the warning, so a telegraph can never damage you.
+        // Collider off through the warning, so a telegraph cannot damage.
         if (telegraphTime > 0f) yield return new WaitForSeconds(telegraphTime);
 
         if (visual != null) visual.color = activeColor;

@@ -5,13 +5,11 @@ public class KingPhaseTuning
 {
     public string name = "Phase";
 
-    // Pause between attacks, and how long telegraphs are held.
     public float idleBeat = 1.1f;
     public float telegraphScale = 1.4f;
     public float recoveryScale = 1f;
 
-    // Phase 2 presses by overlapping attacks rather than only shortening the gaps,
-    // so it has an identity instead of being phase 1 with smaller numbers.
+    // Later phases overlap attacks rather than only shortening the gaps.
     [Range(0f, 1f)] public float doubleUpChance = 0f;
 }
 

@@ -15,40 +15,34 @@ public class KingBrain : MonoBehaviour
     [SerializeField] private float phase2At = 0.66f;
     [SerializeField] private float phase3At = 0.33f;
 
-    // Fired once when a phase boundary is crossed. The "get away from me" burst.
     [Header("Scripted attacks")]
     [SerializeField] private KingAttack transitionAttack;
 
-    // Fired when the player attacks him too fast. Punishes standing on top of him.
     [SerializeField] private KingAttack punishAttack;
     [SerializeField] private int punishHitCount = 4;
     [SerializeField] private float punishWindow = 2f;
 
-    // Without this he answers every burst, so staying on him turns the fight into the
-    // punish on repeat. It is a warning, not a wall.
+    // Without this he answers every burst and the fight becomes the punish on repeat.
     [SerializeField] private float punishCooldown = 8f;
 
-    // The whole point of the fight: the worse your stability, the less time he gives
-    // you. Low is where you hit hardest, so it is also where he is most relentless.
+    // Worse stability, less time between his attacks.
     [Header("Greed")]
     [SerializeField] private float highStabilityScale = 1.4f;
     [SerializeField] private float midStabilityScale = 1f;
     [SerializeField] private float lowStabilityScale = 0.6f;
 
-    // Shared by every attack, so damage and the player layer are set in one place
-    // rather than repeated on each one where they would drift apart.
+    // Shared by every attack, so these are set in one place.
     [Header("Light")]
     [SerializeField] private int lightDamage = 15;
     [SerializeField] private LayerMask playerLayer;
 
-    // Left empty a plain white square is generated in code, so the fight is visible
-    // and tunable before any art exists. Drop a sprite in later and nothing changes.
+    // Empty generates a white square in code.
     [SerializeField] private Sprite lightSprite;
 
     [SerializeField] private Color telegraphColor = new Color(1f, 0.93f, 0.55f, 0.30f);
     [SerializeField] private Color activeColor = new Color(1f, 1f, 0.85f, 0.95f);
 
-    // Must beat the tilemap's order or every attack draws behind the floor.
+    // Must beat the tilemap, or attacks draw behind the floor.
     [SerializeField] private string sortingLayer = "Default";
     [SerializeField] private int sortingOrder = 50;
 
@@ -81,7 +75,6 @@ public class KingBrain : MonoBehaviour
     public bool Active => active;
     public Transform Player => player;
 
-    // Read by KingDebugHUD. Nothing in the fight depends on these.
     public KingAttack CurrentMain { get; private set; }
     public KingAttack CurrentExtra { get; private set; }
     public KingAttack TransitionAttack => transitionAttack;
@@ -106,7 +99,7 @@ public class KingBrain : MonoBehaviour
     public string SortingLayer => sortingLayer;
     public int SortingOrder => sortingOrder;
 
-    // 1 when there is no player to read, so a missing reference cannot break pacing.
+    // 1 with no player, so a missing reference cannot break pacing.
     private float GreedScale
     {
         get
@@ -147,12 +140,10 @@ public class KingBrain : MonoBehaviour
 
     private void Start()
     {
-        // Same rule the bird and the breakables use: already dealt with, so not here.
         var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
         if (run != null && run.defeatedBosses.Contains(bossId)) Destroy(gameObject);
     }
 
-    // Called by the throne when the player challenges him.
     public void Activate()
     {
         if (active || state.IsDead) return;
@@ -176,19 +167,17 @@ public class KingBrain : MonoBehaviour
     {
         state.CurrentState = KingState.KingStateType.Intro;
 
-        // FirstTime last: it marks the line as seen, so calling it before the null
-        // checks would burn the intro on a run where no conversation was assigned yet.
+        // FirstTime last - it marks as seen, so an unassigned conversation would burn it.
         if (introConversation != null && DialogueManager.Instance != null && FirstTime("intro"))
             yield return Say(introConversation);
         else if (introDelay > 0f)
             yield return new WaitForSeconds(introDelay);
 
-        // Nested, not StartCoroutine, so Deactivate's StopCoroutine(loop) still reaches it.
+        // Nested, so Deactivate's StopCoroutine(loop) still reaches it.
         yield return FightLoop();
     }
 
-    // Saved in seenEvents, so a line never plays twice even across deaths and reloads.
-    // Marks it as seen on the way out, so asking is also answering.
+    // Marks as seen on the way out, so asking is also answering.
     private bool FirstTime(string key)
     {
         var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
@@ -218,8 +207,7 @@ public class KingBrain : MonoBehaviour
             if (UpdatePhase())
                 yield return RunTransition();
 
-            // Greed applies to the gap as well as the recovery, or he would only feel
-            // faster after an attack rather than throughout.
+            // On the gap as well as the recovery, or he only feels faster after an attack.
             yield return new WaitForSeconds(Pace.idleBeat * GreedScale);
 
             if (player == null) { yield return null; continue; }
@@ -233,8 +221,7 @@ public class KingBrain : MonoBehaviour
                 continue;
             }
 
-            // Queued but still cooling down: drop it rather than saving it up, or he
-            // fires a stale punish long after the greed that earned it.
+            // Dropped, not banked, or a stale punish fires long after it was earned.
             punishQueued = false;
 
             state.CurrentState = KingState.KingStateType.Choosing;
@@ -242,8 +229,7 @@ public class KingBrain : MonoBehaviour
             KingAttack main = Draw();
             if (main == null) { yield return null; continue; }
 
-            // Phase 2 and 3 press by stacking a second move on the same beat, which
-            // gives them an identity beyond simply shorter gaps.
+            // Later phases stack a second move on the same beat.
             KingAttack extra = null;
             if (main.CanOverlap && Random.value < Pace.doubleUpChance)
                 extra = Draw();
@@ -277,8 +263,7 @@ public class KingBrain : MonoBehaviour
             yield return RunAttacks(transitionAttack, null);
     }
 
-    // Waits for every attack started here, so an overlapping pair cannot leak into
-    // the next beat and stack forever.
+    // Waits for both, so an overlapping pair cannot leak into the next beat.
     private IEnumerator RunAttacks(KingAttack a, KingAttack b)
     {
         StopRunning();
@@ -317,8 +302,7 @@ public class KingBrain : MonoBehaviour
         running.Clear();
     }
 
-    // Counts hits inside a rolling window. Hitting him steadily is fine; burst damage
-    // at point blank is what gets answered.
+    // Rolling window: steady damage is fine, bursts are what get answered.
     private void RegisterHit()
     {
         if (Time.time > recentHitsExpire) recentHits = 0;
@@ -337,9 +321,7 @@ public class KingBrain : MonoBehaviour
         float f = health != null ? health.Normalized : 1f;
         int target = f <= phase3At ? 3 : f <= phase2At ? 2 : 1;
 
-        // Never backwards, and never more than one step at a time. A single big hit can
-        // cross both thresholds, and jumping straight to 3 would skip phase 2's
-        // transition burst and its dialogue entirely.
+        // One step at a time - a big hit crossing both thresholds must not skip phase 2.
         if (target <= state.Phase) return false;
 
         state.Phase++;

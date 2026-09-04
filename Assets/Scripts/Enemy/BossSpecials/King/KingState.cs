@@ -1,7 +1,6 @@
 using UnityEngine;
 
-// No Hit state, deliberately. The King never flinches - every other enemy in the game
-// does, and his not doing so is the characterisation.
+// No Hit state: he never flinches.
 public class KingState : MonoBehaviour
 {
     public enum KingStateType
@@ -22,7 +21,7 @@ public class KingState : MonoBehaviour
     public bool IsDead;
     public int Phase = 1;
 
-    // He floats and never repositions, so facing is only for the art.
+    // Art only; he never repositions.
     public bool IsFacingRight = true;
 
     [Header("Flip")]

@@ -3,11 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 
-// Lives on Managers, next to GameManager and TimeManager. Survives scene loads, which
-// music needs and one-shots do not care about.
-//
-// Callers use the static Play, so a missing SoundManager is silence rather than a crash
-// and no script needs a reference to it.
+// Static Play, so a missing manager is silence and no caller needs a reference.
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager Instance { get; private set; }
@@ -16,21 +12,18 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private SoundBank bank;
 
     [Header("Mixer")]
-    // Routed through groups so the settings menu can move one slider per group.
     [SerializeField] private AudioMixer mixer;
     [SerializeField] private AudioMixerGroup sfxGroup;
     [SerializeField] private AudioMixerGroup musicGroup;
 
     [Header("Voices")]
-    // A pool, not one shared source: PlayOneShot cannot be stopped or faded per sound,
-    // and a pitch change on a shared source bends everything already playing.
+    // Pool, not PlayOneShot: sounds need stopping and independent pitch.
     [SerializeField] private int voices = 8;
 
     [Header("Music")]
     [SerializeField] private float musicCrossfade = 1.5f;
 
-    // Exposed parameter names on the mixer. Must match exactly or volume silently
-    // does nothing, so they are fields rather than literals buried in code.
+    // Must match the mixer's exposed names exactly.
     [Header("Mixer parameters")]
     [SerializeField] private string masterParam = "MasterVolume";
     [SerializeField] private string sfxParam = "SFXVolume";
@@ -62,6 +55,10 @@ public class SoundManager : MonoBehaviour
         musicA = MakeSource("Music A", musicGroup);
         musicB = MakeSource("Music B", musicGroup);
         musicA.loop = musicB.loop = true;
+
+        // Pulled, so load order with GameSettings cannot matter.
+        GameSettings.Load();
+        GameSettings.ApplyAudio();
     }
 
     private void OnDestroy()
@@ -78,8 +75,7 @@ public class SoundManager : MonoBehaviour
         s.playOnAwake = false;
         s.outputAudioMixerGroup = group;
 
-        // 2D by default. The camera follows the player, so panning player sounds by
-        // world position only adds noise.
+        // 2D: the camera follows the player.
         s.spatialBlend = 0f;
 
         return s;
@@ -89,7 +85,6 @@ public class SoundManager : MonoBehaviour
 
     public static void Play(SoundId id) => Instance?.PlayInternal(id, null);
 
-    // Positional, for things away from the player - a distant breakable, an enemy.
     public static void PlayAt(SoundId id, Vector3 position) =>
         Instance?.PlayInternal(id, position);
 
@@ -100,7 +95,7 @@ public class SoundManager : MonoBehaviour
         SoundBank.Entry entry = bank.Find(id);
         if (entry == null || entry.clips == null || entry.clips.Length == 0) return;
 
-        // Unscaled: a sound asked for while the game is frozen still belongs to now.
+        // Unscaled, so a sound asked for while frozen still belongs to now.
         if (nextAllowed.TryGetValue(id, out float allowed) && Time.unscaledTime < allowed)
             return;
 
@@ -129,7 +124,7 @@ public class SoundManager : MonoBehaviour
         s.Play();
     }
 
-    // Prefers a free voice; steals the oldest only when everything is busy.
+    // Steals the oldest only when every voice is busy.
     private AudioSource Take()
     {
         for (int i = 0; i < pool.Length; i++)
@@ -149,8 +144,7 @@ public class SoundManager : MonoBehaviour
 
     // ── music ────────────────────────────────────────────────────────────────────
 
-    // Same clip means keep playing. Walking between rooms in one area must not
-    // restart the track.
+    // Same clip keeps playing, so room changes do not restart the track.
     public void PlayMusic(AudioClip clip, float fade = -1f)
     {
         AudioSource current = musicOnA ? musicA : musicB;
@@ -199,8 +193,7 @@ public class SoundManager : MonoBehaviour
     public void SetSfxVolume(float v) => SetVolume(sfxParam, v);
     public void SetMusicVolume(float v) => SetVolume(musicParam, v);
 
-    // Mixers work in decibels, which are logarithmic. Feeding a 0-1 slider straight in
-    // makes the top half of its travel do almost nothing.
+    // Mixer volume is logarithmic dB; a raw 0-1 slider wastes half its travel.
     private void SetVolume(string param, float linear)
     {
         if (mixer == null || string.IsNullOrEmpty(param)) return;

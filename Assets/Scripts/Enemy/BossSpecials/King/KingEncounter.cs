@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// Doors, camera and King wake as one moment, so one thing has to order them.
-// Same shape as BossEncounter, kept separate so the bird cannot break when this changes.
+// Orders doors, camera and King. Separate from BossEncounter so the bird cannot break.
 public class KingEncounter : MonoBehaviour
 {
     [Header("King")]
@@ -19,7 +18,6 @@ public class KingEncounter : MonoBehaviour
     [SerializeField] private KingCredits credits;
     [SerializeField] private Conversation lastWords;
 
-    // Cached: the King deletes himself once beaten, and the throne still asks after that.
     private string bossId;
 
     private GameRunProfile Run => GameManager.Instance != null ? GameManager.Instance.activeRun : null;
@@ -59,7 +57,7 @@ public class KingEncounter : MonoBehaviour
     {
         Run?.defeatedBosses.Add(bossId);
 
-        // Beating the final boss is the least acceptable thing to lose to a crash.
+        // Least acceptable thing to lose to a crash.
         if (GameManager.Instance != null) GameManager.Instance.SaveNow();
 
         StartCoroutine(Ending());
@@ -76,8 +74,7 @@ public class KingEncounter : MonoBehaviour
 
         if (credits != null) yield return credits.Play();
 
-        // Doors and camera only after the card, so the room is still sealed behind
-        // the black and you come back to the arena rather than mid-transition.
+        // After the card, so the room is still sealed behind the black.
         SetDoorsClosed(false);
 
         if (cameraSwitcher != null) cameraSwitcher.SwitchToGameplayCam();

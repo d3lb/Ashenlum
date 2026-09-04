@@ -1,11 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// An expanding circle of light that hurts while you are inside it.
-//
-// Drawn with a LineRenderer rather than a sprite: a circle stretched from a square
-// image looks wrong at every size, and a ring outline reads better anyway - you can
-// see the edge coming at you.
+// Expanding damage circle. LineRenderer, since a stretched square sprite reads wrong.
 public class KingRing : MonoBehaviour
 {
     [SerializeField] private int segments = 48;
@@ -19,8 +15,7 @@ public class KingRing : MonoBehaviour
     private Color telegraphColor;
     private Color activeColor;
 
-    // Its own tick, unlike KingLight. The player's 0.3s iFrames would otherwise set the
-    // rate at 50 damage a second, which kills from full in two seconds inside.
+    // Own tick: iFrames alone would make this 50 damage a second.
     private float tickInterval;
     private float nextTick;
 
@@ -34,7 +29,6 @@ public class KingRing : MonoBehaviour
         go.transform.position = (follow != null ? follow.position : Vector3.zero)
                                 + (Vector3)offset;
 
-        // Parented so it stays centred on him even though he does not move.
         if (follow != null) go.transform.SetParent(follow, true);
 
         CircleCollider2D circle = go.AddComponent<CircleCollider2D>();
@@ -54,7 +48,7 @@ public class KingRing : MonoBehaviour
         ring.filter.useTriggers = true;
 
         LineRenderer line = go.AddComponent<LineRenderer>();
-        // Sprites/Default, or URP renders it magenta.
+        // Or URP renders it magenta.
         line.material = new Material(Shader.Find("Sprites/Default"));
         line.useWorldSpace = false;
         line.loop = true;
@@ -105,13 +99,12 @@ public class KingRing : MonoBehaviour
 
     private IEnumerator Run(float maxRadius, float chargeTime, float growTime, float holdTime)
     {
-        // He glows before anything happens. This is the "get away from me" warning.
         float t = 0f;
         while (t < chargeTime)
         {
             t += Time.deltaTime;
 
-            // A small pulse at full size, so the warning shows how far it will reach.
+            // Pulses at full size, so the warning shows its reach.
             Redraw(maxRadius * (0.9f + 0.1f * Mathf.Sin(t * 12f)));
             yield return null;
         }

@@ -1,6 +1,5 @@
 using UnityEngine;
 
-// The King never moves, so this only exists to tell his attacks where the room is.
 public class KingArena : MonoBehaviour
 {
     [Header("Bounds (offset from this transform)")]
@@ -19,7 +18,6 @@ public class KingArena : MonoBehaviour
 
     public float ClampX(float x) => Mathf.Clamp(x, LeftX, RightX);
 
-    // Slot 0 is the left edge. Used by attacks that divide the room into columns.
     public float SlotX(int index, int count) =>
         count <= 1 ? Center.x : Mathf.Lerp(LeftX, RightX, index / (float)(count - 1));
 

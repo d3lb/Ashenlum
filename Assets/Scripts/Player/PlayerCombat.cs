@@ -36,21 +36,19 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float attackDuration = 0.1f;
     [SerializeField] private float attackSpeed = 1f;
 
-    // The worse your stability, the wilder the swing. Same direction as the damage
-    // tiers above, so the whole mechanic reads one way: hurt hits harder.
+    // Same direction as the damage tiers above.
     [Header("Stability - hitbox size")]
     [SerializeField] private float highSize = 1f;
     [SerializeField] private float midSize = 1.1f;
     [SerializeField] private float lowSize = 1.25f;
 
-    // Shortens the gap between swings only. attackDuration stays fixed, so breaking
-    // down never shrinks the window you have to connect in.
+    // Gap between swings only; attackDuration stays fixed.
     [Header("Stability - swing rate")]
     [SerializeField] private float highRate = 1f;
     [SerializeField] private float midRate = 1.1f;
     [SerializeField] private float lowRate = 1.2f;
 
-    // Scene view only. The hitbox is live for 0.1s, which is too short to judge by eye.
+    // The hitbox is live for 0.1s, too short to judge by eye.
     [SerializeField] private bool drawHitboxGizmo = true;
     [Space(2)]
     [SerializeField] private float recoilForceX = 5f;
@@ -69,9 +67,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] private float killShakeAmplitude = 3f;
     [SerializeField] private float killShakeFrequency = 2.5f;
 
-    // Every swing, hit or miss. Nothing at High on purpose: if all three tiers shook,
-    // the shake would stop meaning "you are hurt" and just become noise.
-    // Kept below hitShakeAmplitude so connecting still reads as a step up, not down.
+    // Every swing, hit or miss. Below hitShakeAmplitude, so connecting still steps up.
     [Header("Swing Shake - by stability")]
     [SerializeField] private float midSwingDuration = 0.05f;
     [SerializeField] private float midSwingAmplitude = 0.8f;
@@ -98,8 +94,7 @@ public class PlayerCombat : MonoBehaviour
     private AttackType currentAttackType;
     private int attackDir;
 
-    // Scale is written as an absolute value off these, never multiplied onto the
-    // current scale, so repeated swings cannot compound.
+    // Absolute, never multiplied onto the current scale, so swings cannot compound.
     private Transform[] attackScalers;
     private Vector3[] attackBaseScales;
     private Vector3[] attackBasePositions;
@@ -108,7 +103,6 @@ public class PlayerCombat : MonoBehaviour
 
     private StabilityState Stability => health.CurrentStabilityState;
 
-    // For the cheat menu and any HUD readout.
     public StabilityState CurrentStability => Stability;
     public float CurrentAttackScale => SizeFor(Stability);
     public float CurrentCooldown => CooldownNow;
@@ -171,8 +165,7 @@ public class PlayerCombat : MonoBehaviour
     {
         attackDir = state.IsFacingRight ? 1 : -1;
 
-        // Not scaled by stability: the swing comes round faster, but the window you
-        // have to land it in never shrinks.
+        // Not scaled by stability: the window to land a hit never shrinks.
         float active = attackDuration / attackSpeed;
 
         var (activeCollider, attackType) = GetAttackData();
@@ -199,16 +192,13 @@ public class PlayerCombat : MonoBehaviour
                 break;
         }
 
-        // Strength is the one permanent upgrade - it lifts every tier.
         if (GameManager.Instance != null)
             damage += GameManager.Instance.activeRun.strengthLevel * damagePerStrengthLevel;
 
-        // Per swing rather than on a health event, so healing, resting, respawning and
-        // loading a save all resolve on their own with no wiring.
+        // Per swing, so healing, resting and loading all resolve with no wiring.
         ApplyAttackSize(SizeFor(Stability));
 
-        // Before ProcessAttackHit, so landing a hit overrides this with the stronger
-        // hit shake rather than the two fighting over the camera.
+        // Before ProcessAttackHit, so a landed hit overrides it.
         ShakeSwing();
 
         SoundManager.Play(SoundId.Attack);
@@ -234,10 +224,8 @@ public class PlayerCombat : MonoBehaviour
     {
         if (attackScalers == null) return;
 
-        // Position scales as well as size, so the whole arrangement grows outward from
-        // the player instead of each box puffing up around its own centre. Because the
-        // offsets already point the right way (+2.5 right, -2.5 left, and so on), one
-        // multiply gives the correct direction for all four with no per-side handling.
+        // Position scales too, so the arrangement grows outward instead of in place.
+        // The offsets already point the right way, so one multiply covers all four.
         for (int i = 0; i < attackScalers.Length; i++)
         {
             if (attackScalers[i] == null) continue;
@@ -246,15 +234,11 @@ public class PlayerCombat : MonoBehaviour
             attackScalers[i].localPosition = attackBasePositions[i] * scale;
         }
 
-        // Physics caches collider shapes and only refreshes on its own step. Overlap
-        // runs later this same frame, so without this the swing that crosses a
-        // stability threshold would still use the previous size.
+        // Overlap runs later this frame, and physics only refreshes shapes on its own step.
         Physics2D.SyncTransforms();
     }
 
-    // Draws all four hitboxes at the size the CURRENT stability tier would give them,
-    // not the size the last swing left behind, so it previews before you attack.
-    // White = High, yellow = Mid, red = Low.
+    // Current tier, not the last swing's size. White High, yellow Mid, red Low.
     private void OnDrawGizmos()
     {
         if (!drawHitboxGizmo || health == null) return;
@@ -278,9 +262,7 @@ public class PlayerCombat : MonoBehaviour
 
         Transform t = col.transform;
 
-        // Base values, not current: ApplyAttackSize has already written the last swing's
-        // size and position onto the transform, and drawing those would echo them back
-        // instead of previewing the tier you are on now.
+        // Base values: the transform still holds the last swing's size and position.
         bool cached = attackBaseScales != null && index < attackBaseScales.Length;
 
         Vector3 baseScale = cached ? attackBaseScales[index] : t.localScale;
@@ -377,7 +359,7 @@ public class PlayerCombat : MonoBehaviour
         return (attackDir == 1 ? attackColliderRight : attackColliderLeft, AttackType.Side);
     }
 
-    // Fires on the swing itself, whether or not anything is there to hit.
+    // Fires on the swing, hit or miss.
     private void ShakeSwing()
     {
         if (CameraShakeManager.Instance == null) return;
@@ -423,7 +405,7 @@ public class PlayerCombat : MonoBehaviour
                 rb.AddForce(new Vector2(-dir * recoilForceX, 0), ForceMode2D.Impulse);
                 break;
 
-            // The thing you hit decides the launch, so pads can differ from enemies.
+            // The target decides the launch, so pads can differ from enemies.
             case AttackType.Down:
                 float force = pogoForce;
                 if (hit is MonoBehaviour hitObject)
@@ -506,8 +488,7 @@ public class PlayerCombat : MonoBehaviour
         slash.transform.localPosition = point.localPosition;
         slash.transform.localRotation = rot;
 
-        // Off the prefab's scale, not the instance's, so it cannot compound. A bigger
-        // hitbox with the same slash just reads as inconsistent range.
+        // Off the prefab's scale, not the instance's, so it cannot compound.
         slash.transform.localScale = slashPrefab.transform.localScale * SizeFor(Stability);
 
         Animator anim = slash.GetComponent<Animator>();

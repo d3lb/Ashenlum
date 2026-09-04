@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-// What you do while sitting at a checkpoint. The resting itself already happened.
+// Opens after the rest has already happened.
 public class RestPointUI : MonoBehaviour
 {
     public static RestPointUI Instance { get; private set; }
@@ -56,7 +56,7 @@ public class RestPointUI : MonoBehaviour
         if (Instance == this) Instance = null;
     }
 
-    // Torn down while open would otherwise leave the game frozen.
+    // Torn down while open must not leave the game frozen.
     private void OnDisable()
     {
         if (!IsOpen) return;
@@ -69,7 +69,6 @@ public class RestPointUI : MonoBehaviour
     {
         if (!IsOpen || !Input.GetKeyDown(KeyCode.Escape)) return;
 
-        // Escape backs out one step at a time rather than dropping straight to the world.
         if (travelView != null && travelView.activeSelf) ShowMain();
         else                                             Close();
     }
@@ -135,12 +134,11 @@ public class RestPointUI : MonoBehaviour
             spawnedEntries.Add(row.gameObject);
         }
 
-        // Fitters resolve a frame late, so without this the first open stacks the rows
-        // on top of each other - the same bug the inventory had.
+        // Fitters resolve a frame late, so the first open would stack the rows.
         RebuildLayout(travelListParent);
     }
 
-    // Rebuilds from the outermost layout group so nested content/viewport both resolve.
+    // From the outermost layout group, so nested content resolves.
     private static void RebuildLayout(Transform from)
     {
         RectTransform top = null;
@@ -159,7 +157,7 @@ public class RestPointUI : MonoBehaviour
     {
         if (entry == null) return;
 
-        // Closed first so the freeze is released before the scene load starts.
+        // Closed first, so the freeze releases before the scene load.
         Close();
         GameManager.Instance.TravelToCheckpoint(entry.scene, entry.id);
     }

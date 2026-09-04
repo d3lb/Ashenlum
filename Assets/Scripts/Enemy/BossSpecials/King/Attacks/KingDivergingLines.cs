@@ -1,12 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// Pillars fall next to him and march outward toward the walls, shoving the player off.
-//
-// This started life as the opposite - closing in from the walls - on the assumption the
-// player would camp the edge. Testing showed the reverse: the centre is where the damage
-// is, so standing next to him is what needed punishing, and herding him there made the
-// fight easier rather than harder.
+// Pillars march outward from him, pushing the player off.
 public class KingDivergingLines : KingAttack
 {
     [Header("References")]
@@ -15,8 +10,7 @@ public class KingDivergingLines : KingAttack
     [Header("Pattern")]
     [SerializeField] private int waves = 4;
 
-    // 0 is on him, 1 is at the wall. The first pair starts just off his body and the
-    // last stops short, so there is standing room at each wall to be pushed into.
+    // 0 is on him, 1 is at the wall. Stopping short leaves standing room.
     [Range(0f, 1f)] [SerializeField] private float startFromKing = 0.15f;
     [Range(0f, 1f)] [SerializeField] private float endBeforeWall = 0.8f;
 
@@ -27,8 +21,7 @@ public class KingDivergingLines : KingAttack
     [SerializeField] private float telegraphTime = 0.7f;
     [SerializeField] private float activeTime = 0.3f;
 
-    // Shorter than telegraph + active, so waves overlap and it reads as one push
-    // outward rather than four separate attacks.
+    // Shorter than telegraph + active, so waves overlap into one push.
     [SerializeField] private float waveGap = 0.45f;
 
     protected override void Awake()
@@ -82,7 +75,6 @@ public class KingDivergingLines : KingAttack
                 ? endBeforeWall
                 : Mathf.Lerp(startFromKing, endBeforeWall, i / (float)(count - 1));
 
-            // Later waves are redder, so the outward order is readable in the editor.
             Gizmos.color = Color.Lerp(Color.yellow, Color.red, i / Mathf.Max(1f, count - 1f));
 
             foreach (float x in new[] { Mathf.Lerp(centerX, arena.LeftX, t),
@@ -91,7 +83,7 @@ public class KingDivergingLines : KingAttack
                                     new Vector3(lineSize.x, lineSize.y, 0f));
         }
 
-        // Green marks the standing room left at each wall.
+        // Green is the standing room left at each wall.
         Gizmos.color = Color.green;
         float lastL = Mathf.Lerp(centerX, arena.LeftX, endBeforeWall);
         float lastR = Mathf.Lerp(centerX, arena.RightX, endBeforeWall);

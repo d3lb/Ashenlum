@@ -5,13 +5,11 @@ public class ShortcutDoor : Interactable
 {
     [SerializeField] private string doorId;
 
-    // The solid collider. Must be on a child: Interactable turns the collider on this
-    // object into a trigger, and with two here it may pick the wrong one.
+    // Must be on a child: Interactable turns this object's collider into a trigger.
     [SerializeField] private Collider2D blocker;
 
     [SerializeField] private SpriteRenderer visual;
 
-    // Optional. Set one and it owns the picture instead of the sprite being switched off.
     [SerializeField] private Animator animator;
 
     [Header("Side")]
@@ -30,15 +28,14 @@ public class ShortcutDoor : Interactable
             Debug.LogError($"[ShortcutDoor] '{name}' has no Door Id, so it cannot be saved.", this);
     }
 
-    // Start, not Awake, so GameManager is up - same as BreakableWall.
+    // Start, not Awake, so GameManager is up.
     private void Start()
     {
         opened = GameManager.Instance != null && GameManager.Instance.HasSeenEvent(doorId);
         Apply();
     }
 
-    // Measured from the trigger, not transform.position. The root pivot is often not in
-    // the doorway, and then every approach is on the same side of it and both read wrong.
+    // From the trigger, not the pivot - the pivot is often outside the doorway.
     private float DividingX => range != null ? range.bounds.center.x : transform.position.x;
 
     private bool OnOpeningSide =>
@@ -64,8 +61,7 @@ public class ShortcutDoor : Interactable
         else if (visual != null) visual.enabled = !opened;
     }
 
-    // Red line is the split, green ball is the side that opens it. If the red line is
-    // not in the doorway, that is the bug.
+    // Red is the split, green is the opening side.
     private void OnDrawGizmos()
     {
         Collider2D c = range != null ? range : GetComponent<Collider2D>();

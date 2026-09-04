@@ -23,11 +23,10 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private AbilitySocketUI abilitySocket;
     [SerializeField] private TalismanSocketUI[] talismanSockets;
 
-    // Shown when the panel is opened away from a checkpoint, where the loadout is read-only.
+    // Shown when the loadout is read-only.
     [SerializeField] private GameObject loadoutLockedHint;
 
     [Header("Owned list")]
-    // The grid inside each section; the sections themselves are laid out in the editor.
     [SerializeField] private Transform abilityListParent;
     [SerializeField] private Transform talismanListParent;
     [SerializeField] private Transform bundleListParent;
@@ -53,7 +52,7 @@ public class InventoryUI : MonoBehaviour
         IsOpen = false;
     }
 
-    // Safety net: never leave the game frozen if this object goes away while open.
+    // Torn down while open must not leave the game frozen.
     private void OnDisable()
     {
         if (!IsOpen) return;
@@ -65,7 +64,7 @@ public class InventoryUI : MonoBehaviour
 
     private void Update()
     {
-        // Update() still ticks at timeScale 0, so the close hotkey keeps working.
+        // Ticks at timeScale 0, so the close hotkey keeps working.
         if (Input.GetKeyDown(toggleKey))
         {
             if (IsOpen) Close();
@@ -81,13 +80,13 @@ public class InventoryUI : MonoBehaviour
     {
         if (IsOpen) return;
 
-        // One gate for every panel, so a new panel never has to be added here.
+        // One gate, so a new panel never has to be added here.
         if (UIState.Busy) return;
 
         IsOpen = true;
         if (inventoryPanel != null) inventoryPanel.SetActive(true);
 
-        // Pin the counter open instead of letting it fade on its timer.
+        // Pinned, not left to fade on its timer.
         lumenUI?.Show();
 
         playerHealth = FindFirstObjectByType<PlayerHealth>();
@@ -113,7 +112,7 @@ public class InventoryUI : MonoBehaviour
         else        Open();
     }
 
-    // Consumables stay usable anywhere; only the loadout is checkpoint-bound.
+    // Only the loadout is checkpoint-bound; consumables work anywhere.
     private static bool CanEditLoadout => CheckPoint.PlayerAtCheckpoint;
 
     public void Refresh()
@@ -129,7 +128,7 @@ public class InventoryUI : MonoBehaviour
     {
         if (abilityIcons == null) return;
 
-        // Straight from the run profile, so the panel cannot disagree with the player.
+        // From the run profile, so the panel cannot disagree with the player.
         var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
 
         foreach (var binding in abilityIcons)
@@ -201,11 +200,11 @@ public class InventoryUI : MonoBehaviour
         }
         if (run.bundles.Count == 0) SpawnEmpty(bundleListParent);
 
-        // Fitters recalculate next pass, so same-frame cells would draw on top of each other.
+        // Fitters recalculate next pass, so same-frame cells would overlap.
         RebuildLayout(talismanListParent);
     }
 
-    // Rebuild from the topmost layout group so nested grid/section/content all resolve.
+    // From the topmost layout group, so nested groups resolve.
     private static void RebuildLayout(Transform from)
     {
         RectTransform top = null;
@@ -220,7 +219,7 @@ public class InventoryUI : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(top);
     }
 
-    // Only removes cells this script spawned - editor-placed ones are left alone.
+    // Only cells this script spawned.
     private void ClearSpawned()
     {
         foreach (GameObject go in spawnedEntries)
@@ -236,14 +235,13 @@ public class InventoryUI : MonoBehaviour
         spawnedEntries.Add(entry.gameObject);
     }
 
-    // A blank cell: no icon, no count, not clickable. Just the socket art.
     private void SpawnEmpty(Transform parent) => Spawn(parent, null, 0, true, null);
 
     private void Equip(Talisman talisman)
     {
         if (!CanEditLoadout) return;
 
-        // Both sockets full - free one first rather than silently swapping.
+        // Both full: free one rather than silently swapping.
         if (!GameManager.Instance.activeRun.Equip(talisman)) return;
 
         GameManager.Instance.MarkDirty();
@@ -283,7 +281,7 @@ public class InventoryUI : MonoBehaviour
         Refresh();
     }
 
-    // A null here would save a stale maxHp, because MarkDirty has already fired.
+    // MarkDirty already fired, so a null here saves a stale maxHp.
     private void RefreshPlayerMaxHealth()
     {
         if (playerHealth == null) playerHealth = FindFirstObjectByType<PlayerHealth>();

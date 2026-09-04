@@ -1,10 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// The answer to standing on top of him and mashing. Circles bloom around his body and
-// go off, so burst damage at point blank costs you.
-//
-// Fired by the brain when it counts enough hits inside its window, never at random.
+// Circles bloom around his body and detonate. Fired by the brain, never at random.
 public class KingRetribution : KingAttack
 {
     public override bool Scripted => true;
@@ -13,8 +10,7 @@ public class KingRetribution : KingAttack
     [Header("Pattern")]
     [SerializeField] private int circles = 5;
 
-    // How far out from him they sit. Should cover melee range and no further, or it
-    // stops being a punish for being close and becomes a room-wide attack.
+    // Melee range and no further, or it stops being a punish for being close.
     [SerializeField] private float spread = 3f;
     [SerializeField] private float blastRadius = 2.2f;
 
@@ -22,7 +18,7 @@ public class KingRetribution : KingAttack
     [SerializeField] private float telegraphTime = 0.45f;
     [SerializeField] private float blastTime = 0.2f;
 
-    // Small stagger so they pop in sequence rather than as one flat wall.
+    // Pops them in sequence rather than as one wall.
     [SerializeField] private float ripple = 0.06f;
 
     [Header("Damage")]
@@ -38,8 +34,7 @@ public class KingRetribution : KingAttack
             float angle = i / (float)count * Mathf.PI * 2f;
             Vector2 offset = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * spread;
 
-            // growTime near zero: this is a blast at a fixed size, not an expanding
-            // wave. tickInterval longer than blastTime so it can only land once.
+            // Near-zero growTime is a fixed blast; tickInterval > blastTime lands once.
             KingRing.Spawn(Brain, transform, offset, blastRadius,
                            telegraph + i * ripple, 0.05f, blastTime,
                            damage, blastTime + 1f);

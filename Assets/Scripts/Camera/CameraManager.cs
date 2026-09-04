@@ -128,8 +128,7 @@ public class CameraManager : MonoBehaviour
         forcingYOffset = true;
     }
 
-    // Distance comes from the room. lookDistance is only a fallback for a caller that
-    // somehow looks with no room set.
+    // From the room; lookDistance is only a fallback when none is set.
     public void LookUp()
     {
         lookOffsetY = currentRoom != null ? currentRoom.LookUpDistance : lookDistance;

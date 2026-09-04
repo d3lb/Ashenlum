@@ -9,13 +9,10 @@ public class KingLines : KingAttack
     [SerializeField] private KingArena arena;
 
     [Header("Pattern")]
-    // The room is divided into this many columns; some are left empty.
     [SerializeField] private int slots = 7;
     [SerializeField] private int gaps = 2;
 
-    // How many columns away the guaranteed safe gap is placed from the player.
-    // 0 puts it under their feet, which means standing still is always correct and the
-    // attack asks nothing of them. 1 or 2 makes it reachable but demands a move.
+    // Columns between the player and the guaranteed gap. 0 means standing still works.
     [SerializeField] private int gapDistance = 2;
 
     [Header("Shape")]
@@ -59,9 +56,7 @@ public class KingLines : KingAttack
         yield return new WaitForSeconds(telegraph + activeTime);
     }
 
-    // One gap is guaranteed reachable from where the player stands - not underneath
-    // them. Reachable keeps it fair; underneath makes standing still the right answer
-    // and turns the attack into scenery.
+    // One gap is always reachable, but never underneath.
     private void PickGaps(int columns, int holes, Transform player)
     {
         free.Clear();
@@ -74,7 +69,7 @@ public class KingLines : KingAttack
             int step = Mathf.Max(0, gapDistance);
             int side = Random.value < 0.5f ? -1 : 1;
 
-            // Flip toward the room if that side would fall off the edge.
+            // Flip inward if that side falls off the edge.
             if (here + side * step < 0 || here + side * step > columns - 1) side = -side;
 
             free.Add(Mathf.Clamp(here + side * step, 0, columns - 1));

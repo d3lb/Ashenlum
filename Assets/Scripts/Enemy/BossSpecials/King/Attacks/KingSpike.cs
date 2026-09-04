@@ -1,12 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// Light erupts from the floor under the player.
-//
-// Set count above 1 and it becomes a volley that re-aims between each one, so you have
-// to keep moving instead of sidestepping once. That is also how phase 3 gets its
-// "spikes in threes" - a second copy of this component with count 3 and minPhase 3.
-// The brain finds attacks with GetComponents, so two of these on the King is fine.
+// Floor spike under the player. count above 1 is a volley that re-aims between each.
 public class KingSpike : KingAttack
 {
     [Header("References")]
@@ -15,7 +10,6 @@ public class KingSpike : KingAttack
     [Header("Pattern")]
     [SerializeField] private int count = 1;
 
-    // Gap between spikes in a volley. Each one re-reads where the player is.
     [SerializeField] private float burstGap = 0.35f;
 
     [Header("Shape")]
@@ -44,8 +38,7 @@ public class KingSpike : KingAttack
 
         for (int i = 0; i < shots; i++)
         {
-            // Position locks the moment it is placed and does not follow during the
-            // telegraph. A spike that tracks you while warning you cannot be dodged.
+            // Locked on placement; a spike that tracks while warning cannot be dodged.
             float x = arena.ClampX(player.position.x);
             Vector2 pos = new Vector2(x, arena.FloorY + spikeSize.y * 0.5f);
 
@@ -62,7 +55,6 @@ public class KingSpike : KingAttack
         if (arena == null) arena = FindFirstObjectByType<KingArena>();
         if (arena == null) return;
 
-        // Drawn at the King's own x, just to show the size and where the floor is.
         Gizmos.color = new Color(1f, 0.8f, 0.2f, 0.8f);
         Gizmos.DrawWireCube(new Vector3(transform.position.x,
                                         arena.FloorY + spikeSize.y * 0.5f, 0f),

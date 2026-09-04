@@ -1,19 +1,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-// A checkpoint lives in a scene that is not loaded, so the travel list cannot find it
-// by searching. Every checkpoint has to be listed here to be travelled to.
+// Unloaded scenes cannot be searched, so every travel target is listed here.
 [CreateAssetMenu(fileName = "Checkpoint Directory", menuName = "Ashenlum/Checkpoint Directory")]
 public class CheckpointDirectory : ScriptableObject
 {
     [System.Serializable]
     public class Entry
     {
-        // Must match the Checkpoint Entrance Id on the checkpoint in the scene.
         public string id;
         public string displayName = "Rest Point";
 
-        // Scene name exactly as it appears in Build Settings.
+        // Exactly as in Build Settings.
         public string scene;
     }
 
@@ -29,7 +27,6 @@ public class CheckpointDirectory : ScriptableObject
         return null;
     }
 
-    // Listed in directory order, so the inspector controls how the travel menu reads.
     public List<Entry> Discovered(HashSet<string> openedIds)
     {
         List<Entry> found = new();

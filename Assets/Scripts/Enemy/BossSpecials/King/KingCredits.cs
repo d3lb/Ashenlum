@@ -1,30 +1,24 @@
 using System.Collections;
 using UnityEngine;
 
-// Fade to black, hold on a credits card, fade back to the arena.
-//
-// Skipping matches the dialogue rules: a press ends the current step and nothing else.
-// The final fade in is not skippable, so the game never snaps straight from a black
-// screen back into play.
+// A press ends the current step only. The way out does not skip.
 public class KingCredits : MonoBehaviour
 {
     [Header("Card")]
-    // Whatever the credits text lives on. Written in the editor, not here.
     [SerializeField] private GameObject panel;
 
     [Header("Timing")]
     [SerializeField] private float fadeOutTime = 1.5f;
 
-    // The names come up out of the black rather than appearing on it.
     [SerializeField] private float textFadeIn = 1f;
     [SerializeField] private float holdTime = 6f;
     [SerializeField] private float textFadeOut = 0.8f;
 
-    // A beat of empty black after the names go and before the room comes back.
+    // Empty black between the names leaving and the room returning.
     [SerializeField] private float blackBeat = 0.5f;
     [SerializeField] private float fadeInTime = 1.5f;
 
-    // Stops the press that killed him from also skipping the first fade.
+    // Or the killing blow's press also skips the first fade.
     [SerializeField] private float inputDelay = 0.35f;
 
     private CanvasGroup group;
@@ -33,7 +27,6 @@ public class KingCredits : MonoBehaviour
     {
         if (panel == null) return;
 
-        // Added rather than required, so there is nothing extra to wire by hand.
         group = panel.GetComponent<CanvasGroup>();
         if (group == null) group = panel.AddComponent<CanvasGroup>();
 
@@ -45,9 +38,7 @@ public class KingCredits : MonoBehaviour
 
     public IEnumerator Play()
     {
-        // Frozen for the whole card, so nothing keeps fighting behind the black.
-        // The flag is separate: Update still runs at timeScale 0, so without it the
-        // click that skips a step also swings the sword.
+        // Freeze stops the world; the flag stops input, which Update still reads at timeScale 0.
         TimeManager.Freeze(this);
         UIState.CutsceneActive = true;
 
@@ -58,7 +49,6 @@ public class KingCredits : MonoBehaviour
         yield return FadeGroup(0f, 1f, textFadeIn, true);
         yield return SkippableWait(holdTime);
 
-        // From here on nothing skips. The way out should feel decided, not rushed.
         yield return FadeGroup(1f, 0f, textFadeOut, false);
 
         if (panel != null) panel.SetActive(false);
@@ -72,7 +62,7 @@ public class KingCredits : MonoBehaviour
         TimeManager.Release(this);
     }
 
-    // Runs the fade and cuts it short on a press, landing on full black either way.
+    // Cut short on a press, but always lands on full black.
     private IEnumerator SkippableFade(float duration)
     {
         if (SceneFader.Instance == null) yield break;
@@ -111,7 +101,7 @@ public class KingCredits : MonoBehaviour
             yield return null;
         }
 
-        // Always lands on the target, whether it ran out or was skipped.
+        // Lands on the target whether it ran out or was skipped.
         group.alpha = to;
     }
 
@@ -133,7 +123,7 @@ public class KingCredits : MonoBehaviour
         }
     }
 
-    // Safety net: torn down mid-card must not leave the game frozen or black.
+    // Torn down mid-card must not leave the game frozen.
     private void OnDisable()
     {
         UIState.CutsceneActive = false;

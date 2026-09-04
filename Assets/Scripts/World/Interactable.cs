@@ -21,8 +21,7 @@ public abstract class Interactable : MonoBehaviour
 
     private void Update()
     {
-        // Update runs at timeScale 0, so without this an open panel still passes E
-        // through to whatever the player happens to be standing on.
+        // Update runs at timeScale 0, so an open panel would still pass E through.
         bool nearby = inRange && input != null && !UIState.Busy;
         bool available = nearby && CanInteract;
 
@@ -42,18 +41,16 @@ public abstract class Interactable : MonoBehaviour
     protected virtual bool CanInteract => true;
     protected virtual string PromptVerb => "Interact";
 
-    // Shown instead of the prompt when you are close but cannot act. Null stays silent,
-    // which is right for most things - a locked door is worth explaining, a shop is not.
+    // Shown when close but unable to act. Null stays silent.
     protected virtual string BlockedMessage => null;
 
     protected bool PlayerInRange => inRange;
 
-    // Null unless the player is inside the trigger. For things that care which side.
+    // Null unless the player is inside the trigger.
     protected Transform Player => player;
 
     protected abstract void Interact();
 
-    // For things that care about proximity itself, not just the E press.
     protected virtual void OnPlayerEnter() { }
     protected virtual void OnPlayerExit() { }
 

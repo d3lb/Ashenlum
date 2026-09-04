@@ -6,11 +6,11 @@ public class Dialogue : Interactable
     [SerializeField] private Conversation conversation;
 
     [Header("After a boss")]
-    // Leave the id blank for an NPC that always says the same thing.
+    // Blank for an NPC that never changes.
     [SerializeField] private string afterBossId;
     [SerializeField] private Conversation afterBossConversation;
 
-    // IsDialogueActive stays true one extra frame so the closing press cannot reopen it.
+    // Stays true one extra frame, so the closing press cannot reopen it.
     protected override bool CanInteract => !DialogueManager.IsDialogueActive;
 
     protected override string PromptVerb => "Talk";
@@ -26,7 +26,7 @@ public class Dialogue : Interactable
         }
     }
 
-    // Falls back to the normal line, so a half-filled inspector still talks.
+    // Falls back, so a half-filled inspector still talks.
     private Conversation Current =>
         BossBeaten && afterBossConversation != null ? afterBossConversation : conversation;
 

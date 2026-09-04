@@ -1,14 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-// One dash charge. Put this on the pip root so the background hides with it, and
-// point Front at the circle that comes and goes.
+// One dash charge. Goes on the pip root, so the background hides with it.
 public class DashPipUI : MonoBehaviour
 {
     [SerializeField] private Image front;
 
-    // Needs Front's Image Type to be Filled. Ignored otherwise - a Simple image drops
-    // fillAmount silently, which leaves the pip lit for the whole refill.
+    // Needs Front set to Filled; a Simple image drops fillAmount silently.
     [SerializeField] private bool animateRefill;
 
     private bool CanAnimate =>
@@ -33,7 +31,6 @@ public class DashPipUI : MonoBehaviour
             return;
         }
 
-        // The charge currently coming back, when the art can show a partial state.
         if (CanAnimate && refillPercent > 0f)
         {
             front.enabled = true;

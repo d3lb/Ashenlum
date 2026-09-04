@@ -1,11 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-// Four arrows of light form in the top corners, two a side, all aimed at where you are
-// standing. Then they all fire at once.
-//
-// Coming from both corners means there is no direction that is simply "away" - you have
-// to leave the point they are converging on, not just back off.
+// Four arrows from the top corners, converging on one point.
 public class KingArrow : KingAttack
 {
     [Header("References")]
@@ -14,7 +10,6 @@ public class KingArrow : KingAttack
     [Header("Spawn corners")]
     [SerializeField] private int perCorner = 2;
 
-    // How far in from the corner the pair sits, and how far apart the two are.
     [SerializeField] private float cornerInset = 3f;
     [SerializeField] private float pairSpacing = 2.5f;
     [SerializeField] private float dropFromCeiling = 1.5f;
@@ -23,26 +18,21 @@ public class KingArrow : KingAttack
     [SerializeField] private Vector2 arrowSize = new Vector2(3f, 0.9f);
 
     [Header("Timing")]
-    // Long on purpose. Four converging arrows need to be readable well before they move.
+    // Long: four converging arrows need reading before they move.
     [SerializeField] private float aimTime = 0.9f;
     [SerializeField] private float flightTime = 1.2f;
 
-    // Peak speed, not average. The curve below scales it, so the arrow covers less
-    // ground than speed x flightTime would suggest.
+    // Peak, not average - the curve scales it, so distance is under speed x flightTime.
     [SerializeField] private float speed = 40f;
 
-    // Speed across the flight, 0 to 1. It creeps out of the corner and then snaps,
-    // which reads as a throw rather than a constant slide. Drag the first key below
-    // zero and it pulls back before firing.
+    // Speed across the flight. A first key below zero pulls back before firing.
     [SerializeField] private AnimationCurve speedCurve = new AnimationCurve(
         new Keyframe(0f, 0.10f),
         new Keyframe(0.40f, 0.22f),
         new Keyframe(0.65f, 0.85f),
         new Keyframe(1f, 1f));
 
-    // They swivel to follow you for the whole aim, then commit this long before firing.
-    // Zero would mean the only possible dodge is after launch; this leaves a beat where
-    // the final line is visible and standing there is your choice.
+    // Commit this long before firing; zero leaves no dodge until after launch.
     [SerializeField] private float lockLead = 0.18f;
 
     protected override void Awake()
@@ -79,8 +69,7 @@ public class KingArrow : KingAttack
             }
         }
 
-        // They track you for the whole aim and only commit at the end, so standing
-        // still is lethal and the dodge is a late one rather than a guess.
+        // Tracks until lockAt, so the dodge is late rather than a guess.
         float lockAt = Mathf.Max(0f, aim - lockLead);
         float t = 0f;
 

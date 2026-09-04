@@ -19,7 +19,7 @@ public class InteractPrompt : MonoBehaviour
         if (!visual.activeSelf) visual.SetActive(true);
     }
 
-    // No key prefix: this is a reason you cannot act, not something to press.
+    // No key prefix: a reason, not something to press.
     public void ShowMessage(string text)
     {
         label.text = text;

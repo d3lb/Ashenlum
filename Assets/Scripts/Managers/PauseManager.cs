@@ -38,8 +38,11 @@ public class PauseManager : MonoBehaviour
 
     private void Update()
     {
-        // Whoever is open owns Escape. Checked only when closed, or pause could
-        // never be dismissed - being paused makes UIState.Busy true by itself.
+        // Settings closes itself on Escape; without this the same press also resumes.
+        if (SettingsPanel.IsOpen)
+            return;
+
+        // Only when closed - being paused makes UIState.Busy true by itself.
         if (!paused && UIState.Busy)
             return;
 
