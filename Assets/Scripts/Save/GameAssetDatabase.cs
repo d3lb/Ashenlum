@@ -2,13 +2,11 @@ using UnityEngine;
 
 // Ids back into assets. Anything ownable must be listed here or it vanishes on load.
 [CreateAssetMenu(fileName = "Game Asset Database", menuName = "Ashenlum/Asset Database")]
-public class GameAssetDatabase : ScriptableObject
-{
+public class GameAssetDatabase : ScriptableObject {
     [SerializeField] private ShopGood[] goods;
     [SerializeField] private ActiveAbility[] abilities;
 
-    public T FindGood<T>(string id) where T : ShopGood
-    {
+    public T FindGood<T>(string id) where T : ShopGood {
         if (string.IsNullOrEmpty(id) || goods == null) return null;
 
         foreach (ShopGood good in goods)
@@ -17,8 +15,7 @@ public class GameAssetDatabase : ScriptableObject
         return null;
     }
 
-    public ActiveAbility FindAbility(string id)
-    {
+    public ActiveAbility FindAbility(string id) {
         if (string.IsNullOrEmpty(id) || abilities == null) return null;
 
         foreach (ActiveAbility ability in abilities)
@@ -29,13 +26,11 @@ public class GameAssetDatabase : ScriptableObject
 
 #if UNITY_EDITOR
     // A duplicate id silently loads the wrong asset.
-    private void OnValidate()
-    {
+    private void OnValidate() {
         WarnOnDuplicates();
     }
 
-    private void WarnOnDuplicates()
-    {
+    private void WarnOnDuplicates() {
         if (goods == null) return;
 
         for (int i = 0; i < goods.Length; i++)

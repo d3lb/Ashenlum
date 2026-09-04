@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class SecretaryBirdDebugHUD : MonoBehaviour
-{
+public class SecretaryBirdDebugHUD : MonoBehaviour {
     [SerializeField] private SecretaryBirdBrain brain;
     [SerializeField] private SecretaryBirdState state;
     [SerializeField] private SecretaryBirdHealth health;
@@ -16,28 +15,24 @@ public class SecretaryBirdDebugHUD : MonoBehaviour
     private string lastName = "-";
     private float lastChange;
 
-    private void Awake()
-    {
+    private void Awake() {
         if (brain == null)  brain  = GetComponent<SecretaryBirdBrain>();
         if (state == null)  state  = GetComponent<SecretaryBirdState>();
         if (health == null) health = GetComponent<SecretaryBirdHealth>();
     }
 
-    private void Update()
-    {
+    private void Update() {
         string n = brain != null && brain.CurrentAttack != null
             ? brain.CurrentAttack.DisplayName
             : "-";
 
-        if (n != lastName)
-        {
+        if (n != lastName) {
             lastName = n;
             lastChange = Time.time;
         }
     }
 
-    private void OnGUI()
-    {
+    private void OnGUI() {
         if (!show || state == null) return;
 
         if (style == null)

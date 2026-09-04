@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections;
 
-public class EnemyHealth : MonoBehaviour, IDamageable
-{
+// Damage, knockback, hit flash and death for every regular enemy. Bosses keep their own
+// because they have phases and this does not.
+public class EnemyHealth : MonoBehaviour, IDamageable {
     private PersistentObject persistentObject;
 
     [SerializeField] private GameObject corpsePrefab;
@@ -38,8 +39,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
     private Vector3 spawnPosition;
     private int startHp;
 
-    private void Awake()
-    {
+    private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         state = GetComponent<EnemyState>();
         sprite = GetComponent<SpriteRenderer>();
@@ -54,8 +54,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
     private void OnDestroy() => WorldReset.Unregister(this);
 
-    private void Start()
-    {
+    private void Start() {
         if (persistentObject == null)
             return;
 
@@ -68,8 +67,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             gameObject.SetActive(false);
     }
 
-    public void ResetToSpawn()
-    {
+    public void ResetToSpawn() {
         if (gameObject.activeSelf && hp >= startHp) return;
 
         GameRunProfile run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
@@ -86,8 +84,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         transform.position = spawnPosition;
         if (rb != null) rb.linearVelocity = Vector2.zero;
 
-        if (state != null)
-        {
+        if (state != null) {
             state.IsDead = false;
             state.IsKnocked = false;
             state.IsAttacking = false;
@@ -105,32 +102,27 @@ public class EnemyHealth : MonoBehaviour, IDamageable
             part.ResetForRespawn();
     }
 
-    public void Update()
-    {
+    public void Update() {
         if (state.IsDead)
             return;
 
-        if (isInvincible)
-        {
+        if (isInvincible) {
             iFrameTimer -= Time.deltaTime;
             if (iFrameTimer <= 0)
                 isInvincible = false;
         }
 
-        if (state.IsKnocked)
-        {
+        if (state.IsKnocked) {
             knockbackTimer -= Time.deltaTime;
 
-            if (knockbackTimer <= 0)
-            {
+            if (knockbackTimer <= 0) {
                 state.IsKnocked = false;
                 state.CurrentState = EnemyState.EnemyStateType.Patrol;
                 rb.linearVelocity = new Vector2(0f, 0f);
             }
         }
     } 
-    public bool TakeDamage(int dmg, Vector2 attackerPos)
-    {
+    public bool TakeDamage(int dmg, Vector2 attackerPos) {
         if (isInvincible)
             return false;
 
@@ -140,8 +132,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         iFrameTimer = iFrameTime;
 
         // Knockback
-        if (knockbackable)
-        {
+        if (knockbackable) {
             lastHitDirection = (transform.position - (Vector3)attackerPos).normalized;
             rb.AddForce(lastHitDirection * knockbackStrength, ForceMode2D.Impulse);
 
@@ -158,8 +149,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
 
         // call death if hp <= 0
-        if (hp <= 0)
-        {
+        if (hp <= 0) {
             Die();
             return true;
         }
@@ -168,27 +158,19 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
 
     // death
-    private void Die()
-    {
+    private void Die() {
         GameManager.Instance?.CountKill();
 
         GetComponentInChildren<LumenDropper>()?.Drop();
 
-        if (corpsePrefab != null)
-        {
-            GameObject corpse = Instantiate(
-                corpsePrefab,
-                transform.position,
-                transform.rotation
-            );
+        if (corpsePrefab != null) {
+            GameObject corpse = Instantiate(corpsePrefab, transform.position, transform.rotation);
 
             corpse.GetComponent<Corpse>()?.Pop(lastHitDirection);
         }
 
-        if (persistentObject != null)
-        {
-            switch (persistentObject.PersistenceType)
-            {
+        if (persistentObject != null) {
+            switch (persistentObject.PersistenceType) {
                 case PersistenceType.Temporary:
                     GameManager.Instance.activeRun.temporaryRemoved.Add(persistentObject.Id);
                     break;
@@ -207,14 +189,12 @@ public class EnemyHealth : MonoBehaviour, IDamageable
 
 
     // white flash when hit
-    private IEnumerator HitFlash()
-    {
+    private IEnumerator HitFlash() {
         float halfTime = hitFlashTime * 0.5f;
         float timer = 0f;
 
         // fade in
-        while (timer < halfTime)
-        {
+        while (timer < halfTime) {
             timer += Time.deltaTime;
             float t = timer / halfTime; // 0 -> 1
             mat.SetFloat("_FlashAmount", t);
@@ -224,8 +204,7 @@ public class EnemyHealth : MonoBehaviour, IDamageable
         timer = 0f;
 
         // fade out
-        while (timer < halfTime)
-        {
+        while (timer < halfTime) {
             timer += Time.deltaTime;
             float t = 1f - (timer / halfTime); // 1 -> 0
             mat.SetFloat("_FlashAmount", t);

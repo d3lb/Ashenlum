@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class WingBurstEffect : MonoBehaviour
-{
+public class WingBurstEffect : MonoBehaviour {
     [SerializeField] private float lifeTime = 0.4f;
     [SerializeField] private float scaleMultiplier = 1.5f;
 
@@ -10,26 +9,20 @@ public class WingBurstEffect : MonoBehaviour
     private Vector3 startScale;
     private Color startColor;
 
-    private void Awake()
-    {
+    private void Awake() {
         sprite = GetComponent<SpriteRenderer>();
 
         startScale = transform.localScale;
         startColor = sprite.color;
     }
 
-    private void Update()
-    {
+    private void Update() {
         lifeTime -= Time.deltaTime;
 
         float t = 1f - (lifeTime / 0.4f);
 
         transform.localScale =
-            Vector3.Lerp(
-                startScale,
-                startScale * scaleMultiplier,
-                t
-            );
+            Vector3.Lerp(startScale, startScale * scaleMultiplier, t);
 
         Color c = startColor;
 

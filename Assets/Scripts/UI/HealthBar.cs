@@ -3,8 +3,9 @@ using UnityEngine.UI;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class HealthBar : MonoBehaviour
-{
+// The bar is also the stability warning: it grows with max HP and drives the screen
+// darkening when you are low, so one script owns both.
+public class HealthBar : MonoBehaviour {
     [Header("References")]
     [SerializeField] private Slider healthSlider;
     [SerializeField] private Slider easeHealthSlider;
@@ -42,8 +43,7 @@ public class HealthBar : MonoBehaviour
     private float pulseTimer;
     private bool pulseWasRising;
 
-    private void Start()
-    {
+    private void Start() {
         FindPlayer();
         if (globalVolume != null)
             globalVolume.profile.TryGet(out vignette);
@@ -51,31 +51,26 @@ public class HealthBar : MonoBehaviour
             vignette.color.value = vignetteColor;
     }
 
-    private void OnEnable()
-    {
+    private void OnEnable() {
         if (GameManager.Instance != null)
             GameManager.Instance.OnSceneReady += FindPlayer;
     }
 
-    private void OnDisable()
-    {
+    private void OnDisable() {
         if (GameManager.Instance != null)
             GameManager.Instance.OnSceneReady -= FindPlayer;
     }
 
-    private void FindPlayer()
-    {
+    private void FindPlayer() {
         playerHealth = FindFirstObjectByType<PlayerHealth>();
-        if (playerHealth != null)
-        {
+        if (playerHealth != null) {
             float percent = (float)playerHealth.CurrentHP / playerHealth.MaxHP;
             healthSlider.value = percent;
             easeHealthSlider.value = percent;
         }
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (playerHealth == null) return;
 
         float percent = (float)playerHealth.CurrentHP / playerHealth.MaxHP;
@@ -86,8 +81,7 @@ public class HealthBar : MonoBehaviour
         barTransform.sizeDelta = new Vector2(width, barTransform.sizeDelta.y);
 
         // anchoredPosition places the pivot, so shift by its distance from the middle.
-        if (keepBarCentered)
-        {
+        if (keepBarCentered) {
             Vector2 pos = barTransform.anchoredPosition;
             pos.x = barCenterX + width * (barTransform.pivot.x - 0.5f);
             barTransform.anchoredPosition = pos;
@@ -96,12 +90,10 @@ public class HealthBar : MonoBehaviour
         UpdateStabilityVisuals();
     }
 
-    private void UpdateStabilityVisuals()
-    {
+    private void UpdateStabilityVisuals() {
         PlayerHealth.StabilityState stability = playerHealth.CurrentStabilityState;
 
-        if (stability == PlayerHealth.StabilityState.High)
-        {
+        if (stability == PlayerHealth.StabilityState.High) {
             pulseTimer = 0f;
             pulseWasRising = false;
         }
@@ -110,8 +102,7 @@ public class HealthBar : MonoBehaviour
         float pulseIntensity;
         float pulseSpeed;
 
-        switch (stability)
-        {
+        switch (stability) {
             case PlayerHealth.StabilityState.High:
                 targetColor = highColor;
                 pulseIntensity = 0f;
@@ -136,8 +127,7 @@ public class HealthBar : MonoBehaviour
         // Vignette pulse
         if (vignette == null) return;
 
-        if (pulseIntensity <= 0f)
-        {
+        if (pulseIntensity <= 0f) {
             vignette.intensity.value = Mathf.Lerp(vignette.intensity.value, 0f, colorLerpSpeed * Time.deltaTime);
             pulseTimer = 0f;
             return;
@@ -150,8 +140,7 @@ public class HealthBar : MonoBehaviour
 
         // Detect peak of the pulse to fire a shake
         bool rising = Mathf.Cos(pulseTimer) > 0f;
-        if (pulseWasRising && !rising)
-        {
+        if (pulseWasRising && !rising) {
             float amp = stability == PlayerHealth.StabilityState.Low ? lowShakeAmplitude : midShakeAmplitude;
             if (CameraShakeManager.Instance != null)
                 CameraShakeManager.Instance.Shake(shakeDuration, amp, shakeFrequency);

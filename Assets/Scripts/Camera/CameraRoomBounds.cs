@@ -1,8 +1,8 @@
 using UnityEngine;
 
+// One of these sits in every room. It tells CameraManager how that room wants to be filmed.
 [RequireComponent(typeof(BoxCollider2D))]
-public class CameraRoomBounds : MonoBehaviour
-{
+public class CameraRoomBounds : MonoBehaviour {
     [Header("Refrences")]
     [SerializeField] private CameraManager cameraManager;
 
@@ -46,8 +46,7 @@ public class CameraRoomBounds : MonoBehaviour
     public float MinY => minY;
     public float MaxY => maxY;
 
-    private void OnTriggerStay2D(Collider2D other)
-    {
+    private void OnTriggerStay2D(Collider2D other) {
         if (!other.CompareTag("Player"))
             return;
         cameraManager.SetRoom(this);

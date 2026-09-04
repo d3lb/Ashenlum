@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // Circles bloom around his body and detonate. Fired by the brain, never at random.
-public class KingRetribution : KingAttack
-{
+public class KingRetribution : KingAttack {
     public override bool Scripted => true;
     public override bool CanOverlap => false;
 
@@ -24,13 +23,11 @@ public class KingRetribution : KingAttack
     [Header("Damage")]
     [SerializeField] private int damage = 15;
 
-    public override IEnumerator Act(Transform player)
-    {
+    public override IEnumerator Act(Transform player) {
         int count = Mathf.Max(1, circles);
         float telegraph = Telegraph(telegraphTime);
 
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             float angle = i / (float)count * Mathf.PI * 2f;
             Vector2 offset = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * spread;
 
@@ -43,14 +40,12 @@ public class KingRetribution : KingAttack
         yield return new WaitForSeconds(telegraph + (count - 1) * ripple + blastTime + 0.05f);
     }
 
-    private void OnDrawGizmosSelected()
-    {
+    private void OnDrawGizmosSelected() {
         int count = Mathf.Max(1, circles);
 
         Gizmos.color = new Color(1f, 0.35f, 0.1f, 0.8f);
 
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             float angle = i / (float)count * Mathf.PI * 2f;
             Vector3 p = transform.position +
                         (Vector3)(new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * spread);

@@ -2,8 +2,9 @@ using System.Collections;
 using UnityEngine;
 using static PlayerState;
 
-public class PlayerMovement : MonoBehaviour
-{
+// Movement is what a platformer is judged on, so it gets its own class and its own tuning
+// asset. Update reads the world and decides; FixedUpdate applies the forces.
+public class PlayerMovement : MonoBehaviour {
     [SerializeField] private PlayerPhysicsData physicsData;
 
     #region VARIABLES 
@@ -93,29 +94,40 @@ public class PlayerMovement : MonoBehaviour
     // Grounded only, so the shade never lands on a spike.
     public Vector2 LastSafeGround { get; private set; }
 
-    private void Awake()
-    {
+    private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         Sprite = GetComponent<SpriteRenderer>();
         input = GetComponent<PlayerInput>();
     }
-    private void Start()
-    {
+    private void Start() {
         SetGravityScale(physicsData.gravityScale);
         state.IsFacingRight = true;
         LastSafeGround = transform.position;
     }
 
     // dashesLeft defaults to 0, so without this you spawn with none. Also covers respawn.
-    private void OnEnable()
-    {
+    private void OnEnable() {
         dashesLeft = MaxDashes;
         dashRefillTimer = 0f;
     }
 
-    private void Update()
-    {
-        #region TIMERS
+    private void Update() {
+        TickTimers();
+        ReadInput();
+        CheckCollisions();
+        HandleJump();
+        HandleDash();
+        HandleSlide();
+        ApplyGravity();
+
+        TryCutJump();
+        TickDashRefill();
+        TickFootsteps();
+        UpdateState();
+    }
+
+    // Every forgiveness window is a countdown, so one place ticks them all down.
+    private void TickTimers() {
         LastOnGroundTime -= Time.deltaTime;
         LastOnWallTime -= Time.deltaTime;
         LastOnWallRightTime -= Time.deltaTime;
@@ -127,16 +139,14 @@ public class PlayerMovement : MonoBehaviour
         wallJumpTimer -= Time.deltaTime;
         wallJumpReturnTimer -= Time.deltaTime;
         wallJumpRegrabTimer -= Time.deltaTime;
+    }
 
-        #endregion
-
-        #region INPUT
-
+    // Read the pad once, turn presses into buffered timers, and face the way we are going.
+    private void ReadInput() {
         moveInput = input.Movement;
 
         // Check If player should be facing left or right
-        if (moveInput.x != 0 && !state.IsBusy)
-        {
+        if (moveInput.x != 0 && !state.IsBusy) {
             facingDir = moveInput.x > 0 ? 1 : -1;
             state.IsFacingRight = facingDir == 1;
         }
@@ -144,40 +154,34 @@ public class PlayerMovement : MonoBehaviour
         Sprite.flipX = facingDir == -1;
 
 
-        if (input.JumpPressed)
-        {
+        if (input.JumpPressed) {
             LastPressedJumpTime = physicsData.jumpInputBufferTime;
             jumpCutQueued = false;
         }
 
-        if (input.JumpReleased)
-        {
+        if (input.JumpReleased) {
             jumpCutQueued = true;
         }
 
-        if (input.DashPressed)
-        {
+        if (input.DashPressed) {
             LastPressedDashTime = physicsData.dashInputBufferTime;
         }
 
         state.IsGrounded = LastOnGroundTime > 0f;
+    }
 
-        #endregion
-
-        #region COLLISION CHECKS
-        if (state.CurrentState != PlayerStateType.Dash)
-        {
+    // What are we touching this frame - ground, wall, and are we sliding down it.
+    private void CheckCollisions() {
+        if (state.CurrentState != PlayerStateType.Dash) {
             //Ground Check
-            if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer))
-            {
+            if (Physics2D.OverlapBox(_groundCheckPoint.position, _groundCheckSize, 0, _groundLayer)) {
                 LastOnGroundTime = physicsData.coyoteTime;
                 LastSafeGround = transform.position;
             }
 
 
             //Wall Check
-            if (wallJumpRegrabTimer <= 0f)
-            {
+            if (wallJumpRegrabTimer <= 0f) {
                 bool frontWall = Physics2D.OverlapBox(_frontWallCheckPoint.position, _wallCheckSize, 0, _groundLayer);
                 bool backWall = Physics2D.OverlapBox(_backWallCheckPoint.position, _wallCheckSize, 0, _groundLayer);
 
@@ -192,19 +196,17 @@ public class PlayerMovement : MonoBehaviour
 
             state.IsSliding = GameManager.Instance.activeRun.isWallJumpUnlocked && LastOnGroundTime <= 0 && LastOnWallTime > 0 && pressingIntoWall;
         }
-        #endregion
+    }
 
-        #region JUMP CHECKS
-
+    // Coyote time and the jump buffer both land here: a jump fires if either window is open.
+    private void HandleJump() {
         // Detect leaving ground
-        if (!state.IsGrounded && wasGroundedLastFrame)
-        {
+        if (!state.IsGrounded && wasGroundedLastFrame) {
             jumpNumber = 1; // consume jump
         }
 
         // Reset jumps when grounded
-        if (LastOnGroundTime > 0)
-        {
+        if (LastOnGroundTime > 0) {
             jumpNumber = 0;
         }
 
@@ -213,34 +215,30 @@ public class PlayerMovement : MonoBehaviour
         wasGroundedLastFrame = state.IsGrounded;
 
         // Jump
-        if (CanWallJump() && LastPressedJumpTime > 0)
-        {
+        if (CanWallJump() && LastPressedJumpTime > 0) {
             lastWallJumpDir = -wallDir;
             WallJump(lastWallJumpDir);
             LastPressedJumpTime = 0;
         }
-        else if (CanJump() && LastPressedJumpTime > 0)
-        {
+        else if (CanJump() && LastPressedJumpTime > 0) {
             jumpNumber++;
             SoundManager.Play(jumpNumber > 1 ? SoundId.DoubleJump : SoundId.Jump);
             Jump();
             LastPressedJumpTime = 0;
         }
-        #endregion
+    }
 
-        #region DASH CHECKS
-        if (CanDash())
-        {
+    // Dash the way you are holding, or the way you are facing if you are holding nothing.
+    private void HandleDash() {
+        if (CanDash()) {
             LastPressedDashTime = 0;
 
             // If there is horizontal input, dash that way
-            if (Mathf.Abs(moveInput.x) > 0.1f)
-            {
+            if (Mathf.Abs(moveInput.x) > 0.1f) {
                 lastDashDir = new Vector2(Mathf.Sign(moveInput.x), 0);
             }
             // Otherwise, dash based on facing direction
-            else
-            {
+            else {
                 lastDashDir = state.IsFacingRight ? Vector2.right : Vector2.left;
             }
 
@@ -248,60 +246,46 @@ public class PlayerMovement : MonoBehaviour
 
             StartCoroutine(StartDash(lastDashDir));
         }
-        #endregion
+    }
 
-        #region SLIDE CHECKS
+    // Pressing into a wall in the air is a slide, not a fall.
+    private void HandleSlide() {
         if (CanSlide() && ((LastOnWallLeftTime > 0 && moveInput.x < 0) || (LastOnWallRightTime > 0 && moveInput.x > 0)))
             state.CurrentState = PlayerStateType.WallSlide;
-        #endregion
+    }
 
-        #region GRAVITY
-        if (state.CurrentState == PlayerStateType.WallSlide)
-        {
+    // Falling, hanging at the top of a jump and sliding each want a different gravity.
+    private void ApplyGravity() {
+        if (state.CurrentState == PlayerStateType.WallSlide) {
             SetGravityScale(0);
         }
-        else if (state.CurrentState == PlayerStateType.Dash)
-        {
+        else if (state.CurrentState == PlayerStateType.Dash) {
             SetGravityScale(0);
         }
-        else if (rb.linearVelocity.y < 0 && moveInput.y < 0)
-        {
+        else if (rb.linearVelocity.y < 0 && moveInput.y < 0) {
             //Much higher gravity if holding down
             SetGravityScale(physicsData.gravityScale);
             //Caps maximum fall speed, so when falling over large distances we don't accelerate to insanely high speeds
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y));
         }
-        else if ((state.CurrentState == PlayerStateType.Jump || state.CurrentState == PlayerStateType.Fall) && Mathf.Abs(rb.linearVelocity.y) < physicsData.jumpHangTimeThreshold)
-        {
+        else if ((state.CurrentState == PlayerStateType.Jump || state.CurrentState == PlayerStateType.Fall) && Mathf.Abs(rb.linearVelocity.y) < physicsData.jumpHangTimeThreshold) {
             SetGravityScale(physicsData.gravityScale * physicsData.jumpHangGravityMult);
         }
-        else if (rb.linearVelocity.y < 0)
-        {
+        else if (rb.linearVelocity.y < 0) {
             //Higher gravity if falling
             SetGravityScale(physicsData.gravityScale * physicsData.fallGravityMult);
             //Caps maximum fall speed, so when falling over large distances we don't accelerate to insanely high speeds
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, Mathf.Max(rb.linearVelocity.y, -physicsData.maxFallSpeed));
         }
-        else
-        {
+        else {
             //Default gravity if standing on a platform or moving upwards
             SetGravityScale(physicsData.gravityScale);
         }
-
-        #endregion
-
-        TryCutJump();
-        TickDashRefill();
-        TickFootsteps();
-
-        UpdateState();
     }
 
-    private void FixedUpdate()
-    {
+    private void FixedUpdate() {
         //Handle Run
-        if ((!state.IsUsingAbility || state.CurrentState == PlayerStateType.Burst) && !state.IsDashing)
-        {
+        if ((!state.IsUsingAbility || state.CurrentState == PlayerStateType.Burst) && !state.IsDashing) {
             Run();
         }
 
@@ -312,34 +296,28 @@ public class PlayerMovement : MonoBehaviour
             Slide();
     }
 
-    void UpdateState()
-    {
-        if (state.IsUsingAbility)
-        {
+    void UpdateState() {
+        if (state.IsUsingAbility) {
             return;
         }
 
         // ACTION STATES
-        if (state.IsAttacking)
-        {
+        if (state.IsAttacking) {
             return;
         }
 
-        if (state.IsDashing)
-        {
+        if (state.IsDashing) {
             state.CurrentState = PlayerStateType.Dash;
             return;
         }
 
-        if (state.IsSliding)
-        {
+        if (state.IsSliding) {
             state.CurrentState = PlayerStateType.WallSlide;
             return;
         }
 
         // AIR STATES
-        if (LastOnGroundTime <= 0)
-        {
+        if (LastOnGroundTime <= 0) {
             if (rb.linearVelocity.y > 0.1f)
                 state.CurrentState = PlayerStateType.Jump;
             else 
@@ -356,25 +334,21 @@ public class PlayerMovement : MonoBehaviour
     }
 
     #region GENERAL METHODS
-    public void SetGravityScale(float scale)
-    {
+    public void SetGravityScale(float scale) {
         rb.gravityScale = scale;
     }
 
-    private void Sleep(float duration)
-    {
+    private void Sleep(float duration) {
         StartCoroutine(nameof(PerformSleep), duration);
     }
 
-    private IEnumerator PerformSleep(float duration)
-    {
+    private IEnumerator PerformSleep(float duration) {
         TimeManager.Freeze(this);
         yield return new WaitForSecondsRealtime(duration);
         TimeManager.Release(this);
     }
 
-    private void OnDisable()
-    {
+    private void OnDisable() {
         TimeManager.Release(this);
 
         // The dash coroutine dies with a disabled object, leaving IsBusy permanent.
@@ -385,8 +359,7 @@ public class PlayerMovement : MonoBehaviour
 
     //MOVEMENT METHODS
     #region RUN METHODS
-    private void Run()
-    {
+    private void Run() {
         //Calculate the direction we want to move in and our desired velocity
         float targetSpeed = moveInput.x * physicsData.runMaxSpeed;
 
@@ -398,16 +371,11 @@ public class PlayerMovement : MonoBehaviour
             accelRate *= physicsData.wallJumpRunLerp;
 
         //Conserve Momentum
-        if (physicsData.doConserveMomentum && Mathf.Abs(rb.linearVelocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && LastOnGroundTime < 0)
-        {
+        if (physicsData.doConserveMomentum && Mathf.Abs(rb.linearVelocity.x) > Mathf.Abs(targetSpeed) && Mathf.Sign(rb.linearVelocity.x) == Mathf.Sign(targetSpeed) && Mathf.Abs(targetSpeed) > 0.01f && LastOnGroundTime < 0) {
             accelRate = 0;
         }
 
-        float newVelX = Mathf.Lerp(
-            rb.linearVelocity.x,
-            targetSpeed,
-            accelRate * Time.fixedDeltaTime
-        );
+        float newVelX = Mathf.Lerp(rb.linearVelocity.x, targetSpeed, accelRate * Time.fixedDeltaTime);
 
         rb.linearVelocity = new Vector2(newVelX, rb.linearVelocity.y);
     }
@@ -416,16 +384,14 @@ public class PlayerMovement : MonoBehaviour
     #region JUMP METHODS
 
     // Normal jump
-    private void Jump()
-    {
+    private void Jump() {
         //Ensures we can't call Jump multiple times from one press
         LastPressedJumpTime = 0;
         LastOnGroundTime = 0;
 
         float force = physicsData.jumpForce;
 
-        if (jumpNumber > 1)
-        {
+        if (jumpNumber > 1) {
             force *= 0.8f;
         }
 
@@ -435,12 +401,10 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // Every frame, not on the release event - the release can arrive before the jump.
-    private void TryCutJump()
-    {
+    private void TryCutJump() {
         if (!jumpCutQueued) return;
 
-        if (rb.linearVelocity.y <= 0f)
-        {
+        if (rb.linearVelocity.y <= 0f) {
             // Already falling, nothing to cut.
             if (LastOnGroundTime > 0) jumpCutQueued = false;
             return;
@@ -455,8 +419,7 @@ public class PlayerMovement : MonoBehaviour
 
 
     // Wall jump
-    private void WallJump(int dir)
-    {
+    private void WallJump(int dir) {
         LastPressedJumpTime = 0;
         LastOnGroundTime = 0;
         LastOnWallTime = 0;
@@ -478,24 +441,20 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = new Vector2(xForce, physicsData.wallJumpForce.y);
     }
 
-    private void RegisterWallCheck(bool hitWall, Transform checkPoint)
-    {
+    private void RegisterWallCheck(bool hitWall, Transform checkPoint) {
         if (!hitWall) return;
 
-        if (checkPoint.position.x > transform.position.x)
-        {
+        if (checkPoint.position.x > transform.position.x) {
             LastOnWallRightTime = physicsData.coyoteTime;
             wallDir = 1;
         }
-        else
-        {
+        else {
             LastOnWallLeftTime = physicsData.coyoteTime;
             wallDir = -1;
         }
     }
 
-    private void HandleWallJumpReturnAssist()
-    {
+    private void HandleWallJumpReturnAssist() {
         if (usedWallReturnAssist) return;
         if (wallJumpTimer > 0f) return;
         if (wallJumpReturnTimer <= 0f) return;
@@ -516,8 +475,7 @@ public class PlayerMovement : MonoBehaviour
 
     #region DASH METHODS
     //Dash Coroutine
-    private IEnumerator StartDash(Vector2 dir)
-    {
+    private IEnumerator StartDash(Vector2 dir) {
         state.IsDashing = true;
         SoundManager.Play(SoundId.Dash);
 
@@ -531,8 +489,7 @@ public class PlayerMovement : MonoBehaviour
 
         float startTime = Time.time;
 
-        while (Time.time - startTime <= physicsData.dashTime)
-        {
+        while (Time.time - startTime <= physicsData.dashTime) {
             yield return null;
         }
 
@@ -541,15 +498,13 @@ public class PlayerMovement : MonoBehaviour
     }
 
     // One charge at a time, never in parallel.
-    private void TickFootsteps()
-    {
+    private void TickFootsteps() {
         bool walking = state.IsGrounded
                        && !state.IsBusy
                        && Mathf.Abs(moveInput.x) > 0.1f
                        && Mathf.Abs(rb.linearVelocity.x) > 0.5f;
 
-        if (!walking)
-        {
+        if (!walking) {
             // Primed, so the first step lands as you start moving.
             stepTravelled = stepDistance;
             return;
@@ -562,13 +517,11 @@ public class PlayerMovement : MonoBehaviour
         SoundManager.Play(SoundId.Footstep);
     }
 
-    private void TickDashRefill()
-    {
+    private void TickDashRefill() {
         if (dashesLeft > MaxDashes) dashesLeft = MaxDashes;
 
         // Counts during the dash too, or the real gap is dashTime + dashRefillTime.
-        if (dashesLeft >= MaxDashes)
-        {
+        if (dashesLeft >= MaxDashes) {
             dashRefillTimer = 0f;
             return;
         }
@@ -583,8 +536,7 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region OTHER MOVEMENT METHODS
-    private void Slide()
-    {
+    private void Slide() {
 
         float speedDif = physicsData.slideSpeed - rb.linearVelocity.y;
         float movement = speedDif * physicsData.slideAccel;
@@ -597,21 +549,18 @@ public class PlayerMovement : MonoBehaviour
 
     #region CHECK METHODS
 
-    private bool CanJump()
-    {
+    private bool CanJump() {
         int allowedJumps = GameManager.Instance.activeRun.isDoubleJumpUnlocked ? physicsData.jumpAmount : 1;
         return (LastOnGroundTime > 0 || jumpNumber < allowedJumps) && !state.IsBusy;
     }
 
-    private bool CanWallJump()
-    {
+    private bool CanWallJump() {
         if (!GameManager.Instance.activeRun.isWallJumpUnlocked) return false;
         if (wallJumpRegrabTimer > 0f) return false;
 
         return LastPressedJumpTime > 0 && LastOnWallTime > 0 && LastOnGroundTime <= 0 && !state.IsBusy;
     }
-    private bool CanDash()
-    {
+    private bool CanDash() {
        
         if (!GameManager.Instance.activeRun.isDashUnlocked) return false;
 
@@ -622,8 +571,7 @@ public class PlayerMovement : MonoBehaviour
 
     }
 
-    public bool CanSlide()
-    {
+    public bool CanSlide() {
         if (!GameManager.Instance.activeRun.isWallJumpUnlocked) return false;
 
         if (LastOnWallTime > 0 && state.CurrentState != PlayerStateType.Jump && state.CurrentState != PlayerStateType.Dash && LastOnGroundTime <= 0)
@@ -634,8 +582,7 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region EDITOR METHODS
-    private void OnDrawGizmosSelected()
-    {
+    private void OnDrawGizmosSelected() {
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(_groundCheckPoint.position, _groundCheckSize);
         Gizmos.color = Color.blue;

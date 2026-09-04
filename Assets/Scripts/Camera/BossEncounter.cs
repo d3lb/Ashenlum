@@ -1,8 +1,7 @@
 using UnityEngine;
 
 // Doors, camera and boss wake as one moment, so one thing has to order them.
-public class BossEncounter : MonoBehaviour
-{
+public class BossEncounter : MonoBehaviour {
     [Header("Boss")]
     [SerializeField] private SecretaryBirdBrain boss;
     [SerializeField] private SecretaryBirdHealth bossHealth;
@@ -24,21 +23,18 @@ public class BossEncounter : MonoBehaviour
     public bool AlreadyBeaten =>
         Run != null && !string.IsNullOrEmpty(bossId) && Run.defeatedBosses.Contains(bossId);
 
-    private void Awake()
-    {
+    private void Awake() {
         if (boss != null) bossId = boss.BossId;
         if (bossHealth != null) bossHealth.OnDied += OnBossDied;
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         if (bossHealth != null) bossHealth.OnDied -= OnBossDied;
     }
 
     private void Start() => SetDoorsClosed(false);
 
-    public void Begin()
-    {
+    public void Begin() {
         if (AlreadyBeaten || boss == null) return;
 
         SetDoorsClosed(true);
@@ -48,8 +44,7 @@ public class BossEncounter : MonoBehaviour
         boss.Activate();
     }
 
-    private void OnBossDied()
-    {
+    private void OnBossDied() {
         Run?.defeatedBosses.Add(bossId);
         Run?.SetAbilityUnlocked(reward, true);
 
@@ -61,8 +56,7 @@ public class BossEncounter : MonoBehaviour
         if (cameraSwitcher != null) cameraSwitcher.SwitchToGameplayCam();
     }
 
-    private void SetDoorsClosed(bool closed)
-    {
+    private void SetDoorsClosed(bool closed) {
         if (doors == null) return;
 
         foreach (GameObject door in doors)

@@ -1,10 +1,10 @@
 using UnityEngine;
 
-public class PlayerState : MonoBehaviour
-{
+// One place to ask what the player is doing. Movement, combat, animation and camera all
+// read it instead of reading each other.
+public class PlayerState : MonoBehaviour {
 
-    public enum PlayerStateType
-    {
+    public enum PlayerStateType {
         Idle,
         Run,
         Jump,

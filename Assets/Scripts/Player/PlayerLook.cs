@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class PlayerLook : MonoBehaviour
-{
+public class PlayerLook : MonoBehaviour {
     private PlayerState state;
     private PlayerInput input;
     private CameraManager cameraManager;
@@ -9,17 +8,14 @@ public class PlayerLook : MonoBehaviour
     private float idleTimer;
     private float lookActivateDelay = 0.5f;
 
-    private void Awake()
-    {
+    private void Awake() {
         state = GetComponent<PlayerState>();
         input = GetComponent<PlayerInput>();
         cameraManager = FindFirstObjectByType<CameraManager>();
     }
 
-    private void Update()
-    {
-        if (state.CurrentState != PlayerState.PlayerStateType.Idle)
-        {
+    private void Update() {
+        if (state.CurrentState != PlayerState.PlayerStateType.Idle) {
             idleTimer = 0f;
             cameraManager.ResetLook();
             return;
@@ -35,16 +31,13 @@ public class PlayerLook : MonoBehaviour
         if (room == null)
             return;
 
-        if (input.LookUpHeld && room.AllowLookUp)
-        {
+        if (input.LookUpHeld && room.AllowLookUp) {
             cameraManager.LookUp();
         }
-        else if (input.LookDownHeld && room.AllowLookDown)
-        {
+        else if (input.LookDownHeld && room.AllowLookDown) {
             cameraManager.LookDown();
         }
-        else
-        {
+        else {
             cameraManager.ResetLook();
         }
     }

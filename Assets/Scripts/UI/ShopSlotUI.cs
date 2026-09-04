@@ -3,8 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // Owns the dialled-in quantity; ShopUI owns the money.
-public class ShopSlotUI : MonoBehaviour
-{
+public class ShopSlotUI : MonoBehaviour {
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text nameText;
     [SerializeField] private TMP_Text descriptionText;
@@ -27,15 +26,13 @@ public class ShopSlotUI : MonoBehaviour
     private System.Action<ShopGood, int> onBuy;
     private int quantity = 1;
 
-    private void Awake()
-    {
+    private void Awake() {
         buyButton.onClick.AddListener(() => onBuy?.Invoke(good, quantity));
         minusButton.onClick.AddListener(() => Step(-1));
         plusButton.onClick.AddListener(() => Step(1));
     }
 
-    public void Bind(ShopGood item, GameRunProfile profile, System.Action<ShopGood, int> buyCallback)
-    {
+    public void Bind(ShopGood item, GameRunProfile profile, System.Action<ShopGood, int> buyCallback) {
         good = item;
         run = profile;
         onBuy = buyCallback;
@@ -44,21 +41,18 @@ public class ShopSlotUI : MonoBehaviour
         UpdateVisuals();
     }
 
-    private void Step(int delta)
-    {
+    private void Step(int delta) {
         quantity += delta;
         UpdateVisuals();
     }
 
-    private void UpdateVisuals()
-    {
+    private void UpdateVisuals() {
         int stock = good.StockRemaining(run);
         int max = good.MaxBuyable(run);
 
         quantity = Mathf.Clamp(quantity, 1, Mathf.Max(1, max));
 
-        if (icon != null)
-        {
+        if (icon != null) {
             icon.sprite = good.icon;
             icon.enabled = good.icon != null;
         }

@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class PauseManager : MonoBehaviour
-{
+public class PauseManager : MonoBehaviour {
     public static PauseManager Instance;
 
     private LumenUI lumenUI;
@@ -10,34 +9,28 @@ public class PauseManager : MonoBehaviour
     private bool paused;
     public bool IsPaused => paused;
 
-    private void Awake()
-    {
-        if (Instance == null)
-        {
+    private void Awake() {
+        if (Instance == null) {
             Instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else
-        {
+        else {
             Destroy(gameObject);
         }
     }
 
-    public void RegisterMenu(GameObject menu)
-    {
+    public void RegisterMenu(GameObject menu) {
         pausePanel = menu;
         pausePanel.SetActive(false);
         paused = false;
         TimeManager.Release(this);
     }
 
-    public void RegisterLumenUI(LumenUI ui)
-    {
+    public void RegisterLumenUI(LumenUI ui) {
         lumenUI = ui;
     }
 
-    private void Update()
-    {
+    private void Update() {
         // Settings closes itself on Escape; without this the same press also resumes.
         if (SettingsPanel.IsOpen)
             return;
@@ -46,8 +39,7 @@ public class PauseManager : MonoBehaviour
         if (!paused && UIState.Busy)
             return;
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
 
             if (paused)
                 Resume();
@@ -56,8 +48,7 @@ public class PauseManager : MonoBehaviour
         }
     }
 
-    public void Pause()
-    {
+    public void Pause() {
         if (pausePanel == null)
             return;
 
@@ -69,8 +60,7 @@ public class PauseManager : MonoBehaviour
         TimeManager.Freeze(this);
     }
 
-    public void Resume()
-    {
+    public void Resume() {
         paused = false;
 
         if (pausePanel != null)
@@ -80,8 +70,7 @@ public class PauseManager : MonoBehaviour
         TimeManager.Release(this);
     }
 
-    public void ExitToMenu()
-    {
+    public void ExitToMenu() {
         TimeManager.ReleaseAll();
         GameManager.Instance.GoToScene("MainMenu", "");
     }

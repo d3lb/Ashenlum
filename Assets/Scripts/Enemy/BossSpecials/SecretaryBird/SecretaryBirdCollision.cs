@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class SecretaryBirdCollision : MonoBehaviour
-{
+public class SecretaryBirdCollision : MonoBehaviour {
     [SerializeField] private SecretaryBirdMovement movement;
 
     private void Reset() => movement = GetComponent<SecretaryBirdMovement>();

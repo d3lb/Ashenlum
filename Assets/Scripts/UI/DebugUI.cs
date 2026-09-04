@@ -1,8 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class DebugUI : MonoBehaviour
-{
+public class DebugUI : MonoBehaviour {
     [SerializeField] private PlayerMovement player;
     [SerializeField] private TextMeshProUGUI text;
 
@@ -11,8 +10,7 @@ public class DebugUI : MonoBehaviour
     [SerializeField] private EnemyState Estate;
     [SerializeField] private CameraManager cameraa;
 
-    void Update()
-    {
+    void Update() {
         text.text =
             "State: " + state.CurrentState + "\n" +
             "Jumps: " + player.JumpNumber + "\n" +

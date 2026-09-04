@@ -2,22 +2,18 @@ using System.Collections;
 using UnityEngine;
 
 // Warn, hurt, vanish. Built in code; falls back to a generated white square.
-public class KingLight : MonoBehaviour
-{
+public class KingLight : MonoBehaviour {
     private static Sprite fallbackSprite;
 
-    public static Sprite FallbackSprite
-    {
-        get
-        {
+    public static Sprite FallbackSprite {
+        get {
             if (fallbackSprite != null) return fallbackSprite;
 
             Texture2D tex = new Texture2D(1, 1);
             tex.SetPixel(0, 0, Color.white);
             tex.Apply();
 
-            fallbackSprite = Sprite.Create(tex, new Rect(0f, 0f, 1f, 1f),
-                                           new Vector2(0.5f, 0.5f), 1f);
+            fallbackSprite = Sprite.Create(tex, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
             return fallbackSprite;
         }
     }
@@ -32,8 +28,7 @@ public class KingLight : MonoBehaviour
     private bool armed;
 
     public static KingLight Spawn(KingBrain brain, Vector2 position, Vector2 size,
-                                  float angle, float telegraphTime, float activeTime)
-    {
+                                  float angle, float telegraphTime, float activeTime) {
         GameObject go = new GameObject("KingLight");
         go.transform.SetPositionAndRotation(position, Quaternion.Euler(0f, 0f, angle));
 
@@ -61,8 +56,7 @@ public class KingLight : MonoBehaviour
             ? brain.LightSprite : FallbackSprite;
         light.visual.color = brain != null ? brain.TelegraphColor : Color.yellow;
 
-        if (brain != null)
-        {
+        if (brain != null) {
             light.visual.sortingLayerName = brain.SortingLayer;
             light.visual.sortingOrder = brain.SortingOrder;
         }
@@ -71,14 +65,12 @@ public class KingLight : MonoBehaviour
         return light;
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (!armed || box == null) return;
 
         int count = box.Overlap(filter, results);
 
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             PlayerHealth player = results[i].GetComponentInParent<PlayerHealth>();
 
             // No cooldown: the player's iFrames already rate-limit this.
@@ -86,8 +78,7 @@ public class KingLight : MonoBehaviour
         }
     }
 
-    private IEnumerator Run(float telegraphTime, float activeTime)
-    {
+    private IEnumerator Run(float telegraphTime, float activeTime) {
         // Collider off through the warning, so a telegraph cannot damage.
         if (telegraphTime > 0f) yield return new WaitForSeconds(telegraphTime);
 
@@ -100,8 +91,7 @@ public class KingLight : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void OnDrawGizmos()
-    {
+    private void OnDrawGizmos() {
         if (box == null) return;
 
         Gizmos.color = armed ? new Color(1f, 0.2f, 0.2f, 0.9f)

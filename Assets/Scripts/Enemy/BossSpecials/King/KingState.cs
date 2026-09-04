@@ -1,10 +1,8 @@
 using UnityEngine;
 
 // No Hit state: he never flinches.
-public class KingState : MonoBehaviour
-{
-    public enum KingStateType
-    {
+public class KingState : MonoBehaviour {
+    public enum KingStateType {
         Throne,
         Intro,
         Idle,
@@ -33,8 +31,7 @@ public class KingState : MonoBehaviour
         CurrentState != KingStateType.Throne &&
         CurrentState != KingStateType.Dead;
 
-    public void SetFacing(bool right)
-    {
+    public void SetFacing(bool right) {
         IsFacingRight = right;
         if (flipRoot == null) return;
 

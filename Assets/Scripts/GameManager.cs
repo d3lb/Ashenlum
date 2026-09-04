@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour
-{
+// The one object that outlives every scene. Owns the active run, moves between scenes, and
+// decides when the game is written to disk.
+public class GameManager : MonoBehaviour {
 
     public static GameManager Instance;
     // Serialized, Unity bakes stale prefab values that beat the defaults.
@@ -40,11 +41,9 @@ public class GameManager : MonoBehaviour
     public int CurrentLumens => activeRun.lumens;
 
 
-    private void Awake()
-    {
+    private void Awake() {
         Application.targetFrameRate = 60;
-        if (Instance == null)
-        {
+        if (Instance == null) {
             Instance = this;
             DontDestroyOnLoad(transform.root.gameObject);
 
@@ -52,21 +51,18 @@ public class GameManager : MonoBehaviour
 
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
-        else
-        {
+        else {
             Destroy(gameObject);
         }
 
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     // A new run always takes the next free slot.
-    public bool StartNewGame()
-    {
+    public bool StartNewGame() {
         SaveSystem.Compact();
 
         int profileId = SaveSystem.UsedCount();
@@ -93,8 +89,7 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    public bool ContinueGame()
-    {
+    public bool ContinueGame() {
         ProfileIndex index = SaveSystem.LoadIndex();
 
         if (index.lastUsedProfile >= 0 && LoadProfile(index.lastUsedProfile)) return true;
@@ -106,8 +101,7 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    public bool LoadProfile(int profileId)
-    {
+    public bool LoadProfile(int profileId) {
         if (profileId < 0) return false;
 
         RunSave save = SaveSystem.LoadRun(profileId);
@@ -127,18 +121,15 @@ public class GameManager : MonoBehaviour
         return true;
     }
 
-    private void SetResume(GameRunProfile.ResumeType type, string scene, string id)
-    {
+    private void SetResume(GameRunProfile.ResumeType type, string scene, string id) {
         activeRun.resumeType  = type;
         activeRun.resumeScene = scene;
         activeRun.resumeId    = id;
     }
 
     // Or quit-and-reload is a free full heal.
-    private void Resume()
-    {
-        switch (activeRun.resumeType)
-        {
+    private void Resume() {
+        switch (activeRun.resumeType) {
             case GameRunProfile.ResumeType.Checkpoint when activeRun.hasCheckpoint:
                 GoToCheckpoint(false);
                 break;
@@ -153,8 +144,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void DeleteProfile(int profileId)
-    {
+    public void DeleteProfile(int profileId) {
         // The active run may be renumbered underneath us.
         if (CurrentProfileId == profileId) CurrentProfileId = -1;
 
@@ -162,8 +152,7 @@ public class GameManager : MonoBehaviour
         SaveSystem.Compact();
     }
 
-    private void CountDeath()
-    {
+    private void CountDeath() {
         if (CurrentProfileId < 0) return;
 
         ProfileIndex index = SaveSystem.LoadIndex();
@@ -178,10 +167,8 @@ public class GameManager : MonoBehaviour
 
     public void CountKill() => pendingKills++;
 
-    private ProfileEntry NewEntry(ProfileIndex index, int profileId)
-    {
-        ProfileEntry entry = new ProfileEntry
-        {
+    private ProfileEntry NewEntry(ProfileIndex index, int profileId) {
+        ProfileEntry entry = new ProfileEntry {
             profileId = profileId,
             saveFile  = SaveSystem.RunFileName(profileId)
         };
@@ -192,8 +179,7 @@ public class GameManager : MonoBehaviour
 
     public void MarkDirty() => saveDirty = true;
 
-    public void SaveNow()
-    {
+    public void SaveNow() {
         if (CurrentProfileId < 0) return;
 
         saveDirty = false;
@@ -213,8 +199,7 @@ public class GameManager : MonoBehaviour
         SaveSystem.SaveIndex(index);
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (!saveDirty || Time.unscaledTime < nextSaveAt) return;
 
         nextSaveAt = Time.unscaledTime + saveInterval;
@@ -224,24 +209,20 @@ public class GameManager : MonoBehaviour
     // Quitting must not undo the last few seconds.
     private void OnApplicationQuit() => SaveNow();
 
-    private void OnApplicationPause(bool paused)
-    {
+    private void OnApplicationPause(bool paused) {
         if (paused) SaveNow();
     }
 
-    public void GoToScene(string sceneName, string entranceId)
-    {
+    public void GoToScene(string sceneName, string entranceId) {
         activeRun.targetEntranceId = entranceId;
         activeRun.isTransitioningScenes = true;
 
-        if (sceneName == menuScene)
-        {
+        if (sceneName == menuScene) {
             // Flush with the real area before untracking.
             SaveNow();
             CurrentProfileId = -1;
         }
-        else
-        {
+        else {
             // OnSceneLoaded sets this too, but after the file is written.
             activeRun.currentArea = sceneName;
 
@@ -255,22 +236,19 @@ public class GameManager : MonoBehaviour
     }
 
 
-    private IEnumerator LoadSceneRoutine(string sceneName)
-    {
+    private IEnumerator LoadSceneRoutine(string sceneName) {
         yield return StartCoroutine(SceneFader.Instance.FadeOut(0f));
         pendingFadeIn = true;
         SceneManager.LoadScene(sceneName);
     }
 
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         if (scene.name != menuScene) activeRun.currentArea = scene.name;
         TimeManager.ReleaseAll();
         CheckPoint.ClearResting();
         StartCoroutine(NotifySceneReady());
 
-        if (scene.name == pendingCheckpointScene)
-        {
+        if (scene.name == pendingCheckpointScene) {
             // FinishCheckpointTeleport fades in itself.
             pendingFadeIn = false;
             StartCoroutine(FinishCheckpointTeleport());
@@ -278,21 +256,18 @@ public class GameManager : MonoBehaviour
             return;
         }
 
-        if (pendingFadeIn)
-        {
+        if (pendingFadeIn) {
             pendingFadeIn = false;
             StartCoroutine(SceneFader.Instance.FadeIn(0.4f));
         }
     }
-    private IEnumerator NotifySceneReady()
-    {
+    private IEnumerator NotifySceneReady() {
         yield return null;
         OnSceneReady?.Invoke();
     }
 
     // CHECKPOINTS
-    public void SetCheckpoint(string entranceId)
-    {
+    public void SetCheckpoint(string entranceId) {
         activeRun.checkpointScene = SceneManager.GetActiveScene().name;
         activeRun.checkpointEntranceId = entranceId;
         activeRun.hasCheckpoint = true;
@@ -302,8 +277,7 @@ public class GameManager : MonoBehaviour
         MarkDirty();
     }
 
-    public void GoToCheckpoint(bool heal = true)
-    {
+    public void GoToCheckpoint(bool heal = true) {
         if (!activeRun.hasCheckpoint)
             return;
 
@@ -318,21 +292,17 @@ public class GameManager : MonoBehaviour
         StartCoroutine(LoadSceneRoutine(activeRun.checkpointScene));
     }
 
-    private IEnumerator FinishCheckpointTeleport()
-    {
+    private IEnumerator FinishCheckpointTeleport() {
         yield return null;
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
 
-        if (player != null)
-        {
+        if (player != null) {
 
             CheckPoint[] entrances = FindObjectsByType<CheckPoint>(FindObjectsSortMode.None);
 
-            foreach (var entrance in entrances)
-            {
-                if (entrance.CheckpointEntranceId == activeRun.checkpointEntranceId)
-                {
+            foreach (var entrance in entrances) {
+                if (entrance.CheckpointEntranceId == activeRun.checkpointEntranceId) {
                     player.transform.position = entrance.transform.position;
                     break;
                 }
@@ -344,10 +314,8 @@ public class GameManager : MonoBehaviour
 
 
     // SetCheckpoint only ever means this scene, so travel must name its destination.
-    public void TravelToCheckpoint(string scene, string entranceId)
-    {
-        if (string.IsNullOrEmpty(scene) || string.IsNullOrEmpty(entranceId))
-        {
+    public void TravelToCheckpoint(string scene, string entranceId) {
+        if (string.IsNullOrEmpty(scene) || string.IsNullOrEmpty(entranceId)) {
             Debug.LogError($"[GameManager] Travel to '{entranceId}' has no scene set.");
             return;
         }
@@ -363,62 +331,53 @@ public class GameManager : MonoBehaviour
         GoToCheckpoint(false);
     }
 
-    public bool HasCheckpoint()
-    {
+    public bool HasCheckpoint() {
         return activeRun.hasCheckpoint;
     }
 
-    public string GetCheckpointEntranceId()
-    {
+    public string GetCheckpointEntranceId() {
         return activeRun.checkpointEntranceId;
     }
 
     // WALLS
 
-    public void RegisterBrokenWall(string wallID)
-    {
+    public void RegisterBrokenWall(string wallID) {
         activeRun.brokenWalls.Add(wallID);
         MarkDirty();
     }
 
-    public bool IsWallBroken(string wallID)
-    {
+    public bool IsWallBroken(string wallID) {
         return activeRun.brokenWalls.Contains(wallID);
     }
 
     // EVENTS - one-off world flags: shortcuts opened, cutscenes watched.
 
-    public void RegisterEvent(string eventId)
-    {
+    public void RegisterEvent(string eventId) {
         if (string.IsNullOrEmpty(eventId)) return;
 
         activeRun.seenEvents.Add(eventId);
         MarkDirty();
     }
 
-    public bool HasSeenEvent(string eventId)
-    {
+    public bool HasSeenEvent(string eventId) {
         return !string.IsNullOrEmpty(eventId) && activeRun.seenEvents.Contains(eventId);
     }
 
     public System.Action<int> OnLumensChanged;
 
-    public void AddLumens(int amount)
-    {
+    public void AddLumens(int amount) {
         activeRun.lumens += amount;
         OnLumensChanged?.Invoke(activeRun.lumens);
         MarkDirty();
     }
 
-    public void TakeLumens(int amount)
-    {
+    public void TakeLumens(int amount) {
         activeRun.lumens -= amount;
         OnLumensChanged?.Invoke(activeRun.lumens);
         MarkDirty();
     }
 
-    public bool UseBundle(LumenBundle bundle)
-    {
+    public bool UseBundle(LumenBundle bundle) {
         if (bundle == null || !activeRun.ConsumeBundle(bundle)) return false;
 
         AddLumens(bundle.value);
@@ -426,8 +385,7 @@ public class GameManager : MonoBehaviour
     }
 
     // PLAYER DEATH
-    public void PlayerDied(float respawnDelay)
-    {
+    public void PlayerDied(float respawnDelay) {
         activeRun.temporaryRemoved.Clear();
 
         DropShade();
@@ -439,8 +397,7 @@ public class GameManager : MonoBehaviour
     }
 
     // Last safe ground, so a spike death does not strand the pile.
-    private void DropShade()
-    {
+    private void DropShade() {
         // Dying replaces the pile even when broke.
         activeRun.droppedLumens = 0;
         activeRun.dropScene     = null;
@@ -461,24 +418,20 @@ public class GameManager : MonoBehaviour
     }
 
     // Clears the record only; the pickups carry the lumens.
-    public void CollectShade()
-    {
+    public void CollectShade() {
         if (!activeRun.HasShade) return;
 
         activeRun.droppedLumens = 0;
         activeRun.dropScene     = null;
     }
 
-    private IEnumerator RespawnRoutine(float respawnDelay)
-    {
+    private IEnumerator RespawnRoutine(float respawnDelay) {
         yield return new WaitForSecondsRealtime(respawnDelay);
 
-        if (activeRun.hasCheckpoint)
-        {
+        if (activeRun.hasCheckpoint) {
             GoToCheckpoint();
         }
-        else
-        {
+        else {
             activeRun.currentHp = activeRun.maxHp;
             StartCoroutine(LoadSceneRoutine(startingScene));
         }

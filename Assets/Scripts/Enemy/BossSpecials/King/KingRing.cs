@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // Expanding damage circle. LineRenderer, since a stretched square sprite reads wrong.
-public class KingRing : MonoBehaviour
-{
+public class KingRing : MonoBehaviour {
     [SerializeField] private int segments = 48;
 
     private CircleCollider2D circle;
@@ -23,8 +22,7 @@ public class KingRing : MonoBehaviour
 
     public static KingRing Spawn(KingBrain brain, Transform follow, Vector2 offset,
                                  float maxRadius, float chargeTime, float growTime,
-                                 float holdTime, int damage, float tickInterval)
-    {
+                                 float holdTime, int damage, float tickInterval) {
         GameObject go = new GameObject("KingRing");
         go.transform.position = (follow != null ? follow.position : Vector3.zero)
                                 + (Vector3)offset;
@@ -55,8 +53,7 @@ public class KingRing : MonoBehaviour
         line.widthMultiplier = 0.25f;
         line.startColor = line.endColor = ring.telegraphColor;
 
-        if (brain != null)
-        {
+        if (brain != null) {
             line.sortingLayerName = brain.SortingLayer;
             line.sortingOrder = brain.SortingOrder;
         }
@@ -66,14 +63,12 @@ public class KingRing : MonoBehaviour
         return ring;
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (!armed || circle == null || Time.time < nextTick) return;
 
         int count = circle.Overlap(filter, results);
 
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             PlayerHealth player = results[i].GetComponentInParent<PlayerHealth>();
             if (player == null) continue;
 
@@ -83,25 +78,21 @@ public class KingRing : MonoBehaviour
         }
     }
 
-    private void Redraw(float radius)
-    {
+    private void Redraw(float radius) {
         if (line == null) return;
 
         int n = Mathf.Max(8, segments);
         line.positionCount = n;
 
-        for (int i = 0; i < n; i++)
-        {
+        for (int i = 0; i < n; i++) {
             float a = i / (float)n * Mathf.PI * 2f;
             line.SetPosition(i, new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0f) * radius);
         }
     }
 
-    private IEnumerator Run(float maxRadius, float chargeTime, float growTime, float holdTime)
-    {
+    private IEnumerator Run(float maxRadius, float chargeTime, float growTime, float holdTime) {
         float t = 0f;
-        while (t < chargeTime)
-        {
+        while (t < chargeTime) {
             t += Time.deltaTime;
 
             // Pulses at full size, so the warning shows its reach.
@@ -114,8 +105,7 @@ public class KingRing : MonoBehaviour
         if (line != null) line.startColor = line.endColor = activeColor;
 
         t = 0f;
-        while (t < growTime)
-        {
+        while (t < growTime) {
             t += Time.deltaTime;
             float r = Mathf.Lerp(0f, maxRadius, growTime <= 0f ? 1f : t / growTime);
 
@@ -132,8 +122,7 @@ public class KingRing : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void OnDrawGizmos()
-    {
+    private void OnDrawGizmos() {
         if (circle == null) return;
 
         Gizmos.color = armed ? new Color(1f, 0.3f, 0.1f, 0.9f)

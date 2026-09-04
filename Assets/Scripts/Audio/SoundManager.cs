@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.Audio;
 
 // Static Play, so a missing manager is silence and no caller needs a reference.
-public class SoundManager : MonoBehaviour
-{
+public class SoundManager : MonoBehaviour {
     public static SoundManager Instance { get; private set; }
 
     [Header("Bank")]
@@ -39,10 +38,8 @@ public class SoundManager : MonoBehaviour
 
     private readonly Dictionary<SoundId, float> nextAllowed = new();
 
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
+    private void Awake() {
+        if (Instance != null && Instance != this) {
             Destroy(gameObject);
             return;
         }
@@ -61,13 +58,11 @@ public class SoundManager : MonoBehaviour
         GameSettings.ApplyAudio();
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         if (Instance == this) Instance = null;
     }
 
-    private AudioSource MakeSource(string name, AudioMixerGroup group)
-    {
+    private AudioSource MakeSource(string name, AudioMixerGroup group) {
         GameObject go = new GameObject(name);
         go.transform.SetParent(transform, false);
 
@@ -88,8 +83,7 @@ public class SoundManager : MonoBehaviour
     public static void PlayAt(SoundId id, Vector3 position) =>
         Instance?.PlayInternal(id, position);
 
-    private void PlayInternal(SoundId id, Vector3? position)
-    {
+    private void PlayInternal(SoundId id, Vector3? position) {
         if (bank == null) return;
 
         SoundBank.Entry entry = bank.Find(id);
@@ -110,13 +104,11 @@ public class SoundManager : MonoBehaviour
         s.volume = entry.volume;
         s.pitch = 1f + Random.Range(-entry.pitchVariance, entry.pitchVariance);
 
-        if (position.HasValue)
-        {
+        if (position.HasValue) {
             s.transform.position = position.Value;
             s.spatialBlend = 1f;
         }
-        else
-        {
+        else {
             s.transform.localPosition = Vector3.zero;
             s.spatialBlend = 0f;
         }
@@ -125,13 +117,10 @@ public class SoundManager : MonoBehaviour
     }
 
     // Steals the oldest only when every voice is busy.
-    private AudioSource Take()
-    {
-        for (int i = 0; i < pool.Length; i++)
-        {
+    private AudioSource Take() {
+        for (int i = 0; i < pool.Length; i++) {
             AudioSource s = pool[(next + i) % pool.Length];
-            if (!s.isPlaying)
-            {
+            if (!s.isPlaying) {
                 next = (next + i + 1) % pool.Length;
                 return s;
             }
@@ -145,8 +134,7 @@ public class SoundManager : MonoBehaviour
     // ── music ────────────────────────────────────────────────────────────────────
 
     // Same clip keeps playing, so room changes do not restart the track.
-    public void PlayMusic(AudioClip clip, float fade = -1f)
-    {
+    public void PlayMusic(AudioClip clip, float fade = -1f) {
         AudioSource current = musicOnA ? musicA : musicB;
         if (current.clip == clip && current.isPlaying) return;
 
@@ -156,8 +144,7 @@ public class SoundManager : MonoBehaviour
 
     public void StopMusic(float fade = -1f) => PlayMusic(null, fade);
 
-    private IEnumerator Crossfade(AudioClip clip, float duration)
-    {
+    private IEnumerator Crossfade(AudioClip clip, float duration) {
         AudioSource from = musicOnA ? musicA : musicB;
         AudioSource to = musicOnA ? musicB : musicA;
         musicOnA = !musicOnA;
@@ -169,8 +156,7 @@ public class SoundManager : MonoBehaviour
         float startFrom = from.volume;
         float t = 0f;
 
-        while (t < duration)
-        {
+        while (t < duration) {
             t += Time.unscaledDeltaTime;
             float k = duration <= 0f ? 1f : t / duration;
 
@@ -194,8 +180,7 @@ public class SoundManager : MonoBehaviour
     public void SetMusicVolume(float v) => SetVolume(musicParam, v);
 
     // Mixer volume is logarithmic dB; a raw 0-1 slider wastes half its travel.
-    private void SetVolume(string param, float linear)
-    {
+    private void SetVolume(string param, float linear) {
         if (mixer == null || string.IsNullOrEmpty(param)) return;
 
         float db = linear <= 0.0001f ? -80f : Mathf.Log10(Mathf.Clamp01(linear)) * 20f;
@@ -204,8 +189,7 @@ public class SoundManager : MonoBehaviour
             Debug.LogWarning($"[SoundManager] Mixer has no exposed parameter '{param}'.", this);
     }
 
-    public float GetVolume(string param)
-    {
+    public float GetVolume(string param) {
         if (mixer == null || !mixer.GetFloat(param, out float db)) return 1f;
         return db <= -80f ? 0f : Mathf.Pow(10f, db / 20f);
     }

@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Pillars of light fall across the room with gaps left in them. Stand in a gap.
-public class KingLines : KingAttack
-{
+public class KingLines : KingAttack {
     [Header("References")]
     [SerializeField] private KingArena arena;
 
@@ -24,8 +23,7 @@ public class KingLines : KingAttack
 
     private readonly List<int> free = new();
 
-    protected override void Awake()
-    {
+    protected override void Awake() {
         base.Awake();
 
         if (arena == null) arena = FindFirstObjectByType<KingArena>();
@@ -34,8 +32,7 @@ public class KingLines : KingAttack
             Debug.LogError($"[KingLines] '{name}' found no KingArena in the scene.", this);
     }
 
-    public override IEnumerator Act(Transform player)
-    {
+    public override IEnumerator Act(Transform player) {
         if (arena == null) yield break;
 
         int columns = Mathf.Max(2, slots);
@@ -45,8 +42,7 @@ public class KingLines : KingAttack
 
         float telegraph = Telegraph(telegraphTime);
 
-        for (int i = 0; i < columns; i++)
-        {
+        for (int i = 0; i < columns; i++) {
             if (free.Contains(i)) continue;
 
             Vector2 pos = new Vector2(arena.SlotX(i, columns), arena.Center.y);
@@ -57,12 +53,10 @@ public class KingLines : KingAttack
     }
 
     // One gap is always reachable, but never underneath.
-    private void PickGaps(int columns, int holes, Transform player)
-    {
+    private void PickGaps(int columns, int holes, Transform player) {
         free.Clear();
 
-        if (player != null)
-        {
+        if (player != null) {
             float t = Mathf.InverseLerp(arena.LeftX, arena.RightX, player.position.x);
             int here = Mathf.Clamp(Mathf.RoundToInt(t * (columns - 1)), 0, columns - 1);
 
@@ -76,8 +70,7 @@ public class KingLines : KingAttack
         }
 
         int guard = 0;
-        while (free.Count < holes && guard++ < 100)
-        {
+        while (free.Count < holes && guard++ < 100) {
             int pick = Random.Range(0, columns);
             if (!free.Contains(pick)) free.Add(pick);
         }

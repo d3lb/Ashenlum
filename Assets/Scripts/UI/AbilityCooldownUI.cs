@@ -2,8 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // Sets fillAmount on the meter only; its colour is left alone.
-public class AbilityCooldownUI : MonoBehaviour
-{
+public class AbilityCooldownUI : MonoBehaviour {
     [Header("Ability")]
     [SerializeField] private GameObject abilityGroup;
     [SerializeField] private Image abilityIcon;
@@ -25,16 +24,14 @@ public class AbilityCooldownUI : MonoBehaviour
     private PlayerActiveAbility ability;
     private PlayerMovement movement;
 
-    private void Awake()
-    {
+    private void Awake() {
         if (abilityIcon != null && abilityIcon == abilityMeter)
             Debug.LogError("[AbilityCooldownUI] Ability Icon and Ability Meter are the same " +
                            "Image. The meter must be the dark copy on top, or nothing animates.",
                            this);
     }
 
-    private void Update()
-    {
+    private void Update() {
         // The player is respawned, so these go stale.
         if (ability == null)  ability  = FindFirstObjectByType<PlayerActiveAbility>();
         if (movement == null) movement = FindFirstObjectByType<PlayerMovement>();
@@ -43,15 +40,13 @@ public class AbilityCooldownUI : MonoBehaviour
         UpdateDash();
     }
 
-    private void UpdateAbility()
-    {
+    private void UpdateAbility() {
         ActiveAbility equipped = ability != null ? ability.Equipped : null;
 
         if (abilityGroup != null) abilityGroup.SetActive(equipped != null);
         if (equipped == null) return;
 
-        if (abilityIcon != null)
-        {
+        if (abilityIcon != null) {
             abilityIcon.sprite = equipped.icon;
             abilityIcon.enabled = equipped.icon != null;
         }
@@ -69,8 +64,7 @@ public class AbilityCooldownUI : MonoBehaviour
         abilityMeter.fillAmount = meterCoversIcon ? 1f - progress : progress;
     }
 
-    private void UpdateDash()
-    {
+    private void UpdateDash() {
         bool unlocked = GameManager.Instance != null &&
                         GameManager.Instance.activeRun.isDashUnlocked;
 
@@ -84,8 +78,7 @@ public class AbilityCooldownUI : MonoBehaviour
         int held = show ? movement.DashCharges : 0;
         float refill = show ? movement.DashRefillPercent : 0f;
 
-        for (int i = 0; i < dashPips.Length; i++)
-        {
+        for (int i = 0; i < dashPips.Length; i++) {
             DashPipUI pip = dashPips[i];
             if (pip == null) continue;
 

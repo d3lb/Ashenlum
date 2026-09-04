@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SecretaryBirdStomp : SecretaryBirdAttack
-{
+public class SecretaryBirdStomp : SecretaryBirdAttack {
     [Header("Rise")]
     [SerializeField, Range(0f, 1f)] private float riseHeight = 0.9f;
     [SerializeField] private float hangTime = 0.12f;
@@ -25,8 +24,7 @@ public class SecretaryBirdStomp : SecretaryBirdAttack
 
     public override string DisplayName => "Stomp";
 
-    public override IEnumerator Act(Transform player)
-    {
+    public override IEnumerator Act(Transform player) {
         Vector2 above = new Vector2(
             Arena.ClampX(player.position.x),
             Mathf.Lerp(Arena.FloorY, Arena.CeilY, riseHeight));
@@ -50,16 +48,14 @@ public class SecretaryBirdStomp : SecretaryBirdAttack
         yield return move.Hold(buriedTime);
     }
 
-    private void SpawnShockwaves()
-    {
+    private void SpawnShockwaves() {
         if (shockwavePrefab == null) return;
 
         Vector2 origin = new Vector2(move.Position.x, Arena.FloorY + shockwaveYOffset);
         int[] dirs = bothDirections ? new[] { -1, 1 }
                                     : new[] { state.IsFacingRight ? 1 : -1 };
 
-        foreach (int d in dirs)
-        {
+        foreach (int d in dirs) {
             GameObject go = Instantiate(shockwavePrefab, origin, Quaternion.identity);
             SecretaryBirdShockwave wave = go.GetComponent<SecretaryBirdShockwave>();
             if (wave != null) wave.Launch(d, Arena);

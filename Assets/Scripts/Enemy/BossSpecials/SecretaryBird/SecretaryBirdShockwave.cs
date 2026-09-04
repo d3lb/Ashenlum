@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class SecretaryBirdShockwave : MonoBehaviour
-{
+public class SecretaryBirdShockwave : MonoBehaviour {
     [SerializeField] private float speed = 12f;
     [SerializeField] private float lifetime = 4f;
     [SerializeField] private bool shrinkOverLife = true;
@@ -11,8 +10,7 @@ public class SecretaryBirdShockwave : MonoBehaviour
     private Vector3 baseScale;
     private float born;
 
-    public void Launch(int direction, SecretaryBirdArena a)
-    {
+    public void Launch(int direction, SecretaryBirdArena a) {
         dir = direction;
         arena = a;
         born = Time.time;
@@ -26,12 +24,10 @@ public class SecretaryBirdShockwave : MonoBehaviour
         Destroy(gameObject, lifetime);
     }
 
-    private void Update()
-    {
+    private void Update() {
         transform.position += Vector3.right * (dir * speed * Time.deltaTime);
 
-        if (shrinkOverLife && lifetime > 0f)
-        {
+        if (shrinkOverLife && lifetime > 0f) {
             float k = 1f - Mathf.Clamp01((Time.time - born) / lifetime);
             transform.localScale = new Vector3(baseScale.x, baseScale.y * k, baseScale.z);
         }

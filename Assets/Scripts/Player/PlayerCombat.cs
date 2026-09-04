@@ -5,8 +5,7 @@ using UnityEngine.UIElements;
 using static PlayerHealth;
 using static PlayerState;
 
-public class PlayerCombat : MonoBehaviour
-{
+public class PlayerCombat : MonoBehaviour {
     [Header("References")]
     private Rigidbody2D rb;
     private PlayerInput input;
@@ -107,16 +106,14 @@ public class PlayerCombat : MonoBehaviour
     public float CurrentAttackScale => SizeFor(Stability);
     public float CurrentCooldown => CooldownNow;
 
-    private void Awake()
-    {
+    private void Awake() {
         // Disable Colliders on start
         attackColliderRight.enabled = false;
         attackColliderLeft.enabled = false;
         attackColliderUp.enabled = false;
         attackColliderDown.enabled = false;
 
-        attackScalers = new[]
-        {
+        attackScalers = new[] {
             attackColliderRight.transform, attackColliderLeft.transform,
             attackColliderUp.transform,    attackColliderDown.transform
         };
@@ -124,8 +121,7 @@ public class PlayerCombat : MonoBehaviour
         attackBaseScales = new Vector3[attackScalers.Length];
         attackBasePositions = new Vector3[attackScalers.Length];
 
-        for (int i = 0; i < attackScalers.Length; i++)
-        {
+        for (int i = 0; i < attackScalers.Length; i++) {
             attackBaseScales[i] = attackScalers[i].localScale;
             attackBasePositions[i] = attackScalers[i].localPosition;
         }
@@ -142,27 +138,23 @@ public class PlayerCombat : MonoBehaviour
         input = GetComponent<PlayerInput>();
     }
 
-    private enum AttackType
-    {
+    private enum AttackType {
         Side,
         Up,
         Down
     }
 
-    private void Update()
-    {
+    private void Update() {
         float cooldown = CooldownNow;
 
-        if (input.AttackPressed && Time.time >= lastAttackTime + cooldown && !state.IsBusy)
-        {
+        if (input.AttackPressed && Time.time >= lastAttackTime + cooldown && !state.IsBusy) {
             lastAttackTime = Time.time;
             StartCoroutine(DoAttack());
         }
     }
 
 
-    private IEnumerator DoAttack()
-    {
+    private IEnumerator DoAttack() {
         attackDir = state.IsFacingRight ? 1 : -1;
 
         // Not scaled by stability: the window to land a hit never shrinks.
@@ -177,8 +169,7 @@ public class PlayerCombat : MonoBehaviour
 
         hitDamageables.Clear();
 
-        switch (health.CurrentStabilityState)
-        {
+        switch (health.CurrentStabilityState) {
             case StabilityState.High:
                 damage = highDamage;
                 break;
@@ -220,14 +211,12 @@ public class PlayerCombat : MonoBehaviour
     private float RateFor(StabilityState s) =>
         s == StabilityState.High ? highRate : s == StabilityState.Mid ? midRate : lowRate;
 
-    private void ApplyAttackSize(float scale)
-    {
+    private void ApplyAttackSize(float scale) {
         if (attackScalers == null) return;
 
         // Position scales too, so the arrangement grows outward instead of in place.
         // The offsets already point the right way, so one multiply covers all four.
-        for (int i = 0; i < attackScalers.Length; i++)
-        {
+        for (int i = 0; i < attackScalers.Length; i++) {
             if (attackScalers[i] == null) continue;
 
             attackScalers[i].localScale = attackBaseScales[i] * scale;
@@ -239,8 +228,7 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // Current tier, not the last swing's size. White High, yellow Mid, red Low.
-    private void OnDrawGizmos()
-    {
+    private void OnDrawGizmos() {
         if (!drawHitboxGizmo || health == null) return;
 
         StabilityState tier = Stability;
@@ -256,8 +244,7 @@ public class PlayerCombat : MonoBehaviour
         DrawHitbox(attackColliderDown,  scale, 3);
     }
 
-    private void DrawHitbox(Collider2D col, float scale, int index)
-    {
+    private void DrawHitbox(Collider2D col, float scale, int index) {
         if (col == null) return;
 
         Transform t = col.transform;
@@ -272,14 +259,12 @@ public class PlayerCombat : MonoBehaviour
 
         Gizmos.matrix = Matrix4x4.TRS(worldPos, t.rotation, baseScale * scale);
 
-        if (col is PolygonCollider2D poly && poly.points.Length > 1)
-        {
+        if (col is PolygonCollider2D poly && poly.points.Length > 1) {
             Vector2[] p = poly.points;
             for (int i = 0; i < p.Length; i++)
                 Gizmos.DrawLine(p[i] + poly.offset, p[(i + 1) % p.Length] + poly.offset);
         }
-        else if (col is BoxCollider2D box)
-        {
+        else if (col is BoxCollider2D box) {
             Gizmos.DrawWireCube(box.offset, box.size);
         }
 
@@ -287,21 +272,18 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // Process the attack
-    private void ProcessAttackHit(Collider2D activeCollider, AttackType attackType)
-    {
+    private void ProcessAttackHit(Collider2D activeCollider, AttackType attackType) {
         bool recoilApplied = false;
 
         int count = activeCollider.Overlap(filter, results);
 
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             if (results[i].transform.root == transform)
                 continue;
 
             IDamageable damageable = results[i].GetComponentInParent<IDamageable>();
 
-            if (damageable != null && !hitDamageables.Contains(damageable))
-            {
+            if (damageable != null && !hitDamageables.Contains(damageable)) {
                 hitDamageables.Add(damageable);
 
                 bool destroyed = damageable.TakeDamage( damage, transform.position  );
@@ -312,8 +294,7 @@ public class PlayerCombat : MonoBehaviour
 
                 effectSpawner.SpawnHitEffect( hitTransform.position, attackType != AttackType.Side  );
 
-                if (!recoilApplied)
-                {
+                if (!recoilApplied) {
                     TimeManager.Instance.HitStop(  destroyed ? killPauseTime : hitPauseTime );
 
                     ShakeHit(destroyed);
@@ -327,16 +308,14 @@ public class PlayerCombat : MonoBehaviour
 
         int groundHits = activeCollider.Overlap(gfilter, results);
 
-        for (int i = 0; i < groundHits; i++)
-        {
+        for (int i = 0; i < groundHits; i++) {
             if (results[i].transform.root == transform)
                 continue;
 
             if (currentAttackType == AttackType.Down || currentAttackType == AttackType.Up)
                 continue;
 
-            if (!recoilApplied)
-            {
+            if (!recoilApplied) {
                 ApplyWallRecoil();
                 recoilApplied = true;
             }
@@ -346,8 +325,7 @@ public class PlayerCombat : MonoBehaviour
 
 
     // getting data about which attack is happening
-    private (Collider2D, AttackType) GetAttackData()
-    {
+    private (Collider2D, AttackType) GetAttackData() {
         float vertical = movement.MoveInput.y;
 
         if (vertical > 0.5f)
@@ -360,46 +338,37 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // Fires on the swing, hit or miss.
-    private void ShakeSwing()
-    {
+    private void ShakeSwing() {
         if (CameraShakeManager.Instance == null) return;
 
-        switch (Stability)
-        {
+        switch (Stability) {
             case StabilityState.Mid:
-                CameraShakeManager.Instance.Shake(
-                    midSwingDuration, midSwingAmplitude, midSwingFrequency);
+                CameraShakeManager.Instance.Shake(midSwingDuration, midSwingAmplitude, midSwingFrequency);
                 break;
 
             case StabilityState.Low:
-                CameraShakeManager.Instance.Shake(
-                    lowSwingDuration, lowSwingAmplitude, lowSwingFrequency);
+                CameraShakeManager.Instance.Shake(lowSwingDuration, lowSwingAmplitude, lowSwingFrequency);
                 break;
         }
     }
 
     // shake screen
-    private void ShakeHit(bool isKill)
-    {
+    private void ShakeHit(bool isKill) {
         if (CameraShakeManager.Instance == null) return;
 
-        if (isKill)
-        {
+        if (isKill) {
             CameraShakeManager.Instance.Shake(killShakeDuration, killShakeAmplitude, killShakeFrequency);
         }
-        else
-        {
+        else {
             CameraShakeManager.Instance.Shake(hitShakeDuration, hitShakeAmplitude, hitShakeFrequency);
         }
     }
 
     // Recoil knockback / pogo when hitting
-    private void ApplyRecoil(AttackType type, IDamageable hit = null)
-    {
+    private void ApplyRecoil(AttackType type, IDamageable hit = null) {
         int dir = attackDir;
 
-        switch (type)
-        {
+        switch (type) {
             case AttackType.Side:
                 rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
                 rb.AddForce(new Vector2(-dir * recoilForceX, 0), ForceMode2D.Impulse);
@@ -408,8 +377,7 @@ public class PlayerCombat : MonoBehaviour
             // The target decides the launch, so pads can differ from enemies.
             case AttackType.Down:
                 float force = pogoForce;
-                if (hit is MonoBehaviour hitObject)
-                {
+                if (hit is MonoBehaviour hitObject) {
                     PogoTarget pad = hitObject.GetComponentInParent<PogoTarget>();
                     if (pad != null) force *= pad.PogoMultiplier;
                 }
@@ -428,8 +396,7 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // Recoil from wall
-    private void ApplyWallRecoil()
-    {
+    private void ApplyWallRecoil() {
         int dir = attackDir;
         
         rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
@@ -437,10 +404,8 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // Get state
-    private PlayerStateType GetStateFromAttack(AttackType type)
-    {
-        switch (type)
-        {
+    private PlayerStateType GetStateFromAttack(AttackType type) {
+        switch (type) {
             case AttackType.Side: return PlayerStateType.SideAttack;
             case AttackType.Up: return PlayerStateType.UpAttack;
             case AttackType.Down: return PlayerStateType.DownAttack;
@@ -449,21 +414,17 @@ public class PlayerCombat : MonoBehaviour
     }
 
     // Slash VFX
-    private void SpawnSlash(AttackType type)
-    {
+    private void SpawnSlash(AttackType type) {
         Transform point;
         Quaternion rot = Quaternion.identity;
 
-        switch (type)
-        {
+        switch (type) {
             case AttackType.Side:
-                if (attackDir == 1) // right
-                {
+                if (attackDir == 1) {  // right
                     point = attackPointRight;
                     rot = Quaternion.identity;
                 }
-                else // left
-                {
+                else {  // left
                     point = attackPointLeft;
                     rot = Quaternion.Euler(0, 0, 180);
                 }

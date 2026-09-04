@@ -1,18 +1,15 @@
 using UnityEngine;
 using Cinemachine;
 
-public class CameraShakeManager : MonoBehaviour
-{
+public class CameraShakeManager : MonoBehaviour {
     public static CameraShakeManager Instance;
 
-    private void Awake()
-    {
+    private void Awake() {
         if (Instance != null && Instance != this) { Destroy(this); return; }
         Instance = this;
     }
 
-    public void Shake(float duration, float amplitude, float frequency)
-    {
+    public void Shake(float duration, float amplitude, float frequency) {
         // Every shake comes through here, so the setting is one multiply.
         amplitude *= GameSettings.ScreenShake;
         if (amplitude <= 0.001f) return;

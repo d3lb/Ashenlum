@@ -1,6 +1,5 @@
 // One gate for "is something already in control of the screen".
-public static class UIState
-{
+public static class UIState {
     public static bool PanelOpen =>
         InventoryUI.IsOpen ||
         RestPointUI.IsOpen ||

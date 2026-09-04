@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(SecretaryBirdState))]
-public class SecretaryBirdBrain : MonoBehaviour
-{
+public class SecretaryBirdBrain : MonoBehaviour {
     [Header("References")]
     [SerializeField] private SecretaryBirdState state;
     [SerializeField] private SecretaryBirdMovement move;
@@ -46,8 +45,7 @@ public class SecretaryBirdBrain : MonoBehaviour
 
     public SecretaryBirdAttack CurrentAttack => current;
 
-    private void Awake()
-    {
+    private void Awake() {
         if (state == null)     state     = GetComponent<SecretaryBirdState>();
         if (move == null)      move      = GetComponent<SecretaryBirdMovement>();
         if (hitboxes == null)  hitboxes  = GetComponent<SecretaryBirdAttackController>();
@@ -57,42 +55,36 @@ public class SecretaryBirdBrain : MonoBehaviour
 
         GetComponents(pool);
 
-        if (player == null)
-        {
+        if (player == null) {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
             if (p != null) player = p.transform;
         }
     }
 
-    private void Start()
-    {
+    private void Start() {
         // Same rule EnemyHealth and the breakables use: already dealt with, so not here.
         var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
         if (run != null && run.defeatedBosses.Contains(bossId)) Destroy(gameObject);
     }
 
-    public void Activate()
-    {
+    public void Activate() {
         if (active || state.IsDead) return;
         active = true;
         loop = StartCoroutine(Begin());
     }
 
-    private IEnumerator Begin()
-    {
+    private IEnumerator Begin() {
         state.CurrentState = SecretaryBirdState.BossStateType.Intro;
         CleanUp();
 
-        if (FirstMeeting())
-        {
+        if (FirstMeeting()) {
             GameManager.Instance.activeRun.seenEvents.Add(bossId);
 
             introCued = false;
             DialogueManager.Instance.StartDialogue(introConversation, () => introCued = true);
             yield return new WaitUntil(() => introCued);
         }
-        else if (introDelay > 0f)
-        {
+        else if (introDelay > 0f) {
             yield return new WaitForSeconds(introDelay);
         }
 
@@ -100,16 +92,14 @@ public class SecretaryBirdBrain : MonoBehaviour
         yield return FightLoop();
     }
 
-    private bool FirstMeeting()
-    {
+    private bool FirstMeeting() {
         if (introConversation == null || DialogueManager.Instance == null) return false;
 
         var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
         return run != null && !run.seenEvents.Contains(bossId);
     }
 
-    public void Deactivate()
-    {
+    public void Deactivate() {
         active = false;
 
         if (actRoutine != null) StopCoroutine(actRoutine);
@@ -121,10 +111,8 @@ public class SecretaryBirdBrain : MonoBehaviour
         if (!state.IsDead) state.CurrentState = SecretaryBirdState.BossStateType.Idle;
     }
 
-    private IEnumerator FightLoop()
-    {
-        while (active && !state.IsDead)
-        {
+    private IEnumerator FightLoop() {
+        while (active && !state.IsDead) {
             state.CurrentState = SecretaryBirdState.BossStateType.Idle;
 
             // Phase before the beat, so a phase change shortens the very next gap.
@@ -152,8 +140,7 @@ public class SecretaryBirdBrain : MonoBehaviour
         }
     }
 
-    private IEnumerator RunAttack(SecretaryBirdAttack attack)
-    {
+    private IEnumerator RunAttack(SecretaryBirdAttack attack) {
         actDone = false;
         actRoutine = StartCoroutine(Wrap(attack.Act(player)));
 
@@ -161,8 +148,7 @@ public class SecretaryBirdBrain : MonoBehaviour
         while (!actDone && Time.time < deadline && !state.IsDead)
             yield return null;
 
-        if (!actDone && actRoutine != null)
-        {
+        if (!actDone && actRoutine != null) {
             // Watchdog. No attack can hang the fight, whatever it got stuck on.
             StopCoroutine(actRoutine);
             Debug.LogWarning($"[SecretaryBird] '{attack.DisplayName}' timed out after " +
@@ -173,31 +159,26 @@ public class SecretaryBirdBrain : MonoBehaviour
         CleanUp();
     }
 
-    private IEnumerator Wrap(IEnumerator inner)
-    {
+    private IEnumerator Wrap(IEnumerator inner) {
         yield return inner;
         actDone = true;
     }
 
-    private void CleanUp()
-    {
+    private void CleanUp() {
         if (hitboxes != null)  hitboxes.DisableAllHitboxes();
         if (telegraph != null) telegraph.Clear();
-        if (move != null)
-        {
+        if (move != null) {
             move.Stop();
             move.ResetGravity();
             move.ClampInsideArena();
         }
     }
 
-    private void UpdatePhase()
-    {
+    private void UpdatePhase() {
         float f = health != null ? health.Normalized : 1f;
         int p = f <= phase3At ? 3 : f <= phase2At ? 2 : 1;
 
-        if (p != state.Phase)
-        {
+        if (p != state.Phase) {
             state.Phase = p;
             bag.Clear();
         }
@@ -207,8 +188,7 @@ public class SecretaryBirdBrain : MonoBehaviour
 
     private PhaseTuning Pace => pacing != null ? pacing.For(state.Phase) : fallbackPace;
 
-    private SecretaryBirdAttack Draw()
-    {
+    private SecretaryBirdAttack Draw() {
         for (int i = bag.Count - 1; i >= 0; i--)
             if (!bag[i].CanUse(state.Phase)) bag.RemoveAt(i);
 
@@ -219,8 +199,7 @@ public class SecretaryBirdBrain : MonoBehaviour
         for (int i = 0; i < bag.Count; i++)
             if (bag[i] != last) candidates.Add(i);
 
-        if (candidates.Count == 0)
-        {
+        if (candidates.Count == 0) {
             Refill();
             for (int i = 0; i < bag.Count; i++)
                 if (bag[i] != last) candidates.Add(i);
@@ -236,11 +215,9 @@ public class SecretaryBirdBrain : MonoBehaviour
         return chosen;
     }
 
-    private void Refill()
-    {
+    private void Refill() {
         bag.Clear();
-        foreach (SecretaryBirdAttack a in pool)
-        {
+        foreach (SecretaryBirdAttack a in pool) {
             if (!a.CanUse(state.Phase)) continue;
             for (int i = 0; i < a.Weight; i++) bag.Add(a);
         }

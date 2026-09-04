@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public enum TalismanType
-{
+public enum TalismanType {
     MaxHealth,
     BurstHeal,
     Dash
@@ -9,8 +8,7 @@ public enum TalismanType
 
 // Owned forever, two equipped. Bonuses are derived, never banked.
 [CreateAssetMenu(fileName = "New Talisman", menuName = "Ashenlum/Talisman")]
-public class Talisman : ShopGood
-{
+public class Talisman : ShopGood {
     [Header("Effect")]
     public TalismanType type;
     // 25 for +25 max HP, 0.05 for +5% burst heal, 1 for +1 dash.

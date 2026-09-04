@@ -3,11 +3,9 @@ using UnityEngine;
 
 // Unloaded scenes cannot be searched, so every travel target is listed here.
 [CreateAssetMenu(fileName = "Checkpoint Directory", menuName = "Ashenlum/Checkpoint Directory")]
-public class CheckpointDirectory : ScriptableObject
-{
+public class CheckpointDirectory : ScriptableObject {
     [System.Serializable]
-    public class Entry
-    {
+    public class Entry {
         public string id;
         public string displayName = "Rest Point";
 
@@ -17,8 +15,7 @@ public class CheckpointDirectory : ScriptableObject
 
     [SerializeField] private Entry[] entries;
 
-    public Entry Find(string id)
-    {
+    public Entry Find(string id) {
         if (string.IsNullOrEmpty(id) || entries == null) return null;
 
         foreach (Entry entry in entries)
@@ -27,8 +24,7 @@ public class CheckpointDirectory : ScriptableObject
         return null;
     }
 
-    public List<Entry> Discovered(HashSet<string> openedIds)
-    {
+    public List<Entry> Discovered(HashSet<string> openedIds) {
         List<Entry> found = new();
         if (entries == null || openedIds == null) return found;
 
@@ -39,12 +35,10 @@ public class CheckpointDirectory : ScriptableObject
     }
 
 #if UNITY_EDITOR
-    private void OnValidate()
-    {
+    private void OnValidate() {
         if (entries == null) return;
 
-        for (int i = 0; i < entries.Length; i++)
-        {
+        for (int i = 0; i < entries.Length; i++) {
             if (entries[i] == null) continue;
 
             if (string.IsNullOrEmpty(entries[i].scene))

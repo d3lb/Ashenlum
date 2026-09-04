@@ -1,8 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class BasicEnemyAttack : MonoBehaviour, IRespawnReset
-{
+public class BasicEnemyAttack : MonoBehaviour, IRespawnReset {
     [Header("References")]
     [SerializeField] private Collider2D attackColliderRight;
     [SerializeField] private Collider2D attackColliderLeft;
@@ -22,8 +21,7 @@ public class BasicEnemyAttack : MonoBehaviour, IRespawnReset
 
 
 
-    private void Awake()
-    {
+    private void Awake() {
         state = GetComponent<EnemyState>();
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
@@ -32,30 +30,26 @@ public class BasicEnemyAttack : MonoBehaviour, IRespawnReset
     }
 
     // Coroutines die with the object, so the hitbox never gets switched back off.
-    public void ResetForRespawn()
-    {
+    public void ResetForRespawn() {
         attackColliderRight.enabled = false;
         attackColliderLeft.enabled = false;
         lastAttackTime = 0f;
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (state.CurrentState != EnemyState.EnemyStateType.Attack)
             return;
 
         if (state.IsAttacking)
             return;
 
-        if (Time.time >= lastAttackTime + attackCooldown)
-        {
+        if (Time.time >= lastAttackTime + attackCooldown) {
             lastAttackTime = Time.time;
             StartCoroutine(DoAttack());
         }
 
     }
-    private IEnumerator DoAttack()
-    {
+    private IEnumerator DoAttack() {
 
         state.IsAttacking = true;
 
@@ -69,10 +63,7 @@ public class BasicEnemyAttack : MonoBehaviour, IRespawnReset
         // Add Lunge force
         float dir = state.IsFacingRight ? 1f : -1f;
 
-        rb.AddForce(
-            new Vector2(dir * lungeForce, 0f),
-            ForceMode2D.Impulse
-        );
+        rb.AddForce(new Vector2(dir * lungeForce, 0f), ForceMode2D.Impulse);
 
         // Handle the collider
         active.enabled = true;
@@ -84,8 +75,7 @@ public class BasicEnemyAttack : MonoBehaviour, IRespawnReset
         state.IsAttacking = false;
     }
 
-    private Collider2D GetActiveCollider()
-    {
+    private Collider2D GetActiveCollider() {
         return state.IsFacingRight ? attackColliderRight : attackColliderLeft;
     }
 }

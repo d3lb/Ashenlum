@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FlyingEnemyAttack : MonoBehaviour, IRespawnReset
-{
+public class FlyingEnemyAttack : MonoBehaviour, IRespawnReset {
     [Header("References")]
     [SerializeField] private Collider2D attackCollider;
     [SerializeField] private EnemyAnimation enemyAnimation;
@@ -20,8 +19,7 @@ public class FlyingEnemyAttack : MonoBehaviour, IRespawnReset
     private Rigidbody2D rb;
     private Transform playerTransform;
 
-    private void Awake()
-    {
+    private void Awake() {
         state = GetComponent<EnemyState>();
         rb = GetComponent<Rigidbody2D>();
 
@@ -34,14 +32,12 @@ public class FlyingEnemyAttack : MonoBehaviour, IRespawnReset
     }
 
     // Coroutines die with the object, so the hitbox never gets switched back off.
-    public void ResetForRespawn()
-    {
+    public void ResetForRespawn() {
         attackCollider.enabled = false;
         lastAttackTime = 0f;
     }
 
-    private void Update()
-    {
+    private void Update() {
         // Only attack from Chase state, and only when not already attacking
         if (state.CurrentState != EnemyState.EnemyStateType.Chase)
             return;
@@ -56,15 +52,13 @@ public class FlyingEnemyAttack : MonoBehaviour, IRespawnReset
         float heightAbovePlayer = transform.position.y - playerTransform.position.y;
         bool alignedOnX = Mathf.Abs(transform.position.x - playerTransform.position.x) < 1f;
 
-        if (heightAbovePlayer >= attackTriggerHeight && alignedOnX)
-        {
+        if (heightAbovePlayer >= attackTriggerHeight && alignedOnX) {
             lastAttackTime = Time.time;
             StartCoroutine(DoDive());
         }
     }
 
-    private IEnumerator DoDive()
-    {
+    private IEnumerator DoDive() {
         state.IsAttacking = true;
         state.CurrentState = EnemyState.EnemyStateType.Attack;
 
@@ -77,13 +71,11 @@ public class FlyingEnemyAttack : MonoBehaviour, IRespawnReset
 
         float diveTimer = 0f;
 
-        while (diveTimer < diveDuration)
-        {
+        while (diveTimer < diveDuration) {
             diveTimer += Time.deltaTime;
             rb.linearVelocity = new Vector2(0f, -diveSpeed);
 
-            if (transform.position.y <= playerTransform.position.y)
-            {
+            if (transform.position.y <= playerTransform.position.y) {
                 break;
             }
 

@@ -1,8 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Strength", menuName = "Ashenlum/Strength Upgrade")]
-public class StrengthUpgrade : ShopGood
-{
+public class StrengthUpgrade : ShopGood {
     public int damagePerLevel = 1;
     public int maxLevel = 5;
 

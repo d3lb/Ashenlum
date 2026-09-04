@@ -3,8 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // Opens after the rest has already happened.
-public class RestPointUI : MonoBehaviour
-{
+public class RestPointUI : MonoBehaviour {
     public static RestPointUI Instance { get; private set; }
     public static bool IsOpen { get; private set; }
 
@@ -32,10 +31,8 @@ public class RestPointUI : MonoBehaviour
     private CheckPoint current;
     private readonly List<GameObject> spawnedEntries = new();
 
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
+    private void Awake() {
+        if (Instance != null && Instance != this) {
             Destroy(gameObject);
             return;
         }
@@ -51,30 +48,26 @@ public class RestPointUI : MonoBehaviour
         if (panel != null) panel.SetActive(false);
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         if (Instance == this) Instance = null;
     }
 
     // Torn down while open must not leave the game frozen.
-    private void OnDisable()
-    {
+    private void OnDisable() {
         if (!IsOpen) return;
 
         IsOpen = false;
         TimeManager.Release(this);
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (!IsOpen || !Input.GetKeyDown(KeyCode.Escape)) return;
 
         if (travelView != null && travelView.activeSelf) ShowMain();
         else                                             Close();
     }
 
-    public void Open(CheckPoint checkpoint)
-    {
+    public void Open(CheckPoint checkpoint) {
         if (IsOpen) return;
 
         current = checkpoint;
@@ -87,8 +80,7 @@ public class RestPointUI : MonoBehaviour
         ShowMain();
     }
 
-    private void ShowMain()
-    {
+    private void ShowMain() {
         if (mainView != null)   mainView.SetActive(true);
         if (travelView != null) travelView.SetActive(false);
 
@@ -97,8 +89,7 @@ public class RestPointUI : MonoBehaviour
         if (teleportButton != null) teleportButton.Select();
     }
 
-    private void ShowTravel()
-    {
+    private void ShowTravel() {
         if (mainView != null)   mainView.SetActive(false);
         if (travelView != null) travelView.SetActive(true);
 
@@ -107,12 +98,10 @@ public class RestPointUI : MonoBehaviour
         if (returnButton != null) returnButton.Select();
     }
 
-    private void BuildTravelList()
-    {
+    private void BuildTravelList() {
         ClearEntries();
 
-        if (directory == null || travelListParent == null || travelEntryPrefab == null)
-        {
+        if (directory == null || travelListParent == null || travelEntryPrefab == null) {
             Debug.LogError("[RestPointUI] Travel list is missing its Directory, List Parent " +
                            "or Entry Prefab.", this);
             return;
@@ -123,8 +112,7 @@ public class RestPointUI : MonoBehaviour
 
         string hereId = current != null ? current.CheckpointEntranceId : null;
 
-        foreach (CheckpointDirectory.Entry entry in found)
-        {
+        foreach (CheckpointDirectory.Entry entry in found) {
             CheckpointDirectory.Entry captured = entry;
             bool isHere = entry.id == hereId;
 
@@ -139,8 +127,7 @@ public class RestPointUI : MonoBehaviour
     }
 
     // From the outermost layout group, so nested content resolves.
-    private static void RebuildLayout(Transform from)
-    {
+    private static void RebuildLayout(Transform from) {
         RectTransform top = null;
 
         for (Transform p = from; p != null; p = p.parent)
@@ -153,8 +140,7 @@ public class RestPointUI : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(top);
     }
 
-    private void Travel(CheckpointDirectory.Entry entry)
-    {
+    private void Travel(CheckpointDirectory.Entry entry) {
         if (entry == null) return;
 
         // Closed first, so the freeze releases before the scene load.
@@ -162,24 +148,21 @@ public class RestPointUI : MonoBehaviour
         GameManager.Instance.TravelToCheckpoint(entry.scene, entry.id);
     }
 
-    private void ClearEntries()
-    {
+    private void ClearEntries() {
         foreach (GameObject go in spawnedEntries)
             if (go != null) Destroy(go);
 
         spawnedEntries.Clear();
     }
 
-    private void Loadout()
-    {
+    private void Loadout() {
         if (inventory == null) inventory = FindFirstObjectByType<InventoryUI>();
 
         Close();
         inventory?.Open();
     }
 
-    public void Close()
-    {
+    public void Close() {
         if (!IsOpen) return;
 
         IsOpen = false;

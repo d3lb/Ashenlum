@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SecretaryBirdFeatherVolley : SecretaryBirdAttack
-{
+public class SecretaryBirdFeatherVolley : SecretaryBirdAttack {
     [Header("Perch")]
     [SerializeField, Range(0f, 1f)] private float perchHeight = 0.7f;
 
@@ -24,8 +23,7 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack
 
     public override string DisplayName => volleys > 1 ? $"Feather Volley x{volleys}" : "Feather Volley";
 
-    public override IEnumerator Act(Transform player)
-    {
+    public override IEnumerator Act(Transform player) {
         yield return MoveToWall(player, perchHeight);
         state.FaceTowards(player.position.x);
 
@@ -34,8 +32,7 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack
         state.CurrentState = SecretaryBirdState.BossStateType.Windup;
         yield return move.Hold(fanTime);
 
-        for (int v = 0; v < volleys; v++)
-        {
+        for (int v = 0; v < volleys; v++) {
             state.CurrentState = SecretaryBirdState.BossStateType.Attacking;
             Fire(aim);
             if (v < volleys - 1) yield return move.Hold(betweenVolleys);
@@ -44,8 +41,7 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack
         yield return move.Hold(0.12f);
     }
 
-    private void Fire(Vector2 aim)
-    {
+    private void Fire(Vector2 aim) {
         if (featherPrefab == null) return;
 
         Vector2 origin = firePoint != null ? (Vector2)firePoint.position : move.Position;
@@ -55,13 +51,11 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack
         int gap = guaranteeGap ? Random.Range(0, featherCount) : -1;
         float step = featherCount > 1 ? spreadAngle / (featherCount - 1) : 0f;
 
-        for (int i = 0; i < featherCount; i++)
-        {
+        for (int i = 0; i < featherCount; i++) {
             if (i == gap) continue;
 
             float angle = baseAngle - spreadAngle * 0.5f + step * i;
-            Vector2 dir = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad),
-                                      Mathf.Sin(angle * Mathf.Deg2Rad));
+            Vector2 dir = new Vector2(Mathf.Cos(angle * Mathf.Deg2Rad), Mathf.Sin(angle * Mathf.Deg2Rad));
 
             GameObject go = Instantiate(featherPrefab, origin, Quaternion.Euler(0f, 0f, angle));
             // Speed comes from the Feather prefab. One source of truth.

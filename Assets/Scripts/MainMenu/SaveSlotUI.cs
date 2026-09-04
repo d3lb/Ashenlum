@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // Resolved, so the row never sees a RunSave or an id.
-public class SlotSummary
-{
+public class SlotSummary {
     public bool   used;
     public int    hp;
     public int    maxHp;
@@ -19,8 +18,7 @@ public class SlotSummary
     public Sprite[] talismans;
 }
 
-public class SaveSlotUI : MonoBehaviour
-{
+public class SaveSlotUI : MonoBehaviour {
     [Header("Header")]
     [SerializeField] private TMP_Text titleText;
 
@@ -53,8 +51,7 @@ public class SaveSlotUI : MonoBehaviour
     // Two rows sharing a button: only the last one bound responds.
     private static readonly Dictionary<Button, SaveSlotUI> claimed = new();
 
-    private void Awake()
-    {
+    private void Awake() {
         Claim(playButton,  "Play Button");
         Claim(eraseButton, "Erase Button");
 
@@ -62,22 +59,18 @@ public class SaveSlotUI : MonoBehaviour
         if (eraseButton != null) eraseButton.onClick.AddListener(() => onErase?.Invoke());
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         if (playButton != null)  claimed.Remove(playButton);
         if (eraseButton != null) claimed.Remove(eraseButton);
     }
 
-    private void Claim(Button button, string field)
-    {
-        if (button == null)
-        {
+    private void Claim(Button button, string field) {
+        if (button == null) {
             Debug.LogError($"[SaveSlotUI] '{name}' has no {field} assigned.", this);
             return;
         }
 
-        if (claimed.TryGetValue(button, out SaveSlotUI owner) && owner != null && owner != this)
-        {
+        if (claimed.TryGetValue(button, out SaveSlotUI owner) && owner != null && owner != this) {
             Debug.LogError(
                 $"[SaveSlotUI] '{name}' and '{owner.name}' both use the same {field} " +
                 $"('{button.name}'). Only one row will respond. Re-drag this row's own " +
@@ -88,8 +81,7 @@ public class SaveSlotUI : MonoBehaviour
         claimed[button] = this;
     }
 
-    public void Bind(int profileId, SlotSummary summary, System.Action play, System.Action erase)
-    {
+    public void Bind(int profileId, SlotSummary summary, System.Action play, System.Action erase) {
         onPlay  = play;
         onErase = erase;
 
@@ -123,16 +115,14 @@ public class SaveSlotUI : MonoBehaviour
     }
 
     // Hidden rather than a blank white box.
-    private static void SetIcon(Image image, Sprite sprite)
-    {
+    private static void SetIcon(Image image, Sprite sprite) {
         if (image == null) return;
 
         image.sprite = sprite;
         image.enabled = sprite != null;
     }
 
-    private static string FormatTime(float seconds)
-    {
+    private static string FormatTime(float seconds) {
         int total   = Mathf.Max(0, Mathf.FloorToInt(seconds));
         int hours   = total / 3600;
         int minutes = (total % 3600) / 60;

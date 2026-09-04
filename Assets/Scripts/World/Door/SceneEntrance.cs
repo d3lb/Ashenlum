@@ -2,13 +2,11 @@ using UnityEngine;
 using Cinemachine;
 using System.Collections;
 
-public class SceneEntrance : MonoBehaviour
-{
+public class SceneEntrance : MonoBehaviour {
     [Header("Entrance Settings")]
     [SerializeField] private string entranceId;
 
-    private void Start()
-    {
+    private void Start() {
 
         var run = GameManager.Instance.activeRun;
 
@@ -20,10 +18,8 @@ public class SceneEntrance : MonoBehaviour
         if (player == null) return;
 
         SceneEntrance[] entrances = FindObjectsByType<SceneEntrance>(FindObjectsSortMode.None);
-        foreach (var entrance in entrances)
-        {
-            if (entrance.entranceId == run.targetEntranceId)
-            {
+        foreach (var entrance in entrances) {
+            if (entrance.entranceId == run.targetEntranceId) {
                 player.transform.position = entrance.transform.position;
                 break;
             }

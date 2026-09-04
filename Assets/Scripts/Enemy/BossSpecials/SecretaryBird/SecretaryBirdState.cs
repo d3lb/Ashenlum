@@ -1,9 +1,7 @@
 using UnityEngine;
 
-public class SecretaryBirdState : MonoBehaviour
-{
-    public enum BossStateType
-    {
+public class SecretaryBirdState : MonoBehaviour {
+    public enum BossStateType {
         Intro,
         Idle,
         Choosing,
@@ -30,8 +28,7 @@ public class SecretaryBirdState : MonoBehaviour
 
     public bool IsVulnerableWindow => CurrentState == BossStateType.Recover;
 
-    public void SetFacing(bool right)
-    {
+    public void SetFacing(bool right) {
         IsFacingRight = right;
         if (flipRoot == null) return;
 

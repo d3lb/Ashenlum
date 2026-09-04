@@ -4,8 +4,7 @@ using UnityEngine;
 // JsonUtility cannot write HashSet, Dictionary or asset refs - everything is flattened.
 
 [System.Serializable]
-public class ProfileEntry
-{
+public class ProfileEntry {
     public int    profileId;
     public bool   slotUsed;
     public float  playTime;
@@ -15,13 +14,11 @@ public class ProfileEntry
 }
 
 [System.Serializable]
-public class ProfileIndex
-{
+public class ProfileIndex {
     public int lastUsedProfile = -1;
     public List<ProfileEntry> profiles = new();
 
-    public ProfileEntry Get(int profileId)
-    {
+    public ProfileEntry Get(int profileId) {
         foreach (ProfileEntry entry in profiles)
             if (entry.profileId == profileId) return entry;
 
@@ -30,8 +27,7 @@ public class ProfileIndex
 }
 
 [System.Serializable]
-public class RunSave
-{
+public class RunSave {
     [Header("Position")]
     public string currentArea;
     public string targetEntranceId;

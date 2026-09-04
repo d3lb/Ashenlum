@@ -1,8 +1,9 @@
 using UnityEngine;
 
+// Every movement number lives here as an asset, not in the scene. Jump height and time to
+// apex are what you type; gravity and jump force are derived from them in OnValidate.
 [CreateAssetMenu(menuName = "Player Physics Data")]
-public class PlayerPhysicsData : ScriptableObject
-{
+public class PlayerPhysicsData : ScriptableObject {
     [Header("Gravity")]
     [HideInInspector] public float gravityStrength; //Downwards force (gravity) needed for the desired jumpHeight and jumpTimeToApex.
     [HideInInspector] public float gravityScale; //Strength of the player's gravity as a multiplier of gravity (set in ProjectSettings/Physics2D).
@@ -81,8 +82,7 @@ public class PlayerPhysicsData : ScriptableObject
 
 
     //Unity Callback, called when the inspector updates
-    private void OnValidate()
-    {
+    private void OnValidate() {
         //Calculate gravity strength using the formula (gravity = 2 * jumpHeight / timeToJumpApex^2) 
         gravityStrength = -(2 * jumpHeight) / (jumpTimeToApex * jumpTimeToApex);
 

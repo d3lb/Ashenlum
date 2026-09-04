@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public abstract class SecretaryBirdAttack : MonoBehaviour
-{
+public abstract class SecretaryBirdAttack : MonoBehaviour {
     [Header("Selection")]
     [SerializeField] private string label = "";
     [SerializeField] private int weight = 1;
@@ -44,8 +43,7 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
 
     protected int CurrentSide => Arena.SideOf(move.Position.x);
 
-    protected virtual void Awake()
-    {
+    protected virtual void Awake() {
         state     = GetComponent<SecretaryBirdState>();
         move      = GetComponent<SecretaryBirdMovement>();
         hitboxes  = GetComponent<SecretaryBirdAttackController>();
@@ -58,8 +56,7 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
     // Act must `yield return`, never StartCoroutine, or the watchdog kills half the chain.
     public abstract IEnumerator Act(Transform player);
 
-    protected IEnumerator BlinkTo(Vector2 target, bool danger = false)
-    {
+    protected IEnumerator BlinkTo(Vector2 target, bool danger = false) {
         state.CurrentState = SecretaryBirdState.BossStateType.Reposition;
         hitboxes.DisableAllHitboxes();
 
@@ -75,18 +72,15 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
     private int TargetWall(Transform player)
         => InLowerHalf ? Arena.FurthestWallFrom(player.position) : -CurrentSide;
 
-    protected IEnumerator MoveToWall(Transform player, float heightT)
-    {
+    protected IEnumerator MoveToWall(Transform player, float heightT) {
         // Feints come from the phase: phase 1 has none, the honest move is learned first.
         int hops = 0;
-        for (int i = 0; i < Pace.maxFeints; i++)
-        {
+        for (int i = 0; i < Pace.maxFeints; i++) {
             if (Random.value > Pace.feintChance) break;
             hops++;
         }
 
-        for (int i = 0; i < hops; i++)
-        {
+        for (int i = 0; i < hops; i++) {
             yield return FeintHop(player);
             yield return move.Hold(hopPause);
         }
@@ -94,8 +88,7 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
         yield return PerchOn(TargetWall(player), heightT);
     }
 
-    private IEnumerator FeintHop(Transform player)
-    {
+    private IEnumerator FeintHop(Transform player) {
         int side = TargetWall(player);
         float height = RandomHopHeight();
 
@@ -108,19 +101,16 @@ public abstract class SecretaryBirdAttack : MonoBehaviour
 
     private float RandomHopHeight() => Random.Range(hopHeightRange.x, hopHeightRange.y);
 
-    private IEnumerator PerchOn(int side, float heightT)
-    {
+    private IEnumerator PerchOn(int side, float heightT) {
         yield return BlinkTo(Arena.Perch(side, heightT));
         state.SetFacing(side < 0);
     }
 
-    protected IEnumerator ShowPath(Vector2 to, float duration, bool danger = true)
-    {
+    protected IEnumerator ShowPath(Vector2 to, float duration, bool danger = true) {
         state.CurrentState = SecretaryBirdState.BossStateType.Windup;
         duration *= Pace.telegraphScale;
 
-        if (telegraph == null)
-        {
+        if (telegraph == null) {
             if (duration > 0f) yield return new WaitForSeconds(duration);
             yield break;
         }

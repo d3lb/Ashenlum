@@ -1,6 +1,5 @@
 // Unlock state lives on GameRunProfile.
-public enum AbilityType
-{
+public enum AbilityType {
     Dash,
     DoubleJump,
     WallJump

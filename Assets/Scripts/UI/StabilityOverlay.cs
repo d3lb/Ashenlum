@@ -2,8 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // One overlay per stability tier. Two Images, so crossing a threshold cross-fades.
-public class StabilityOverlay : MonoBehaviour
-{
+public class StabilityOverlay : MonoBehaviour {
     [Header("Overlays")]
     // Full canvas, Raycast Target OFF.
     [SerializeField] private Image midOverlay;
@@ -25,22 +24,19 @@ public class StabilityOverlay : MonoBehaviour
 
     private void Start() => FindPlayer();
 
-    private void OnEnable()
-    {
+    private void OnEnable() {
         if (GameManager.Instance != null)
             GameManager.Instance.OnSceneReady += FindPlayer;
     }
 
-    private void OnDisable()
-    {
+    private void OnDisable() {
         if (GameManager.Instance != null)
             GameManager.Instance.OnSceneReady -= FindPlayer;
     }
 
     private void FindPlayer() => playerHealth = FindFirstObjectByType<PlayerHealth>();
 
-    private void Update()
-    {
+    private void Update() {
         PlayerHealth.StabilityState tier = playerHealth != null
             ? playerHealth.CurrentStabilityState
             : PlayerHealth.StabilityState.High;
@@ -56,8 +52,7 @@ public class StabilityOverlay : MonoBehaviour
         Fade(lowOverlay, tier == PlayerHealth.StabilityState.Low ? lowAlpha * pulse : 0f);
     }
 
-    private void Fade(Image image, float target)
-    {
+    private void Fade(Image image, float target) {
         if (image == null) return;
 
         Color c = image.color;

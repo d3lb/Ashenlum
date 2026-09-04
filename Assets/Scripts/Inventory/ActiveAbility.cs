@@ -1,7 +1,7 @@
 using UnityEngine;
 
-public abstract class ActiveAbility : ScriptableObject
-{
+// An equippable ability as an asset, so adding a new one is a file and not a code change.
+public abstract class ActiveAbility : ScriptableObject {
     // Saved by id, same as ShopGood. Leave blank to use the asset name.
     public string id;
     public string Id => string.IsNullOrEmpty(id) ? name : id;

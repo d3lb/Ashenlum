@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class DashBruteAI : MonoBehaviour
-{
+public class DashBruteAI : MonoBehaviour {
     [Header("References")]
     [SerializeField] private Transform playerCheck;
     [SerializeField] private LayerMask playerLayer;
@@ -31,8 +30,7 @@ public class DashBruteAI : MonoBehaviour
     private Vector2 homePosition;
 
 
-    private void Awake()
-    {
+    private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
         state = GetComponent<EnemyState>();
@@ -42,8 +40,7 @@ public class DashBruteAI : MonoBehaviour
         state.CurrentState = EnemyState.EnemyStateType.Idle;
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (state.IsDead)
             return;
 
@@ -56,70 +53,55 @@ public class DashBruteAI : MonoBehaviour
         if (state.CurrentState == EnemyState.EnemyStateType.Recover)
             return;
 
-        if (currentTarget == null)
-        {
+        if (currentTarget == null) {
             TryFindPlayer();
         }
-        else
-        {
+        else {
             HandleCombatDecision();
         }
 
         UpdateFacing();
     }
 
-    private void FixedUpdate()
-    {
+    private void FixedUpdate() {
         if (state.IsDead)
             return;
 
-        if (state.CurrentState == EnemyState.EnemyStateType.Chase)
-        {
+        if (state.CurrentState == EnemyState.EnemyStateType.Chase) {
             ChasePlayer();
         }
-        else if (state.CurrentState == EnemyState.EnemyStateType.Return)
-        {
+        else if (state.CurrentState == EnemyState.EnemyStateType.Return) {
             ReturnHome();
         }
         else if (
             state.CurrentState != EnemyState.EnemyStateType.Attack &&
             state.CurrentState != EnemyState.EnemyStateType.Hit
-        )
-        {
+        ) {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
         }
     }
 
-    private void TryFindPlayer()
-    {
+    private void TryFindPlayer() {
 
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            playerCheck.position,
-            detectionRange,
-            playerLayer
-        );
+        Collider2D[] hits = Physics2D.OverlapCircleAll(playerCheck.position, detectionRange, playerLayer);
 
-        if (hits.Length == 0)
-        {
+        if (hits.Length == 0) {
             state.CurrentState = EnemyState.EnemyStateType.Idle;
             return;
         }
 
         Transform possibleTarget = hits[0].transform;
 
-        if (HasLineOfSight(possibleTarget) && IsInsideCombatArea(possibleTarget.position.x))
-        {
+        if (HasLineOfSight(possibleTarget) && IsInsideCombatArea(possibleTarget.position.x)) {
             currentTarget = possibleTarget;
             state.CurrentState = EnemyState.EnemyStateType.Chase;
         }
     }
 
-    private void HandleCombatDecision()
-    {
+    private void HandleCombatDecision() {
 
 
-        if (!IsInsideCombatArea(currentTarget.position.x))
-        {
+        if (!IsInsideCombatArea(currentTarget.position.x)) {
             currentTarget = null;
             state.CurrentState = EnemyState.EnemyStateType.Return;
             return;
@@ -128,35 +110,30 @@ public class DashBruteAI : MonoBehaviour
         float distance = Vector2.Distance(transform.position, currentTarget.position);
         
 
-        if (distance > loseTargetRange)
-        {
+        if (distance > loseTargetRange) {
             currentTarget = null;
             state.CurrentState = EnemyState.EnemyStateType.Return;
             return;
         }
 
-        if (!HasLineOfSight(currentTarget))
-        {
+        if (!HasLineOfSight(currentTarget)) {
             currentTarget = null;
             state.CurrentState = EnemyState.EnemyStateType.Return;
             return;
         }
 
-        if (!attackController.CanAttack())
-        {
+        if (!attackController.CanAttack()) {
             state.CurrentState = EnemyState.EnemyStateType.Chase;
             return;
         }
 
-        if (distance <= meleeAttackRange)
-        {
+        if (distance <= meleeAttackRange) {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             attackController.StartMeleeAttack();
             return;
         }
 
-        if (distance >= minDashRange && distance <= dashAttackRange)
-        {
+        if (distance >= minDashRange && distance <= dashAttackRange) {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             attackController.StartDashAttack(currentTarget);
             return;
@@ -165,33 +142,26 @@ public class DashBruteAI : MonoBehaviour
         state.CurrentState = EnemyState.EnemyStateType.Chase;
     }
 
-    private void ChasePlayer()
-    {
+    private void ChasePlayer() {
         if (currentTarget == null)
             return;
 
         float deltaX = currentTarget.position.x - transform.position.x;
 
-        if (Mathf.Abs(deltaX) <= meleeAttackRange)
-        {
+        if (Mathf.Abs(deltaX) <= meleeAttackRange) {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             return;
         }
 
         float dir = Mathf.Sign(deltaX);
 
-        rb.linearVelocity = new Vector2(
-            dir * chaseSpeed,
-            rb.linearVelocity.y
-        );
+        rb.linearVelocity = new Vector2(dir * chaseSpeed, rb.linearVelocity.y);
     }
 
-    private void ReturnHome()
-    {
+    private void ReturnHome() {
         float deltaX = homePosition.x - transform.position.x;
 
-        if (Mathf.Abs(deltaX) < 0.1f)
-        {
+        if (Mathf.Abs(deltaX) < 0.1f) {
             rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
             state.CurrentState = EnemyState.EnemyStateType.Idle;
             return;
@@ -205,36 +175,25 @@ public class DashBruteAI : MonoBehaviour
         rb.linearVelocity = new Vector2(dir * chaseSpeed, rb.linearVelocity.y);
     }
 
-    private bool HasLineOfSight(Transform target)
-    {
+    private bool HasLineOfSight(Transform target) {
         Vector2 origin = transform.position;
         Vector2 direction = (target.position - transform.position).normalized;
 
-        float distance = Vector2.Distance(
-            transform.position,
-            target.position
-        );
+        float distance = Vector2.Distance(transform.position, target.position);
 
-        RaycastHit2D hit = Physics2D.Raycast(
-            origin,
-            direction,
-            distance,
-            sightBlockLayer
-        );
+        RaycastHit2D hit = Physics2D.Raycast(origin, direction, distance, sightBlockLayer);
 
         return hit.collider == null;
     }
 
-    private bool IsInsideCombatArea(float x)
-    {
+    private bool IsInsideCombatArea(float x) {
         float minX = Mathf.Min(combatZone.pointA.position.x, combatZone.pointB.position.x);
         float maxX = Mathf.Max(combatZone.pointA.position.x, combatZone.pointB.position.x);
 
         return x >= minX && x <= maxX;
     }
 
-    private void UpdateFacing()
-    {
+    private void UpdateFacing() {
         if (currentTarget == null)
             return;
 
@@ -244,8 +203,7 @@ public class DashBruteAI : MonoBehaviour
         sprite.flipX = !facingRight;
     }
 
-    private void OnDrawGizmosSelected()
-    {
+    private void OnDrawGizmosSelected() {
         if (playerCheck == null)
             return;
 

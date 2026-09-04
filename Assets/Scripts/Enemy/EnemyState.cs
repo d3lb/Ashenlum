@@ -1,9 +1,8 @@
 using UnityEngine;
 
-public class EnemyState : MonoBehaviour
-{
-    public enum EnemyStateType
-    {
+// The enemy half of PlayerState. AI, animation and health talk through it, never directly.
+public class EnemyState : MonoBehaviour {
+    public enum EnemyStateType {
         Idle,
         Patrol,
         Chase,

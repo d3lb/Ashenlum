@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // The phase-change burst. Same move at both transitions, so it is learned once.
-public class KingRadiance : KingAttack
-{
+public class KingRadiance : KingAttack {
     public override bool Scripted => true;
     public override bool CanOverlap => false;
 
@@ -24,8 +23,7 @@ public class KingRadiance : KingAttack
     [SerializeField] private int tickDamage = 10;
     [SerializeField] private float tickInterval = 0.5f;
 
-    protected override void Awake()
-    {
+    protected override void Awake() {
         base.Awake();
 
         if (arena == null) arena = FindFirstObjectByType<KingArena>();
@@ -35,8 +33,7 @@ public class KingRadiance : KingAttack
                              $"(half-width {arena.Width * 0.5f:0.0}). There is nowhere to run.", this);
     }
 
-    public override IEnumerator Act(Transform player)
-    {
+    public override IEnumerator Act(Transform player) {
         KingRing.Spawn(Brain, transform, Vector2.zero, maxRadius,
                        Telegraph(chargeTime), growTime, holdTime,
                        tickDamage, tickInterval);
@@ -44,8 +41,7 @@ public class KingRadiance : KingAttack
         yield return new WaitForSeconds(Telegraph(chargeTime) + growTime + holdTime);
     }
 
-    private void OnDrawGizmosSelected()
-    {
+    private void OnDrawGizmosSelected() {
         Gizmos.color = new Color(1f, 0.4f, 0.1f, 0.8f);
         Gizmos.DrawWireSphere(transform.position, maxRadius);
 

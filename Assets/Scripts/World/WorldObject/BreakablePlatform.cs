@@ -1,8 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class BreakablePlatform : MonoBehaviour
-{
+public class BreakablePlatform : MonoBehaviour {
     [Header("References")]
     [SerializeField] private Collider2D groundCollider;
     [SerializeField] private Collider2D topTrigger;
@@ -19,26 +18,22 @@ public class BreakablePlatform : MonoBehaviour
     private bool isBreaking;
     private Color originalColor;
 
-    private void Awake()
-    {
+    private void Awake() {
         if (sprite != null) originalColor = sprite.color;
     }
 
-    public void TriggerBreak()
-    {
+    public void TriggerBreak() {
         if (isBreaking) return;
         StartCoroutine(BreakRoutine());
     }
 
-    private IEnumerator BreakRoutine()
-    {
+    private IEnumerator BreakRoutine() {
         isBreaking = true;
         topTrigger.enabled = false;
 
         float timer = 0f;
 
-        while (timer < breakDelay)
-        {
+        while (timer < breakDelay) {
             timer += Time.deltaTime;
             if (sprite != null) sprite.color = Color.Lerp(originalColor, warningColor, timer / breakDelay);
             yield return null;
@@ -55,8 +50,7 @@ public class BreakablePlatform : MonoBehaviour
         groundCollider.enabled = true;
         topTrigger.enabled = true;
 
-        if (sprite != null)
-        {
+        if (sprite != null) {
             sprite.color = originalColor;
             sprite.enabled = true;
         }

@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class KingHealth : MonoBehaviour, IDamageable
-{
+public class KingHealth : MonoBehaviour, IDamageable {
     [Header("Health")]
     [SerializeField] private int maxHp = 90;
 
@@ -37,8 +36,7 @@ public class KingHealth : MonoBehaviour, IDamageable
     // Drives the brain's aggression counter.
     public System.Action OnHit;
 
-    private void Awake()
-    {
+    private void Awake() {
         hp = maxHp;
 
         if (state == null)  state  = GetComponent<KingState>();
@@ -50,8 +48,7 @@ public class KingHealth : MonoBehaviour, IDamageable
     }
 
     // Without this, editing maxHp during Play leaves hp at the value Awake copied.
-    private void OnValidate()
-    {
+    private void OnValidate() {
         if (!Application.isPlaying) return;
 
         hp = Mathf.Clamp(hp, 0, Mathf.Max(1, maxHp));
@@ -59,8 +56,7 @@ public class KingHealth : MonoBehaviour, IDamageable
     }
 
     // Debug HUD. Uses the real death path so testing cannot diverge from it.
-    public void DebugSetHealth(int value)
-    {
+    public void DebugSetHealth(int value) {
         if (state.IsDead) return;
 
         hp = Mathf.Clamp(value, 0, maxHp);
@@ -69,16 +65,14 @@ public class KingHealth : MonoBehaviour, IDamageable
         if (hp <= 0) StartCoroutine(Die());
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (state.IsDead || !isInvincible) return;
 
         iFrameTimer -= Time.deltaTime;
         if (iFrameTimer <= 0f) isInvincible = false;
     }
 
-    public bool TakeDamage(int damage, Vector2 attackerPos)
-    {
+    public bool TakeDamage(int damage, Vector2 attackerPos) {
         // Untouchable on the throne.
         if (state.IsDead || isInvincible) return false;
         if (state.CurrentState == KingState.KingStateType.Throne) return false;
@@ -94,8 +88,7 @@ public class KingHealth : MonoBehaviour, IDamageable
         OnHit?.Invoke();
         OnHealthChanged?.Invoke(Normalized);
 
-        if (hp <= 0)
-        {
+        if (hp <= 0) {
             hp = 0;
             StartCoroutine(Die());
             return true;
@@ -104,8 +97,7 @@ public class KingHealth : MonoBehaviour, IDamageable
         return false;
     }
 
-    private IEnumerator Die()
-    {
+    private IEnumerator Die() {
         state.IsDead = true;
 
         if (brain != null) brain.Deactivate();
@@ -124,17 +116,14 @@ public class KingHealth : MonoBehaviour, IDamageable
         Destroy(gameObject);
     }
 
-    private IEnumerator HitFlash()
-    {
+    private IEnumerator HitFlash() {
         if (mat == null) yield break;
 
         float half = hitFlashTime * 0.5f;
 
-        for (int phase = 0; phase < 2; phase++)
-        {
+        for (int phase = 0; phase < 2; phase++) {
             float t = 0f;
-            while (t < half)
-            {
+            while (t < half) {
                 t += Time.deltaTime;
                 float k = t / half;
                 mat.SetFloat("_FlashAmount", phase == 0 ? k : 1f - k);

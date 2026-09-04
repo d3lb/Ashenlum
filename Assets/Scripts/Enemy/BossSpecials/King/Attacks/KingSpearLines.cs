@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // Short shards angled from him to you, spawned where you stand. Each one re-aims.
-public class KingSpearLines : KingAttack
-{
+public class KingSpearLines : KingAttack {
     [Header("Pattern")]
     [SerializeField] private int count = 5;
     [SerializeField] private float gap = 0.3f;
@@ -16,15 +15,13 @@ public class KingSpearLines : KingAttack
     [SerializeField] private float telegraphTime = 0.4f;
     [SerializeField] private float activeTime = 0.2f;
 
-    public override IEnumerator Act(Transform player)
-    {
+    public override IEnumerator Act(Transform player) {
         if (player == null) yield break;
 
         int shots = Mathf.Max(1, count);
         float telegraph = Telegraph(telegraphTime);
 
-        for (int i = 0; i < shots; i++)
-        {
+        for (int i = 0; i < shots; i++) {
             Vector2 toPlayer = (Vector2)player.position - (Vector2)transform.position;
             float angle = Mathf.Atan2(toPlayer.y, toPlayer.x) * Mathf.Rad2Deg;
 

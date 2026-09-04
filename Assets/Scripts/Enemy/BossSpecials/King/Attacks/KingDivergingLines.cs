@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // Pillars march outward from him, pushing the player off.
-public class KingDivergingLines : KingAttack
-{
+public class KingDivergingLines : KingAttack {
     [Header("References")]
     [SerializeField] private KingArena arena;
 
@@ -24,8 +23,7 @@ public class KingDivergingLines : KingAttack
     // Shorter than telegraph + active, so waves overlap into one push.
     [SerializeField] private float waveGap = 0.45f;
 
-    protected override void Awake()
-    {
+    protected override void Awake() {
         base.Awake();
 
         if (arena == null) arena = FindFirstObjectByType<KingArena>();
@@ -34,8 +32,7 @@ public class KingDivergingLines : KingAttack
             Debug.LogError($"[KingDivergingLines] '{name}' found no KingArena.", this);
     }
 
-    public override IEnumerator Act(Transform player)
-    {
+    public override IEnumerator Act(Transform player) {
         if (arena == null) yield break;
 
         int count = Mathf.Max(1, waves);
@@ -43,8 +40,7 @@ public class KingDivergingLines : KingAttack
         float centerX = arena.Center.x;
         float y = arena.Center.y;
 
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             float t = count == 1
                 ? endBeforeWall
                 : Mathf.Lerp(startFromKing, endBeforeWall, i / (float)(count - 1));
@@ -61,16 +57,14 @@ public class KingDivergingLines : KingAttack
         yield return new WaitForSeconds(telegraph + activeTime);
     }
 
-    private void OnDrawGizmosSelected()
-    {
+    private void OnDrawGizmosSelected() {
         if (arena == null) arena = FindFirstObjectByType<KingArena>();
         if (arena == null) return;
 
         float centerX = arena.Center.x;
         int count = Mathf.Max(1, waves);
 
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             float t = count == 1
                 ? endBeforeWall
                 : Mathf.Lerp(startFromKing, endBeforeWall, i / (float)(count - 1));

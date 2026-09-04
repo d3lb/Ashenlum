@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SecretaryBirdTelegraph : MonoBehaviour
-{
+public class SecretaryBirdTelegraph : MonoBehaviour {
     [Header("Path line")]
     [SerializeField] private LineRenderer line;
     [SerializeField] private Gradient color;
@@ -13,24 +12,20 @@ public class SecretaryBirdTelegraph : MonoBehaviour
     [Header("Timing")]
     [SerializeField, Range(0f, 0.8f)] private float fadeOutFraction = 0.35f;
 
-    private void Awake()
-    {
+    private void Awake() {
         if (line == null) line = GetComponent<LineRenderer>();
-        if (line != null)
-        {
+        if (line != null) {
             line.useWorldSpace = true;
             line.positionCount = 2;
         }
         Clear();
     }
 
-    public void Clear()
-    {
+    public void Clear() {
         if (line != null) line.enabled = false;
     }
 
-    public void Draw(Vector2 from, Vector2 to, bool danger = true)
-    {
+    public void Draw(Vector2 from, Vector2 to, bool danger = true) {
         if (line == null) return;
 
         Vector2 delta = to - from;
@@ -44,12 +39,10 @@ public class SecretaryBirdTelegraph : MonoBehaviour
         line.SetPosition(1, to + dir * overshoot);
     }
 
-    public IEnumerator Flash(Vector2 from, Vector2 to, float duration, bool danger = true)
-    {
+    public IEnumerator Flash(Vector2 from, Vector2 to, float duration, bool danger = true) {
         Draw(from, to, danger);
 
-        if (line == null)
-        {
+        if (line == null) {
             if (duration > 0f) yield return new WaitForSeconds(duration);
             yield break;
         }
@@ -60,8 +53,7 @@ public class SecretaryBirdTelegraph : MonoBehaviour
         if (hold > 0f) yield return new WaitForSeconds(hold);
 
         float t = 0f;
-        while (t < fade)
-        {
+        while (t < fade) {
             t += Time.deltaTime;
             float k = 1f - Mathf.Clamp01(t / fade);
             line.startWidth = width * k;

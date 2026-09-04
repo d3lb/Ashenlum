@@ -1,8 +1,7 @@
 using UnityEngine;
 
 // A new sound needs an enum entry and a bank entry.
-public enum SoundId
-{
+public enum SoundId {
     None = 0,
 
     Footstep,
@@ -29,11 +28,9 @@ public enum SoundId
 }
 
 [CreateAssetMenu(fileName = "Sound Bank", menuName = "Ashenlum/Sound Bank")]
-public class SoundBank : ScriptableObject
-{
+public class SoundBank : ScriptableObject {
     [System.Serializable]
-    public class Entry
-    {
+    public class Entry {
         public SoundId id;
 
         public AudioClip[] clips;
@@ -49,8 +46,7 @@ public class SoundBank : ScriptableObject
 
     [SerializeField] private Entry[] entries;
 
-    public Entry Find(SoundId id)
-    {
+    public Entry Find(SoundId id) {
         if (entries == null || id == SoundId.None) return null;
 
         foreach (Entry e in entries)
@@ -60,12 +56,10 @@ public class SoundBank : ScriptableObject
     }
 
 #if UNITY_EDITOR
-    private void OnValidate()
-    {
+    private void OnValidate() {
         if (entries == null) return;
 
-        for (int i = 0; i < entries.Length; i++)
-        {
+        for (int i = 0; i < entries.Length; i++) {
             if (entries[i] == null) continue;
 
             if (entries[i].clips == null || entries[i].clips.Length == 0)

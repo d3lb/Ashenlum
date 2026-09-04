@@ -1,8 +1,7 @@
 using UnityEngine;
 
 // Opens once, from one side only, and stays open forever.
-public class ShortcutDoor : Interactable
-{
+public class ShortcutDoor : Interactable {
     [SerializeField] private string doorId;
 
     // Must be on a child: Interactable turns this object's collider into a trigger.
@@ -19,8 +18,7 @@ public class ShortcutDoor : Interactable
     private bool opened;
     private Collider2D range;
 
-    protected override void Awake()
-    {
+    protected override void Awake() {
         base.Awake();
         range = GetComponent<Collider2D>();
 
@@ -29,8 +27,7 @@ public class ShortcutDoor : Interactable
     }
 
     // Start, not Awake, so GameManager is up.
-    private void Start()
-    {
+    private void Start() {
         opened = GameManager.Instance != null && GameManager.Instance.HasSeenEvent(doorId);
         Apply();
     }
@@ -39,22 +36,19 @@ public class ShortcutDoor : Interactable
     private float DividingX => range != null ? range.bounds.center.x : transform.position.x;
 
     private bool OnOpeningSide =>
-        Player != null && (opensFromRight ? Player.position.x > DividingX
-                                          : Player.position.x < DividingX);
+        Player != null && (opensFromRight ? Player.position.x > DividingX : Player.position.x < DividingX);
 
     protected override bool CanInteract => !opened && OnOpeningSide;
     protected override string PromptVerb => "Open";
     protected override string BlockedMessage => opened ? null : wrongSideMessage;
 
-    protected override void Interact()
-    {
+    protected override void Interact() {
         opened = true;
         GameManager.Instance.RegisterEvent(doorId);
         Apply();
     }
 
-    private void Apply()
-    {
+    private void Apply() {
         if (blocker != null) blocker.enabled = !opened;
 
         if (animator != null) animator.SetBool("IsOpen", opened);
@@ -62,8 +56,7 @@ public class ShortcutDoor : Interactable
     }
 
     // Red is the split, green is the opening side.
-    private void OnDrawGizmos()
-    {
+    private void OnDrawGizmos() {
         Collider2D c = range != null ? range : GetComponent<Collider2D>();
         float x = c != null ? c.bounds.center.x : transform.position.x;
         float y = transform.position.y;

@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // A press ends the current step only. The way out does not skip.
-public class KingCredits : MonoBehaviour
-{
+public class KingCredits : MonoBehaviour {
     [Header("Card")]
     [SerializeField] private GameObject panel;
 
@@ -23,8 +22,7 @@ public class KingCredits : MonoBehaviour
 
     private CanvasGroup group;
 
-    private void Awake()
-    {
+    private void Awake() {
         if (panel == null) return;
 
         group = panel.GetComponent<CanvasGroup>();
@@ -36,8 +34,7 @@ public class KingCredits : MonoBehaviour
 
     private static bool Pressed => UIInput.AdvancePressed;
 
-    public IEnumerator Play()
-    {
+    public IEnumerator Play() {
         // Freeze stops the world; the flag stops input, which Update still reads at timeScale 0.
         TimeManager.Freeze(this);
         UIState.CutsceneActive = true;
@@ -63,8 +60,7 @@ public class KingCredits : MonoBehaviour
     }
 
     // Cut short on a press, but always lands on full black.
-    private IEnumerator SkippableFade(float duration)
-    {
+    private IEnumerator SkippableFade(float duration) {
         if (SceneFader.Instance == null) yield break;
 
         Coroutine fade = StartCoroutine(SceneFader.Instance.FadeOut(duration));
@@ -72,8 +68,7 @@ public class KingCredits : MonoBehaviour
         float t = 0f;
         bool skipped = false;
 
-        while (t < duration && !skipped)
-        {
+        while (t < duration && !skipped) {
             t += Time.unscaledDeltaTime;
             if (t > inputDelay && Pressed) skipped = true;
             yield return null;
@@ -84,15 +79,13 @@ public class KingCredits : MonoBehaviour
         SceneFader.Instance.SetBlack();
     }
 
-    private IEnumerator FadeGroup(float from, float to, float duration, bool skippable)
-    {
+    private IEnumerator FadeGroup(float from, float to, float duration, bool skippable) {
         if (group == null) yield break;
 
         group.alpha = from;
         float t = 0f;
 
-        while (t < duration)
-        {
+        while (t < duration) {
             t += Time.unscaledDeltaTime;
 
             if (skippable && t > inputDelay && Pressed) break;
@@ -105,18 +98,15 @@ public class KingCredits : MonoBehaviour
         group.alpha = to;
     }
 
-    private static IEnumerator WaitUnscaled(float duration)
-    {
+    private static IEnumerator WaitUnscaled(float duration) {
         float t = 0f;
         while (t < duration) { t += Time.unscaledDeltaTime; yield return null; }
     }
 
-    private IEnumerator SkippableWait(float duration)
-    {
+    private IEnumerator SkippableWait(float duration) {
         float t = 0f;
 
-        while (t < duration)
-        {
+        while (t < duration) {
             t += Time.unscaledDeltaTime;
             if (t > inputDelay && Pressed) yield break;
             yield return null;
@@ -124,8 +114,7 @@ public class KingCredits : MonoBehaviour
     }
 
     // Torn down mid-card must not leave the game frozen.
-    private void OnDisable()
-    {
+    private void OnDisable() {
         UIState.CutsceneActive = false;
         TimeManager.Release(this);
     }

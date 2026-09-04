@@ -1,10 +1,9 @@
 using UnityEngine;
 
-public static class Bootstrapper
-{
+// Runs before any scene loads, so the game works no matter which scene you pressed Play on.
+public static class Bootstrapper {
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
-    public static void Execute()
-    {
+    public static void Execute() {
         // Before the managers, and outside the early-out below: settings must apply on
         // every launch, not only the one where the managers happen to be created.
         GameSettings.Load();
@@ -14,12 +13,10 @@ public static class Bootstrapper
 
         GameObject managerPrefab = Resources.Load<GameObject>("Managers");
 
-        if (managerPrefab != null)
-        {
+        if (managerPrefab != null) {
             Object.Instantiate(managerPrefab);
         }
-        else
-        {
+        else {
             Debug.LogError("Could not find Managers prefab!");
         }
     }

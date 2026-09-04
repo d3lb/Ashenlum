@@ -1,8 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class KingPhaseTuning
-{
+public class KingPhaseTuning {
     public string name = "Phase";
 
     public float idleBeat = 1.1f;
@@ -13,11 +12,9 @@ public class KingPhaseTuning
     [Range(0f, 1f)] public float doubleUpChance = 0f;
 }
 
-public class KingPacing : MonoBehaviour
-{
+public class KingPacing : MonoBehaviour {
     [SerializeField]
-    private KingPhaseTuning[] phases =
-    {
+    private KingPhaseTuning[] phases = {
         new KingPhaseTuning { name = "1 - Judgement", idleBeat = 1.1f, telegraphScale = 1.4f,
                               recoveryScale = 1f,    doubleUpChance = 0f },
 
@@ -30,8 +27,7 @@ public class KingPacing : MonoBehaviour
 
     private static readonly KingPhaseTuning fallback = new KingPhaseTuning();
 
-    public KingPhaseTuning For(int phase)
-    {
+    public KingPhaseTuning For(int phase) {
         if (phases == null || phases.Length == 0) return fallback;
         return phases[Mathf.Clamp(phase - 1, 0, phases.Length - 1)] ?? fallback;
     }

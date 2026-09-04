@@ -1,8 +1,7 @@
 using UnityEngine;
 
 // An interactable that says something. NPCs, signs, notes, gravestones.
-public class Dialogue : Interactable
-{
+public class Dialogue : Interactable {
     [SerializeField] private Conversation conversation;
 
     [Header("After a boss")]
@@ -15,10 +14,8 @@ public class Dialogue : Interactable
 
     protected override string PromptVerb => "Talk";
 
-    private bool BossBeaten
-    {
-        get
-        {
+    private bool BossBeaten {
+        get {
             if (string.IsNullOrEmpty(afterBossId)) return false;
 
             var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
@@ -30,8 +27,7 @@ public class Dialogue : Interactable
     private Conversation Current =>
         BossBeaten && afterBossConversation != null ? afterBossConversation : conversation;
 
-    protected override void Interact()
-    {
+    protected override void Interact() {
         if (DialogueManager.Instance == null) return;
         DialogueManager.Instance.StartDialogue(Current);
     }

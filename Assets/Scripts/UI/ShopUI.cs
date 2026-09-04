@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ShopUI : MonoBehaviour
-{
+public class ShopUI : MonoBehaviour {
     public static ShopUI Instance { get; private set; }
     public static bool IsOpen { get; private set; }
 
@@ -14,10 +13,8 @@ public class ShopUI : MonoBehaviour
     private readonly List<ShopSlotUI> spawned = new();
     private ShopGood[] stock;
 
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
+    private void Awake() {
+        if (Instance != null && Instance != this) {
             Destroy(gameObject);
             return;
         }
@@ -27,13 +24,11 @@ public class ShopUI : MonoBehaviour
         if (shopPanel != null) shopPanel.SetActive(false);
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         if (Instance == this) Instance = null;
     }
 
-    private void OnDisable()
-    {
+    private void OnDisable() {
         if (!IsOpen) return;
 
         IsOpen = false;
@@ -41,13 +36,11 @@ public class ShopUI : MonoBehaviour
         TimeManager.Release(this);
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (IsOpen && Input.GetKeyDown(KeyCode.Escape)) Close();
     }
 
-    public void Open(ShopGood[] goods)
-    {
+    public void Open(ShopGood[] goods) {
         if (IsOpen) return;
 
         stock = goods;
@@ -61,8 +54,7 @@ public class ShopUI : MonoBehaviour
         TimeManager.Freeze(this);
     }
 
-    public void Close()
-    {
+    public void Close() {
         if (!IsOpen) return;
 
         IsOpen = false;
@@ -72,36 +64,31 @@ public class ShopUI : MonoBehaviour
         TimeManager.Release(this);
     }
 
-    private void BuildList()
-    {
+    private void BuildList() {
         for (int i = slotParent.childCount - 1; i >= 0; i--)
             Destroy(slotParent.GetChild(i).gameObject);
         spawned.Clear();
 
         if (stock == null) return;
 
-        foreach (ShopGood good in stock)
-        {
+        foreach (ShopGood good in stock) {
             if (good == null) continue;
             spawned.Add(Instantiate(slotPrefab, slotParent));
         }
     }
 
-    private void Refresh()
-    {
+    private void Refresh() {
         var run = GameManager.Instance.activeRun;
 
         for (int i = 0; i < spawned.Count && i < stock.Length; i++)
             spawned[i].Bind(stock[i], run, Buy);
     }
 
-    private void Buy(ShopGood good, int quantity)
-    {
+    private void Buy(ShopGood good, int quantity) {
         var run = GameManager.Instance.activeRun;
 
         // One at a time, re-checking each step - a rising price can stop you partway.
-        for (int i = 0; i < quantity; i++)
-        {
+        for (int i = 0; i < quantity; i++) {
             int price = good.PriceFor(run);
             if (good.SoldOut(run) || run.lumens < price) break;
 

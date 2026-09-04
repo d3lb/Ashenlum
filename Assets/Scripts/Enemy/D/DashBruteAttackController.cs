@@ -1,8 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class DashBruteAttackController : MonoBehaviour, IRespawnReset
-{
+public class DashBruteAttackController : MonoBehaviour, IRespawnReset {
     [Header("References")]
     [SerializeField] private EnemyAnimation enemyAnimation;
     [SerializeField] private Collider2D leftMeleeHitbox;
@@ -37,8 +36,7 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset
     private float lastAttackTime;
     private bool isPerformingAttack;
 
-    private void Awake()
-    {
+    private void Awake() {
         state = GetComponent<EnemyState>();
         rb = GetComponent<Rigidbody2D>();
 
@@ -46,8 +44,7 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset
     }
 
     // Coroutines die with the object; isPerformingAttack stuck true blocks CanAttack forever.
-    public void ResetForRespawn()
-    {
+    public void ResetForRespawn() {
         isPerformingAttack = false;
         lastAttackTime = 0f;
 
@@ -57,8 +54,7 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset
         rightDashHitbox.enabled = false;
     }
 
-    public bool CanAttack()
-    {
+    public bool CanAttack() {
         if (isPerformingAttack)
             return false;
 
@@ -77,24 +73,21 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset
         return true;
     }
 
-    public void StartMeleeAttack()
-    {
+    public void StartMeleeAttack() {
         if (!CanAttack())
             return;
 
         StartCoroutine(MeleeAttackRoutine());
     }
 
-    public void StartDashAttack(Transform target)
-    {
+    public void StartDashAttack(Transform target) {
         if (!CanAttack())
             return;
 
         StartCoroutine(DashAttackRoutine(target));
     }
 
-    private IEnumerator MeleeAttackRoutine()
-    {
+    private IEnumerator MeleeAttackRoutine() {
         BeginAttack();
 
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
@@ -109,10 +102,7 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset
 
         float direction = state.IsFacingRight ? 1f : -1f;
 
-        rb.AddForce(
-            new Vector2(direction * meleeLungeForce, 0f),
-            ForceMode2D.Impulse
-        );
+        rb.AddForce(new Vector2(direction * meleeLungeForce, 0f), ForceMode2D.Impulse);
 
         activeHitbox.enabled = true;
 
@@ -123,8 +113,7 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset
         yield return RecoverRoutine();
     }
 
-    private IEnumerator DashAttackRoutine(Transform target)
-    {
+    private IEnumerator DashAttackRoutine(Transform target) {
         BeginAttack();
 
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
@@ -139,13 +128,11 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset
         float minX = Mathf.Min(combatZone.pointA.position.x, combatZone.pointB.position.x);
         float maxX = Mathf.Max(combatZone.pointA.position.x, combatZone.pointB.position.x);
 
-        if (direction > 0f && transform.position.x > minX + 0.5f)
-        {
+        if (direction > 0f && transform.position.x > minX + 0.5f) {
             rb.AddForce(new Vector2(-direction * dashBackstepForce, 0f), ForceMode2D.Impulse);
         }
 
-        else if (direction < 0f && transform.position.x < maxX - 0.5f)
-        {
+        else if (direction < 0f && transform.position.x < maxX - 0.5f) {
             rb.AddForce(new Vector2(-direction * dashBackstepForce, 0f), ForceMode2D.Impulse);
         }
 
@@ -161,8 +148,7 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset
 
         float timer = 0f;
 
-        while (timer < dashDuration)
-        {
+        while (timer < dashDuration) {
             if (direction > 0f && transform.position.x >= boundaryX)
                 break;
 
@@ -184,8 +170,7 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset
         yield return RecoverRoutine();
     }
 
-    private void BeginAttack()
-    {
+    private void BeginAttack() {
         isPerformingAttack = true;
         state.IsAttacking = true;
         state.CurrentState = EnemyState.EnemyStateType.Attack;
@@ -193,8 +178,7 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset
         lastAttackTime = Time.time;
     }
 
-    private IEnumerator RecoverRoutine()
-    {
+    private IEnumerator RecoverRoutine() {
         state.CurrentState = EnemyState.EnemyStateType.Recover;
 
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);

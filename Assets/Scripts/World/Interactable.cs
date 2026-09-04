@@ -3,15 +3,13 @@ using UnityEngine;
 // Anything the player can press E on.
 
 [RequireComponent(typeof(Collider2D))]
-public abstract class Interactable : MonoBehaviour
-{
+public abstract class Interactable : MonoBehaviour {
     private InteractPrompt prompt;
     private PlayerInput input;
     private bool inRange;
     private Transform player;
 
-    protected virtual void Awake()
-    {
+    protected virtual void Awake() {
         GetComponent<Collider2D>().isTrigger = true;
 
         prompt = GetComponentInChildren<InteractPrompt>(true);
@@ -19,14 +17,12 @@ public abstract class Interactable : MonoBehaviour
             Debug.LogError($"[{GetType().Name}] '{name}' has no InteractPrompt child.", this);
     }
 
-    private void Update()
-    {
+    private void Update() {
         // Update runs at timeScale 0, so an open panel would still pass E through.
         bool nearby = inRange && input != null && !UIState.Busy;
         bool available = nearby && CanInteract;
 
-        if (prompt != null)
-        {
+        if (prompt != null) {
             if (available)
                 prompt.Show(PromptVerb);
             else if (nearby && !string.IsNullOrEmpty(BlockedMessage))
@@ -54,8 +50,7 @@ public abstract class Interactable : MonoBehaviour
     protected virtual void OnPlayerEnter() { }
     protected virtual void OnPlayerExit() { }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
+    private void OnTriggerEnter2D(Collider2D other) {
         if (!other.CompareTag("Player")) return;
         input = other.GetComponent<PlayerInput>();
         player = other.transform;
@@ -63,8 +58,7 @@ public abstract class Interactable : MonoBehaviour
         OnPlayerEnter();
     }
 
-    private void OnTriggerExit2D(Collider2D other)
-    {
+    private void OnTriggerExit2D(Collider2D other) {
         if (!other.CompareTag("Player")) return;
         inRange = false;
         input = null;

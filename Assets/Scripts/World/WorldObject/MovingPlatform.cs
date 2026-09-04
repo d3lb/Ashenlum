@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class MovingPlatform : MonoBehaviour
-{
+public class MovingPlatform : MonoBehaviour {
     [Header("References")]
     [SerializeField] private Transform pointA;
     [SerializeField] private Transform pointB;
@@ -13,27 +12,19 @@ public class MovingPlatform : MonoBehaviour
     private Transform target;
     private float waitTimer;
 
-    private void Start()
-    {
+    private void Start() {
         target = pointB;
     }
 
-    private void Update()
-    {
-        if (waitTimer > 0f)
-        {
+    private void Update() {
+        if (waitTimer > 0f) {
             waitTimer -= Time.deltaTime;
             return;
         }
 
-        transform.position = Vector2.MoveTowards(
-            transform.position,
-            target.position,
-            speed * Time.deltaTime
-        );
+        transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
 
-        if (Vector2.Distance(transform.position, target.position) < 0.05f)
-        {
+        if (Vector2.Distance(transform.position, target.position) < 0.05f) {
             target = target == pointA ? pointB : pointA;
             waitTimer = waitTime;
         }

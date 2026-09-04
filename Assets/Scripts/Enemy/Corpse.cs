@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class Corpse : MonoBehaviour
-{
+public class Corpse : MonoBehaviour {
     [SerializeField] private float popForce = 3f;
     [SerializeField] private float upForce = 2f;
 
@@ -17,45 +16,32 @@ public class Corpse : MonoBehaviour
     private bool landed;
     private float settleTimer;
 
-    private void Awake()
-    {
+    private void Awake() {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    public void Pop(Vector2 direction)
-    {
-        rb.AddForce(
-            new Vector2(Mathf.Sign(direction.x) * popForce, upForce),
-            ForceMode2D.Impulse
-        );
+    public void Pop(Vector2 direction) {
+        rb.AddForce(new Vector2(Mathf.Sign(direction.x) * popForce, upForce), ForceMode2D.Impulse);
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (landed)
             return;
 
-        bool onGround = Physics2D.OverlapCircle(
-            groundCheck.position,
-            groundRadius,
-            groundLayer
-        );
+        bool onGround = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
 
-        if (onGround)
-        {
+        if (onGround) {
             settleTimer += Time.deltaTime;
 
             if (settleTimer >= settleTime)
                 Freeze();
         }
-        else
-        {
+        else {
             settleTimer = 0f;
         }
     }
 
-    private void Freeze()
-    {
+    private void Freeze() {
         landed = true;
 
         rb.linearVelocity = Vector2.zero;

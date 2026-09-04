@@ -3,9 +3,10 @@ using Cinemachine;
 using System.Collections;
 using static PlayerState;
 
+// Cinemachine cannot bound a perspective camera in 2D, so framing, room limits and looking
+// up and down are all driven from here instead of from a confiner.
 [DefaultExecutionOrder(100)]
-public class CameraManager : MonoBehaviour
-{
+public class CameraManager : MonoBehaviour {
     [Header("References")]
     [SerializeField] private PlayerState state;
     [SerializeField] private CinemachineVirtualCamera cam;
@@ -32,19 +33,16 @@ public class CameraManager : MonoBehaviour
     private float currentLookSpeed;
     private float yVelocity;
     private float lookVelocity;
-    private void Awake()
-    {
+    private void Awake() {
         transposer = cam.GetCinemachineComponent<CinemachineFramingTransposer>();
     }
 
-    private void LateUpdate()
-    {
+    private void LateUpdate() {
         xAxis();
         yAxis();
     }
 
-    private void xAxis()
-    {
+    private void xAxis() {
         if (currentRoom == null) return;
 
         float desiredOffsetX = state.IsFacingRight ? howFar : -howFar;
@@ -54,20 +52,17 @@ public class CameraManager : MonoBehaviour
         offset.x = Mathf.Lerp(offset.x, desiredOffsetX, tempFlipSpeed * Time.deltaTime);
 
         bool edgeLocked = false;
-        if (currentRoom.LockX)
-        {
+        if (currentRoom.LockX) {
             float playerX = player.position.x;
             if (playerX >= currentRoom.MaxX || playerX <= currentRoom.MinX)
                 edgeLocked = true;
         }
 
-        if (edgeLocked)
-        {
+        if (edgeLocked) {
             transposer.m_SoftZoneWidth = 2f;
             transposer.m_DeadZoneWidth = 2f;
         }
-        else
-        {
+        else {
             transposer.m_SoftZoneWidth = Mathf.Lerp(transposer.m_SoftZoneWidth, 0.2f, 7f * Time.deltaTime);
             transposer.m_DeadZoneWidth = Mathf.Lerp(transposer.m_DeadZoneWidth, 0f, 7f * Time.deltaTime);
         }
@@ -75,15 +70,13 @@ public class CameraManager : MonoBehaviour
         transposer.m_TrackedObjectOffset = offset;
     }
 
-    private void yAxis()
-    {
+    private void yAxis() {
         if (currentRoom == null) return;
 
         Vector3 offset = transposer.m_TrackedObjectOffset;
         float roomY = currentRoom.TrackedYOffset;
 
-        if (forcingYOffset)
-        {
+        if (forcingYOffset) {
             offset.y = Mathf.SmoothDamp(offset.y, roomY, ref yVelocity, 1f / yOffsetSpeed);
             transposer.m_TrackedObjectOffset = offset;
             transposer.m_SoftZoneHeight = 2f;
@@ -102,42 +95,36 @@ public class CameraManager : MonoBehaviour
         transposer.m_TrackedObjectOffset = offset;
 
         bool edgeLocked = false;
-        if (currentRoom.LockY)
-        {
+        if (currentRoom.LockY) {
             float playerY = player.position.y;
             if (playerY >= currentRoom.MaxY || playerY <= currentRoom.MinY)
                 edgeLocked = true;
         }
 
-        if (edgeLocked)
-        {
+        if (edgeLocked) {
             transposer.m_SoftZoneHeight = 2f;
             transposer.m_DeadZoneHeight = 2f;
         }
-        else
-        {
+        else {
             transposer.m_SoftZoneHeight = Mathf.Lerp(transposer.m_SoftZoneHeight, 0.5f, 7f * Time.deltaTime);
             transposer.m_DeadZoneHeight = Mathf.Lerp(transposer.m_DeadZoneHeight, 0f, 7f * Time.deltaTime);
         }
     }
 
-    public void SetRoom(CameraRoomBounds room)
-    {
+    public void SetRoom(CameraRoomBounds room) {
         if (currentRoom == room) return;
         currentRoom = room;
         forcingYOffset = true;
     }
 
     // From the room; lookDistance is only a fallback when none is set.
-    public void LookUp()
-    {
+    public void LookUp() {
         lookOffsetY = currentRoom != null ? currentRoom.LookUpDistance : lookDistance;
         currentLookSpeed = lookSnapSpeed;
         lookVelocity = 0f;
     }
 
-    public void LookDown()
-    {
+    public void LookDown() {
         lookOffsetY = -(currentRoom != null ? currentRoom.LookDownDistance : lookDistance);
         currentLookSpeed = lookSnapSpeed;
         lookVelocity = 0f;

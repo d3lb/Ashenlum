@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // Orders doors, camera and King. Separate from BossEncounter so the bird cannot break.
-public class KingEncounter : MonoBehaviour
-{
+public class KingEncounter : MonoBehaviour {
     [Header("King")]
     [SerializeField] private KingBrain king;
     [SerializeField] private KingHealth kingHealth;
@@ -27,21 +26,18 @@ public class KingEncounter : MonoBehaviour
 
     public bool Started { get; private set; }
 
-    private void Awake()
-    {
+    private void Awake() {
         if (king != null) bossId = king.BossId;
         if (kingHealth != null) kingHealth.OnDied += OnKingDied;
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         if (kingHealth != null) kingHealth.OnDied -= OnKingDied;
     }
 
     private void Start() => SetDoorsClosed(false);
 
-    public void Begin()
-    {
+    public void Begin() {
         if (Started || AlreadyBeaten || king == null) return;
 
         Started = true;
@@ -53,8 +49,7 @@ public class KingEncounter : MonoBehaviour
         king.Activate();
     }
 
-    private void OnKingDied()
-    {
+    private void OnKingDied() {
         Run?.defeatedBosses.Add(bossId);
 
         // Least acceptable thing to lose to a crash.
@@ -63,10 +58,8 @@ public class KingEncounter : MonoBehaviour
         StartCoroutine(Ending());
     }
 
-    private IEnumerator Ending()
-    {
-        if (lastWords != null && DialogueManager.Instance != null)
-        {
+    private IEnumerator Ending() {
+        if (lastWords != null && DialogueManager.Instance != null) {
             bool done = false;
             DialogueManager.Instance.StartDialogue(lastWords, () => done = true);
             yield return new WaitUntil(() => done);
@@ -80,8 +73,7 @@ public class KingEncounter : MonoBehaviour
         if (cameraSwitcher != null) cameraSwitcher.SwitchToGameplayCam();
     }
 
-    private void SetDoorsClosed(bool closed)
-    {
+    private void SetDoorsClosed(bool closed) {
         if (doors == null) return;
 
         foreach (GameObject door in doors)

@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // Two hits open it. No health, does not fight back.
-public class PlayerShade : MonoBehaviour, IDamageable
-{
+public class PlayerShade : MonoBehaviour, IDamageable {
     [Header("References")]
     [SerializeField] private SpriteRenderer sprite;
     [SerializeField] private Collider2D     shadeCollider;
@@ -25,20 +24,17 @@ public class PlayerShade : MonoBehaviour, IDamageable
     private int   hitsTaken;
     private bool  isBroken;
 
-    private void Awake()
-    {
+    private void Awake() {
         if (sprite != null) baseColor = sprite.color;
     }
 
     // Damage is ignored: a stronger weapon must not make dying cheaper.
-    public bool TakeDamage(int damage, Vector2 attackerPosition)
-    {
+    public bool TakeDamage(int damage, Vector2 attackerPosition) {
         if (isBroken) return false;
 
         hitsTaken++;
 
-        if (hitsTaken < hitsToBreak)
-        {
+        if (hitsTaken < hitsToBreak) {
             StartCoroutine(Flash());
             return true;
         }
@@ -47,8 +43,7 @@ public class PlayerShade : MonoBehaviour, IDamageable
         return true;
     }
 
-    private IEnumerator Flash()
-    {
+    private IEnumerator Flash() {
         if (sprite == null) yield break;
 
         sprite.color = hitColor;
@@ -56,8 +51,7 @@ public class PlayerShade : MonoBehaviour, IDamageable
         sprite.color = baseColor;
     }
 
-    private IEnumerator BreakRoutine()
-    {
+    private IEnumerator BreakRoutine() {
         isBroken = true;
 
         if (shadeCollider != null) shadeCollider.enabled = false;
@@ -66,8 +60,7 @@ public class PlayerShade : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(breakDelay);
 
         // Clearing the record on a failed payout would destroy the lumens with the shade.
-        if (!Payout())
-        {
+        if (!Payout()) {
             Debug.LogError("[PlayerShade] Nothing was paid out, so the shade is staying. " +
                            "Check the Lumen Prefab field.", this);
 
@@ -84,8 +77,7 @@ public class PlayerShade : MonoBehaviour, IDamageable
         Destroy(gameObject);
     }
 
-    private bool Payout()
-    {
+    private bool Payout() {
         if (GameManager.Instance == null || lumenPrefab == null) return false;
 
         int total = GameManager.Instance.activeRun.droppedLumens;
@@ -97,8 +89,7 @@ public class PlayerShade : MonoBehaviour, IDamageable
         // Spread the remainder one per pickup so rounding never eats a lumen.
         int extra = total % count;
 
-        for (int i = 0; i < count; i++)
-        {
+        for (int i = 0; i < count; i++) {
             Vector2 pos = (Vector2)transform.position + Random.insideUnitCircle * scatterRadius;
 
             LumenPickup pickup = Instantiate(lumenPrefab, pos, Quaternion.identity);

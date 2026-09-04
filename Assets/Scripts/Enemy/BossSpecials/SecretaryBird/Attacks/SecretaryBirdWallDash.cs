@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SecretaryBirdWallDash : SecretaryBirdAttack
-{
+public class SecretaryBirdWallDash : SecretaryBirdAttack {
     [Header("Perch")]
     [SerializeField, Range(0f, 1f)] private float perchHeight = 0.05f;
     [SerializeField] private float perchPause = 0.08f;
@@ -19,15 +18,13 @@ public class SecretaryBirdWallDash : SecretaryBirdAttack
 
     public override string DisplayName => dashes > 1 ? $"Wall Dash x{dashes}" : "Wall Dash";
 
-    public override IEnumerator Act(Transform player)
-    {
+    public override IEnumerator Act(Transform player) {
         yield return MoveToWall(player, perchHeight);
         yield return move.Hold(perchPause);
 
         int side = CurrentSide;
 
-        for (int i = 0; i < dashes; i++)
-        {
+        for (int i = 0; i < dashes; i++) {
             Vector2 from = move.Position;
             Vector2 to = TargetFrom(player, side, from);
 
@@ -44,8 +41,7 @@ public class SecretaryBirdWallDash : SecretaryBirdAttack
         }
     }
 
-    private Vector2 TargetFrom(Transform player, int fromSide, Vector2 from)
-    {
+    private Vector2 TargetFrom(Transform player, int fromSide, Vector2 from) {
         float x = Arena.WallX(-fromSide);
         float y = aimAtPlayer ? Arena.ClampY(player.position.y) : from.y;
         return new Vector2(x, y);

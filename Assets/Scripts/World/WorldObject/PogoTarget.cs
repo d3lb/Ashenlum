@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class PogoTarget : MonoBehaviour, IDamageable
-{
+public class PogoTarget : MonoBehaviour, IDamageable {
     [Header("Slash pogo")]
     // A multiplier, so retuning the player rescales every pad.
     [SerializeField] private float pogoMultiplier = 3f;
@@ -17,21 +16,17 @@ public class PogoTarget : MonoBehaviour, IDamageable
 
     private float nextBounceTime;
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
+    private void OnCollisionEnter2D(Collision2D collision) {
         BouncePlayer(collision);
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
-    {
+    private void OnCollisionStay2D(Collision2D collision) {
         BouncePlayer(collision);
     }
-    public bool TakeDamage(int damage, Vector2 attackerPos)
-    {
+    public bool TakeDamage(int damage, Vector2 attackerPos) {
         return true;
     }
-    private void BouncePlayer(Collision2D collision)
-    {
+    private void BouncePlayer(Collision2D collision) {
         if (Time.time < nextBounceTime) return;
         if (!collision.collider.CompareTag("Player")) return;
 

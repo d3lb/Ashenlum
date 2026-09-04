@@ -1,8 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class LumenPickup : MonoBehaviour
-{
+public class LumenPickup : MonoBehaviour {
 
     [Header("Refrence")]
     [SerializeField] private Collider2D colli;
@@ -38,13 +37,11 @@ public class LumenPickup : MonoBehaviour
     // The shade's light is already the player's - it comes home rather than waiting.
     public void LaunchAtPlayer() => forceFly = true;
 
-    private void Awake()
-    {
+    private void Awake() {
         rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Start()
-    {
+    private void Start() {
         GameObject p = GameObject.FindGameObjectWithTag("Player");
         if (p != null) player = p.transform;
 
@@ -55,16 +52,14 @@ public class LumenPickup : MonoBehaviour
 
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (player == null) return;
 
         if (!isFlying) spawnTimer += Time.deltaTime;
 
         float dist = Vector2.Distance(transform.position, player.position);
 
-        if (!isFlying && (forceFly || (spawnTimer >= spawnDelay && dist <= attractRadius)))
-        {
+        if (!isFlying && (forceFly || (spawnTimer >= spawnDelay && dist <= attractRadius))) {
             isFlying = true;
             currentSpeed = initialFlySpeed;
             rb.gravityScale = 0f;
@@ -83,8 +78,7 @@ public class LumenPickup : MonoBehaviour
         );
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
+    private void OnTriggerEnter2D(Collider2D other) {
         if (!other.CompareTag("Player")) return;
 
         GameManager.Instance.AddLumens(value);
@@ -96,8 +90,7 @@ public class LumenPickup : MonoBehaviour
         Destroy(gameObject);
     }
 
-    private void OnDrawGizmosSelected()
-    {
+    private void OnDrawGizmosSelected() {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, attractRadius);
     }

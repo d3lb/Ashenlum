@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+// Everything a single run knows about itself. The only object the save file has to describe,
+// which is why ToSave and ApplySave live here and nowhere else.
 [System.Serializable]
-public class GameRunProfile
-{
+public class GameRunProfile {
     [Header("Current Progress")]
     public string currentArea = "Start";
     public string targetEntranceId = "";
@@ -38,14 +39,12 @@ public class GameRunProfile
     public int BundleCount(LumenBundle bundle) =>
         bundle != null && bundles.TryGetValue(bundle, out int n) ? n : 0;
 
-    public void AddBundle(LumenBundle bundle)
-    {
+    public void AddBundle(LumenBundle bundle) {
         if (bundle == null) return;
         bundles[bundle] = BundleCount(bundle) + 1;
     }
 
-    public bool ConsumeBundle(LumenBundle bundle)
-    {
+    public bool ConsumeBundle(LumenBundle bundle) {
         int held = BundleCount(bundle);
         if (held <= 0) return false;
 
@@ -64,20 +63,17 @@ public class GameRunProfile
 
     public bool Owns(Talisman t) => t != null && ownedTalismans.Contains(t);
 
-    public void AddTalisman(Talisman t)
-    {
+    public void AddTalisman(Talisman t) {
         if (t != null && !ownedTalismans.Contains(t)) ownedTalismans.Add(t);
     }
 
     public bool IsEquipped(Talisman t) =>
         t != null && System.Array.IndexOf(equippedTalismans, t) >= 0;
 
-    public bool Equip(Talisman t)
-    {
+    public bool Equip(Talisman t) {
         if (!Owns(t) || IsEquipped(t)) return false;
 
-        for (int i = 0; i < equippedTalismans.Length; i++)
-        {
+        for (int i = 0; i < equippedTalismans.Length; i++) {
             if (equippedTalismans[i] != null) continue;
             equippedTalismans[i] = t;
             return true;
@@ -85,8 +81,7 @@ public class GameRunProfile
         return false;
     }
 
-    public void Unequip(Talisman t)
-    {
+    public void Unequip(Talisman t) {
         for (int i = 0; i < equippedTalismans.Length; i++)
             if (equippedTalismans[i] == t) equippedTalismans[i] = null;
     }
@@ -94,8 +89,7 @@ public class GameRunProfile
     public float bonusHealPercent => Sum(TalismanType.BurstHeal);
     public int bonusDashes => Mathf.RoundToInt(Sum(TalismanType.Dash));
 
-    private float Sum(TalismanType type)
-    {
+    private float Sum(TalismanType type) {
         float total = 0f;
         foreach (Talisman t in equippedTalismans)
             if (t != null && t.type == type) total += t.amount;
@@ -107,13 +101,11 @@ public class GameRunProfile
 
     public bool OwnsAbility(ActiveAbility a) => a != null && ownedAbilities.Contains(a);
 
-    public void AddAbility(ActiveAbility a)
-    {
+    public void AddAbility(ActiveAbility a) {
         if (a != null && !ownedAbilities.Contains(a)) ownedAbilities.Add(a);
     }
 
-    public bool EquipAbility(ActiveAbility a)
-    {
+    public bool EquipAbility(ActiveAbility a) {
         if (!OwnsAbility(a)) return false;
 
         equippedAbility = a;
@@ -128,10 +120,8 @@ public class GameRunProfile
     public bool isWallJumpUnlocked = false;
 
 
-    public bool IsAbilityUnlocked(AbilityType ability)
-    {
-        switch (ability)
-        {
+    public bool IsAbilityUnlocked(AbilityType ability) {
+        switch (ability) {
             case AbilityType.Dash:       return isDashUnlocked;
             case AbilityType.DoubleJump: return isDoubleJumpUnlocked;
             case AbilityType.WallJump:   return isWallJumpUnlocked;
@@ -139,10 +129,8 @@ public class GameRunProfile
         }
     }
 
-    public void SetAbilityUnlocked(AbilityType ability, bool value)
-    {
-        switch (ability)
-        {
+    public void SetAbilityUnlocked(AbilityType ability, bool value) {
+        switch (ability) {
             case AbilityType.Dash:       isDashUnlocked       = value; break;
             case AbilityType.DoubleJump: isDoubleJumpUnlocked = value; break;
             case AbilityType.WallJump:   isWallJumpUnlocked   = value; break;
@@ -151,10 +139,8 @@ public class GameRunProfile
 
     // SAVING
 
-    public RunSave ToSave()
-    {
-        RunSave save = new RunSave
-        {
+    public RunSave ToSave() {
+        RunSave save = new RunSave {
             currentArea          = currentArea,
             targetEntranceId     = targetEntranceId,
             resumeType           = (int)resumeType,
@@ -188,8 +174,7 @@ public class GameRunProfile
         foreach (Talisman t in equippedTalismans)
             save.equippedTalismans.Add(t != null ? t.Id : "");
 
-        foreach (var pair in bundles)
-        {
+        foreach (var pair in bundles) {
             if (pair.Key == null) continue;
             save.bundleIds.Add(pair.Key.Id);
             save.bundleCounts.Add(pair.Value);
@@ -201,8 +186,7 @@ public class GameRunProfile
         return save;
     }
 
-    public void ApplySave(RunSave save, GameAssetDatabase db)
-    {
+    public void ApplySave(RunSave save, GameAssetDatabase db) {
         if (save == null) return;
 
         currentArea          = save.currentArea;
@@ -239,8 +223,7 @@ public class GameRunProfile
 
         if (db == null) return;
 
-        foreach (string id in save.ownedTalismans)
-        {
+        foreach (string id in save.ownedTalismans) {
             Talisman t = db.FindGood<Talisman>(id);
             if (t != null) ownedTalismans.Add(t);
         }
@@ -248,14 +231,12 @@ public class GameRunProfile
         for (int i = 0; i < equippedTalismans.Length && i < save.equippedTalismans.Count; i++)
             equippedTalismans[i] = db.FindGood<Talisman>(save.equippedTalismans[i]);
 
-        for (int i = 0; i < save.bundleIds.Count && i < save.bundleCounts.Count; i++)
-        {
+        for (int i = 0; i < save.bundleIds.Count && i < save.bundleCounts.Count; i++) {
             LumenBundle bundle = db.FindGood<LumenBundle>(save.bundleIds[i]);
             if (bundle != null && save.bundleCounts[i] > 0) bundles[bundle] = save.bundleCounts[i];
         }
 
-        foreach (string id in save.ownedAbilities)
-        {
+        foreach (string id in save.ownedAbilities) {
             ActiveAbility a = db.FindAbility(id);
             if (a != null) ownedAbilities.Add(a);
         }

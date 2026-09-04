@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class PlayerActiveAbility : MonoBehaviour
-{
+public class PlayerActiveAbility : MonoBehaviour {
     [Header("References")]
     [SerializeField] private PlayerState state;
     [SerializeField] private PlayerHealth playerHealth;
@@ -28,10 +27,8 @@ public class PlayerActiveAbility : MonoBehaviour
     public ActiveAbility Equipped =>
         GameManager.Instance != null ? GameManager.Instance.activeRun.equippedAbility : null;
 
-    public float ChargePercent
-    {
-        get
-        {
+    public float ChargePercent {
+        get {
             ActiveAbility ability = Equipped;
             if (ability == null || ability.chargeTime <= 0f) return 0f;
             return Mathf.Clamp01(chargeTimer / ability.chargeTime);
@@ -43,19 +40,16 @@ public class PlayerActiveAbility : MonoBehaviour
     public float CooldownPercent =>
         cooldownLength <= 0f ? 1f : Mathf.Clamp01((Time.time - cooldownStart) / cooldownLength);
 
-    private void Awake()
-    {
+    private void Awake() {
         input = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (input.AbilityPressed) TryCast();
     }
 
-    private void TryCast()
-    {
+    private void TryCast() {
         ActiveAbility ability = Equipped;
         if (ability == null) return;
 
@@ -69,8 +63,7 @@ public class PlayerActiveAbility : MonoBehaviour
         StartCoroutine(Cast(ability));
     }
 
-    private IEnumerator Cast(ActiveAbility ability)
-    {
+    private IEnumerator Cast(ActiveAbility ability) {
         casting = true;
         chargeTimer = 0f;
         state.IsUsingAbility = true;
@@ -79,10 +72,8 @@ public class PlayerActiveAbility : MonoBehaviour
 
         Vector2 startVelocity = rb.linearVelocity;
 
-        while (chargeTimer < ability.chargeTime)
-        {
-            if (Time.time <= playerHealth.LastHitTime + 0.01f)
-            {
+        while (chargeTimer < ability.chargeTime) {
+            if (Time.time <= playerHealth.LastHitTime + 0.01f) {
                 EndCast();
                 yield break;
             }
@@ -109,8 +100,7 @@ public class PlayerActiveAbility : MonoBehaviour
         EndCast();
     }
 
-    private void EndCast()
-    {
+    private void EndCast() {
         casting = false;
         chargeTimer = 0f;
         state.IsUsingAbility = false;

@@ -1,8 +1,7 @@
 using UnityEngine;
 using System.Collections;
 
-public class BreakableMoneyBox : MonoBehaviour, IDamageable
-{
+public class BreakableMoneyBox : MonoBehaviour, IDamageable {
     [Header("References")]
     private PersistentObject persistentObject;
     [SerializeField] private SpriteRenderer sprite;
@@ -21,33 +20,28 @@ public class BreakableMoneyBox : MonoBehaviour, IDamageable
     private bool isBroken;
     private Color originalColor;
 
-    private void Awake()
-    {
+    private void Awake() {
         hp = maxHp;
         if (sprite != null) originalColor = sprite.color;
         persistentObject = GetComponent<PersistentObject>();
     }
 
-    private void Start()
-    {
+    private void Start() {
         if (persistentObject == null)
             return;
 
-        if (GameManager.Instance.activeRun.permanentRemoved.Contains(persistentObject.Id))
-        {
+        if (GameManager.Instance.activeRun.permanentRemoved.Contains(persistentObject.Id)) {
             Destroy(gameObject);
         }
     }
 
-    public bool TakeDamage(int damage, Vector2 attackerPosition)
-    {
+    public bool TakeDamage(int damage, Vector2 attackerPosition) {
         if (isBroken) return false;
 
         hp -= damage;
         StartCoroutine(HitFlash());
 
-        if (hp <= 0)
-        {
+        if (hp <= 0) {
             StartCoroutine(BreakRoutine());
             return true;
         }
@@ -55,8 +49,7 @@ public class BreakableMoneyBox : MonoBehaviour, IDamageable
         return false;
     }
 
-    private IEnumerator HitFlash()
-    {
+    private IEnumerator HitFlash() {
         if (sprite == null) yield break;
 
         sprite.color = hitColor;
@@ -66,8 +59,7 @@ public class BreakableMoneyBox : MonoBehaviour, IDamageable
             sprite.color = originalColor;
     }
 
-    private IEnumerator BreakRoutine()
-    {
+    private IEnumerator BreakRoutine() {
         isBroken = true;
 
         GameManager.Instance.activeRun.permanentRemoved.Add(persistentObject.Id);

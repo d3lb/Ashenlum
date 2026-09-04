@@ -1,8 +1,7 @@
 using UnityEngine;
 
 // Tuning window for the King fight. F2. Reads only.
-public class KingDebugHUD : MonoBehaviour
-{
+public class KingDebugHUD : MonoBehaviour {
     [SerializeField] private KeyCode toggleKey = KeyCode.F2;
     [SerializeField] private bool openOnStart = true;
 
@@ -13,8 +12,7 @@ public class KingDebugHUD : MonoBehaviour
     private bool open;
     private Rect window = new Rect(Screen.width - 340, 20, 320, 460);
 
-    private void Awake()
-    {
+    private void Awake() {
         if (brain == null) brain = GetComponent<KingBrain>();
         if (state == null) state = GetComponent<KingState>();
         if (health == null) health = GetComponent<KingHealth>();
@@ -22,25 +20,21 @@ public class KingDebugHUD : MonoBehaviour
         open = openOnStart;
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (Input.GetKeyDown(toggleKey)) open = !open;
     }
 
-    private void OnGUI()
-    {
+    private void OnGUI() {
         if (!open || brain == null) return;
 
         window = GUI.Window(4821, window, Draw, "King  (F2)");
     }
 
-    private void Draw(int id)
-    {
+    private void Draw(int id) {
         GUILayout.Label($"State:  {state.CurrentState}");
         GUILayout.Label($"Phase:  {state.Phase}   ({brain.PaceNow.name})");
 
-        if (health != null)
-        {
+        if (health != null) {
             Bar($"HP  {health.CurrentHP}/{health.MaxHP}", health.Normalized);
 
             // Just above each threshold, so the next hit is what crosses it.
@@ -55,12 +49,10 @@ public class KingDebugHUD : MonoBehaviour
 
         Section("Doing now");
 
-        if (!brain.Active)
-        {
+        if (!brain.Active) {
             GUILayout.Label("  not active");
         }
-        else
-        {
+        else {
             GUILayout.Label($"  main:  {Name(brain.CurrentMain)}");
             GUILayout.Label($"  extra: {Name(brain.CurrentExtra)}");
         }
@@ -85,22 +77,19 @@ public class KingDebugHUD : MonoBehaviour
         GUI.DragWindow();
     }
 
-    private void DrawOdds()
-    {
+    private void DrawOdds() {
         if (brain.Pool == null) return;
 
         int total = 0;
         foreach (KingAttack a in brain.Pool)
             if (a != null && a.CanUse(state.Phase)) total += a.Weight;
 
-        if (total == 0)
-        {
+        if (total == 0) {
             GUILayout.Label("  nothing usable in this phase");
             return;
         }
 
-        foreach (KingAttack a in brain.Pool)
-        {
+        foreach (KingAttack a in brain.Pool) {
             if (a == null) continue;
 
             bool usable = a.CanUse(state.Phase);
@@ -118,14 +107,12 @@ public class KingDebugHUD : MonoBehaviour
 
     private static string Name(KingAttack a) => a != null ? a.DisplayName : "-";
 
-    private static void Section(string label)
-    {
+    private static void Section(string label) {
         GUILayout.Space(6);
         GUILayout.Label($"-- {label} --");
     }
 
-    private static void Bar(string label, float fill)
-    {
+    private static void Bar(string label, float fill) {
         GUILayout.Label(label);
 
         Rect r = GUILayoutUtility.GetRect(100, 12);

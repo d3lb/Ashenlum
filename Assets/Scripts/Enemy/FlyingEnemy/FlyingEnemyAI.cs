@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 
-public class FlyingEnemyAI : MonoBehaviour
-{
+public class FlyingEnemyAI : MonoBehaviour {
     [Header("References")]
     [SerializeField] private Transform playerCheck;
     [SerializeField] private LayerMask playerLayer;
@@ -40,8 +39,7 @@ public class FlyingEnemyAI : MonoBehaviour
     private float recoverTimer;
     private Vector2 recoverTarget;
 
-    private void Awake()
-    {
+    private void Awake() {
         state = GetComponent<EnemyState>();
         rb = GetComponent<Rigidbody2D>();
         sprite = GetComponent<SpriteRenderer>();
@@ -51,10 +49,8 @@ public class FlyingEnemyAI : MonoBehaviour
         state.CurrentState = EnemyState.EnemyStateType.Patrol;
     }
 
-    private void Update()
-    {
-        if (state.CurrentState == EnemyState.EnemyStateType.Hit)
-        {
+    private void Update() {
+        if (state.CurrentState == EnemyState.EnemyStateType.Hit) {
             state.IsAttacking = false;
             if (!state.IsKnocked)
                 rb.linearVelocity = Vector2.zero;
@@ -64,8 +60,7 @@ public class FlyingEnemyAI : MonoBehaviour
         if (state.CurrentState == EnemyState.EnemyStateType.Attack)
             return;
 
-        switch (state.CurrentState)
-        {
+        switch (state.CurrentState) {
             case EnemyState.EnemyStateType.Patrol:
                 HandlePatrol();
                 TryDetectPlayer();
@@ -86,8 +81,7 @@ public class FlyingEnemyAI : MonoBehaviour
 
     //  PATROL 
 
-    private void HandlePatrol()
-    {
+    private void HandlePatrol() {
         hoverTimer += Time.deltaTime;
 
         Vector2 target = currentPatrolTarget.position;
@@ -99,8 +93,7 @@ public class FlyingEnemyAI : MonoBehaviour
         MoveToward(target, patrolSpeed);
 
         // Flip patrol point when close enough on X
-        if (Mathf.Abs(transform.position.x - currentPatrolTarget.position.x) < 0.3f)
-        {
+        if (Mathf.Abs(transform.position.x - currentPatrolTarget.position.x) < 0.3f) {
             currentPatrolTarget = currentPatrolTarget == patrolPointA
                 ? patrolPointB
                 : patrolPointA;
@@ -108,13 +101,8 @@ public class FlyingEnemyAI : MonoBehaviour
     }
 
     //  DETECTION 
-    private void TryDetectPlayer()
-    {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            playerCheck.position,
-            detectionRadius,
-            playerLayer
-        );
+    private void TryDetectPlayer() {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(playerCheck.position, detectionRadius, playerLayer);
 
         if (hits.Length == 0) return;
 
@@ -124,30 +112,18 @@ public class FlyingEnemyAI : MonoBehaviour
         Vector2 dir = (target.position - transform.position).normalized;
         float dist = Vector2.Distance(transform.position, target.position);
 
-        RaycastHit2D hit = Physics2D.Raycast(
-            transform.position,
-            dir,
-            dist,
-            obstacleMask
-        );
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, dir, dist, obstacleMask);
 
-        if (hit.collider == null)
-        {
+        if (hit.collider == null) {
             playerTransform = target; // lock on
             state.CurrentState = EnemyState.EnemyStateType.Chase;
         }
     }
 
-    private void CheckLostPlayer()
-    {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            playerCheck.position,
-            losePlayerRadius,
-            playerLayer
-        );
+    private void CheckLostPlayer() {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(playerCheck.position, losePlayerRadius, playerLayer);
 
-        if (hits.Length == 0)
-        {
+        if (hits.Length == 0) {
             playerTransform = null;
             state.CurrentState = EnemyState.EnemyStateType.Patrol;
         }
@@ -155,8 +131,7 @@ public class FlyingEnemyAI : MonoBehaviour
 
     //  CHASE
 
-    private void HandleChase()
-    {
+    private void HandleChase() {
         if (playerTransform == null) return;
 
         // Target position: above the player
@@ -169,8 +144,7 @@ public class FlyingEnemyAI : MonoBehaviour
     }
 
     // Called by FlyingEnemyAttack when the dive is done
-    public void StartRecover()
-    {
+    public void StartRecover() {
         recoverTimer = 0f;
 
         float dirAway = state.IsFacingRight ? -1f : 1f;
@@ -187,8 +161,7 @@ public class FlyingEnemyAI : MonoBehaviour
 
     //  RECOVER
 
-    private void HandleRecover()
-    {
+    private void HandleRecover() {
         recoverTimer += Time.deltaTime;
 
         MoveToward(recoverTarget, recoverSpeed);
@@ -196,18 +169,15 @@ public class FlyingEnemyAI : MonoBehaviour
         bool reachedTarget = Vector2.Distance(transform.position, recoverTarget) < 0.3f;
         bool timedOut = recoverTimer >= recoverDuration;
 
-        if (reachedTarget || timedOut)
-        {
+        if (reachedTarget || timedOut) {
             // Decide next state
-            if (playerTransform != null)
-            {
+            if (playerTransform != null) {
                 float dist = Vector2.Distance(transform.position, playerTransform.position);
                 state.CurrentState = dist <= losePlayerRadius
                     ? EnemyState.EnemyStateType.Chase
                     : EnemyState.EnemyStateType.Patrol;
             }
-            else
-            {
+            else {
                 state.CurrentState = EnemyState.EnemyStateType.Patrol;
             }
         }
@@ -215,25 +185,17 @@ public class FlyingEnemyAI : MonoBehaviour
 
     // HELPERS
 
-    private void MoveToward(Vector2 target, float speed)
-    {
-        Vector2 newPos = Vector2.MoveTowards(
-            transform.position,
-            target,
-            speed * Time.deltaTime
-        );
+    private void MoveToward(Vector2 target, float speed) {
+        Vector2 newPos = Vector2.MoveTowards(transform.position, target, speed * Time.deltaTime);
         rb.MovePosition(newPos);
     }
 
-    private void UpdateFacing()
-    {
-        if (state.CurrentState == EnemyState.EnemyStateType.Patrol)
-        {
+    private void UpdateFacing() {
+        if (state.CurrentState == EnemyState.EnemyStateType.Patrol) {
             if (currentPatrolTarget == null) return;
             state.IsFacingRight = currentPatrolTarget.position.x > transform.position.x;
         }
-        else
-        {
+        else {
             if (playerTransform == null) return;
             state.IsFacingRight = playerTransform.position.x > transform.position.x;
         }
@@ -243,8 +205,7 @@ public class FlyingEnemyAI : MonoBehaviour
 
     //  GIZMOS
 
-    private void OnDrawGizmosSelected()
-    {
+    private void OnDrawGizmosSelected() {
         // Detection radius
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(transform.position, detectionRadius);
@@ -254,8 +215,7 @@ public class FlyingEnemyAI : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, losePlayerRadius);
 
         // Patrol
-        if (patrolPointA != null && patrolPointB != null)
-        {
+        if (patrolPointA != null && patrolPointB != null) {
             Gizmos.color = Color.cyan;
             Gizmos.DrawLine(patrolPointA.position, patrolPointB.position);
             Gizmos.DrawSphere(patrolPointA.position, 0.2f);

@@ -1,8 +1,7 @@
 using UnityEngine;
 
 // One list for every kind of good.
-public abstract class ShopGood : ScriptableObject
-{
+public abstract class ShopGood : ScriptableObject {
     public string id;
     public string displayName;
 
@@ -27,22 +26,19 @@ public abstract class ShopGood : ScriptableObject
     // Price of the next one after buying `extra` more. Only matters for climbing prices.
     public virtual int PriceAfter(GameRunProfile run, int extra) => PriceFor(run);
 
-    public int TotalPrice(GameRunProfile run, int quantity)
-    {
+    public int TotalPrice(GameRunProfile run, int quantity) {
         int total = 0;
         for (int i = 0; i < quantity; i++) total += PriceAfter(run, i);
         return total;
     }
 
     // Most you could walk away with right now - limited by stock AND by lumens.
-    public int MaxBuyable(GameRunProfile run)
-    {
+    public int MaxBuyable(GameRunProfile run) {
         int stock = StockRemaining(run);
         int purse = run.lumens;
         int count = 0;
 
-        while (stock < 0 || count < stock)
-        {
+        while (stock < 0 || count < stock) {
             int price = PriceAfter(run, count);
             if (price <= 0 || price > purse) break;
             purse -= price;

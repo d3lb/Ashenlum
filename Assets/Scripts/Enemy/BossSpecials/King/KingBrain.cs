@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(KingState))]
-public class KingBrain : MonoBehaviour
-{
+public class KingBrain : MonoBehaviour {
     [Header("References")]
     [SerializeField] private KingState state;
     [SerializeField] private KingHealth health;
@@ -100,10 +99,8 @@ public class KingBrain : MonoBehaviour
     public int SortingOrder => sortingOrder;
 
     // 1 with no player, so a missing reference cannot break pacing.
-    private float GreedScale
-    {
-        get
-        {
+    private float GreedScale {
+        get {
             if (playerHealth == null) return 1f;
 
             PlayerHealth.StabilityState tier = playerHealth.CurrentStabilityState;
@@ -114,16 +111,14 @@ public class KingBrain : MonoBehaviour
         }
     }
 
-    private void Awake()
-    {
+    private void Awake() {
         if (state == null) state = GetComponent<KingState>();
         if (health == null) health = GetComponent<KingHealth>();
         if (pacing == null) pacing = GetComponent<KingPacing>();
 
         GetComponents(pool);
 
-        if (player == null)
-        {
+        if (player == null) {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
             if (p != null) player = p.transform;
         }
@@ -133,27 +128,23 @@ public class KingBrain : MonoBehaviour
         if (health != null) health.OnHit += RegisterHit;
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         if (health != null) health.OnHit -= RegisterHit;
     }
 
-    private void Start()
-    {
+    private void Start() {
         var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
         if (run != null && run.defeatedBosses.Contains(bossId)) Destroy(gameObject);
     }
 
-    public void Activate()
-    {
+    public void Activate() {
         if (active || state.IsDead) return;
 
         active = true;
         loop = StartCoroutine(Begin());
     }
 
-    public void Deactivate()
-    {
+    public void Deactivate() {
         active = false;
 
         StopRunning();
@@ -163,8 +154,7 @@ public class KingBrain : MonoBehaviour
         if (!state.IsDead) state.CurrentState = KingState.KingStateType.Idle;
     }
 
-    private IEnumerator Begin()
-    {
+    private IEnumerator Begin() {
         state.CurrentState = KingState.KingStateType.Intro;
 
         // FirstTime last - it marks as seen, so an unassigned conversation would burn it.
@@ -178,8 +168,7 @@ public class KingBrain : MonoBehaviour
     }
 
     // Marks as seen on the way out, so asking is also answering.
-    private bool FirstTime(string key)
-    {
+    private bool FirstTime(string key) {
         var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
         if (run == null) return true;
 
@@ -191,17 +180,14 @@ public class KingBrain : MonoBehaviour
         return true;
     }
 
-    private IEnumerator Say(Conversation conversation)
-    {
+    private IEnumerator Say(Conversation conversation) {
         dialogueDone = false;
         DialogueManager.Instance.StartDialogue(conversation, () => dialogueDone = true);
         yield return new WaitUntil(() => dialogueDone);
     }
 
-    private IEnumerator FightLoop()
-    {
-        while (active && !state.IsDead)
-        {
+    private IEnumerator FightLoop() {
+        while (active && !state.IsDead) {
             state.CurrentState = KingState.KingStateType.Idle;
 
             if (UpdatePhase())
@@ -212,8 +198,7 @@ public class KingBrain : MonoBehaviour
 
             if (player == null) { yield return null; continue; }
 
-            if (punishQueued && punishAttack != null && Time.time >= punishReadyAt)
-            {
+            if (punishQueued && punishAttack != null && Time.time >= punishReadyAt) {
                 punishQueued = false;
                 punishReadyAt = Time.time + punishCooldown;
 
@@ -251,8 +236,7 @@ public class KingBrain : MonoBehaviour
         }
     }
 
-    private IEnumerator RunTransition()
-    {
+    private IEnumerator RunTransition() {
         state.CurrentState = KingState.KingStateType.Transition;
 
         if (state.Phase == 3 && phase3Conversation != null &&
@@ -264,14 +248,12 @@ public class KingBrain : MonoBehaviour
     }
 
     // Waits for both, so an overlapping pair cannot leak into the next beat.
-    private IEnumerator RunAttacks(KingAttack a, KingAttack b)
-    {
+    private IEnumerator RunAttacks(KingAttack a, KingAttack b) {
         StopRunning();
 
         state.CurrentState = KingState.KingStateType.Attacking;
 
-        float deadline = Time.time + Mathf.Max(a != null ? a.Timeout : 0f,
-                                               b != null ? b.Timeout : 0f);
+        float deadline = Time.time + Mathf.Max(a != null ? a.Timeout : 0f, b != null ? b.Timeout : 0f);
 
         int finished = 0;
         int expected = (a != null ? 1 : 0) + (b != null ? 1 : 0);
@@ -288,14 +270,12 @@ public class KingBrain : MonoBehaviour
         StopRunning();
     }
 
-    private IEnumerator Wrap(KingAttack attack, System.Action onDone)
-    {
+    private IEnumerator Wrap(KingAttack attack, System.Action onDone) {
         yield return attack.Act(player);
         onDone();
     }
 
-    private void StopRunning()
-    {
+    private void StopRunning() {
         foreach (Coroutine c in running)
             if (c != null) StopCoroutine(c);
 
@@ -303,8 +283,7 @@ public class KingBrain : MonoBehaviour
     }
 
     // Rolling window: steady damage is fine, bursts are what get answered.
-    private void RegisterHit()
-    {
+    private void RegisterHit() {
         if (Time.time > recentHitsExpire) recentHits = 0;
 
         recentHits++;
@@ -316,8 +295,7 @@ public class KingBrain : MonoBehaviour
         punishQueued = true;
     }
 
-    private bool UpdatePhase()
-    {
+    private bool UpdatePhase() {
         float f = health != null ? health.Normalized : 1f;
         int target = f <= phase3At ? 3 : f <= phase2At ? 2 : 1;
 
@@ -329,8 +307,7 @@ public class KingBrain : MonoBehaviour
         return true;
     }
 
-    private KingAttack Draw()
-    {
+    private KingAttack Draw() {
         for (int i = bag.Count - 1; i >= 0; i--)
             if (!bag[i].CanUse(state.Phase)) bag.RemoveAt(i);
 
@@ -352,12 +329,10 @@ public class KingBrain : MonoBehaviour
         return chosen;
     }
 
-    private void Refill()
-    {
+    private void Refill() {
         bag.Clear();
 
-        foreach (KingAttack a in pool)
-        {
+        foreach (KingAttack a in pool) {
             if (!a.CanUse(state.Phase)) continue;
             for (int i = 0; i < a.Weight; i++) bag.Add(a);
         }

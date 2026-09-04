@@ -3,8 +3,7 @@ using System.Collections;
 using UnityEngine.SceneManagement;
 using static PlayerState;
 
-public class PlayerHealth : MonoBehaviour
-{
+public class PlayerHealth : MonoBehaviour {
     [Header("Main Settings")]
     [SerializeField] private int hp = 100;
     [SerializeField] private int baseMaxHp = 100;
@@ -36,17 +35,14 @@ public class PlayerHealth : MonoBehaviour
     public int MaxHP => maxHp;
     public float LastHitTime => lastHitTime;
 
-    public enum StabilityState
-    {
+    public enum StabilityState {
         High,
         Mid,
         Low
     }
 
-    public StabilityState CurrentStabilityState
-    {
-        get
-        {
+    public StabilityState CurrentStabilityState {
+        get {
             float percent = (float)hp / maxHp;
 
             if (percent > 0.66f)
@@ -59,19 +55,16 @@ public class PlayerHealth : MonoBehaviour
         }
     }
 
-    private void Awake()
-    {
+    private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         state = GetComponent<PlayerState>();
     }
 
-    private void Start()
-    {
+    private void Start() {
 
         var run = GameManager.Instance?.activeRun;
 
-        if (run != null)
-        {
+        if (run != null) {
             maxHp = baseMaxHp + run.bonusMaxHp;
 
             if (run.currentHp < 0) run.currentHp = maxHp;
@@ -83,8 +76,7 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // Anything that moves hp writes it back here, so no caller has to remember.
-    private void SyncProfile()
-    {
+    private void SyncProfile() {
         var run = GameManager.Instance?.activeRun;
         if (run == null) return;
 
@@ -94,23 +86,19 @@ public class PlayerHealth : MonoBehaviour
         GameManager.Instance.MarkDirty();
     }
 
-    public void Update()
-    {
-        if (isInvincible)
-        {
+    public void Update() {
+        if (isInvincible) {
             iFrameTimer -= Time.deltaTime;
             if (iFrameTimer <= 0)
                 isInvincible = false;
         }
 
-        if (Time.time >= lastHitTime + regenDelay && regenerate)
-        {
+        if (Time.time >= lastHitTime + regenDelay && regenerate) {
             Regenerate();
         }
     }
 
-    public void TakeDamage(int dmg, Vector2 attackerPos)
-    {
+    public void TakeDamage(int dmg, Vector2 attackerPos) {
         if (hp <= 0 || isInvincible) return;
 
         lastHitTime = Time.time;
@@ -131,14 +119,12 @@ public class PlayerHealth : MonoBehaviour
         if (hp <= 0) Die();
     }
 
-    private void Regenerate()
-    {
+    private void Regenerate() {
         if (hp >= maxHp) return;
 
         regenBuffer += regenRate * Time.deltaTime;
 
-        if (regenBuffer >= 1f)
-        {
+        if (regenBuffer >= 1f) {
             int amount = Mathf.FloorToInt(regenBuffer);
             Heal(amount);
             regenBuffer -= amount;
@@ -146,16 +132,14 @@ public class PlayerHealth : MonoBehaviour
     }
 
     // Called by the shop so a purchase is felt immediately, not next scene.
-    public void RefreshMaxHealth()
-    {
+    public void RefreshMaxHealth() {
         var run = GameManager.Instance?.activeRun;
         if (run == null) return;
 
         int gained = (baseMaxHp + run.bonusMaxHp) - maxHp;
         maxHp = baseMaxHp + run.bonusMaxHp;
 
-        if (gained > 0)
-        {
+        if (gained > 0) {
             Heal(gained);
             return;
         }
@@ -166,23 +150,20 @@ public class PlayerHealth : MonoBehaviour
         SyncProfile();
     }
 
-    public void Heal(int amount)
-    {
+    public void Heal(int amount) {
         hp += amount;
         if (hp > maxHp) hp = maxHp;
 
         SyncProfile();
     }
 
-    private void Die()
-    {
+    private void Die() {
         if (state != null && state.CurrentState == PlayerStateType.Dead) return;
         if (state != null) state.CurrentState = PlayerStateType.Dead;
 
         SoundManager.Play(SoundId.Death);
 
-        if (rb != null)
-        {
+        if (rb != null) {
             rb.linearVelocity = Vector2.zero;
             rb.simulated = false;
         }
@@ -190,12 +171,10 @@ public class PlayerHealth : MonoBehaviour
         GameManager.Instance.PlayerDied(respawnDelay);
     }
 
-    private void ApplyHitRecoil(Vector2 attackerPos)
-    {
+    private void ApplyHitRecoil(Vector2 attackerPos) {
         Vector2 dir = (transform.position - (Vector3)attackerPos).normalized;
 
-        if (rb != null)
-        {
+        if (rb != null) {
             rb.linearVelocity = Vector2.zero;
             rb.AddForce(new Vector2(dir.x * hitRecoilX, hitRecoilY), ForceMode2D.Impulse);
         }

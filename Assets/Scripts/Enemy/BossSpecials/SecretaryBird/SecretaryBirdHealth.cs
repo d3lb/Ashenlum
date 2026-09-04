@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SecretaryBirdHealth : MonoBehaviour, IDamageable
-{
+public class SecretaryBirdHealth : MonoBehaviour, IDamageable {
     [Header("Health")]
     [SerializeField] private int maxHp = 30;
 
@@ -34,8 +33,7 @@ public class SecretaryBirdHealth : MonoBehaviour, IDamageable
     public System.Action<float> OnHealthChanged;
     public System.Action OnDied;
 
-    private void Awake()
-    {
+    private void Awake() {
         hp = maxHp;
 
         if (state == null)  state  = GetComponent<SecretaryBirdState>();
@@ -46,16 +44,14 @@ public class SecretaryBirdHealth : MonoBehaviour, IDamageable
             mat = sprite.material = new Material(sprite.material);
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (state.IsDead || !isInvincible) return;
 
         iFrameTimer -= Time.deltaTime;
         if (iFrameTimer <= 0f) isInvincible = false;
     }
 
-    public bool TakeDamage(int damage, Vector2 attackerPos)
-    {
+    public bool TakeDamage(int damage, Vector2 attackerPos) {
         if (state.IsDead || isInvincible) return false;
 
         hp -= damage;
@@ -67,8 +63,7 @@ public class SecretaryBirdHealth : MonoBehaviour, IDamageable
 
         OnHealthChanged?.Invoke(Normalized);
 
-        if (hp <= 0)
-        {
+        if (hp <= 0) {
             hp = 0;
             StartCoroutine(Die());
             return true;
@@ -77,8 +72,7 @@ public class SecretaryBirdHealth : MonoBehaviour, IDamageable
         return false;
     }
 
-    private IEnumerator Die()
-    {
+    private IEnumerator Die() {
         state.IsDead = true;
 
         if (brain != null) brain.Deactivate();
@@ -97,17 +91,14 @@ public class SecretaryBirdHealth : MonoBehaviour, IDamageable
         Destroy(gameObject);
     }
 
-    private IEnumerator HitFlash()
-    {
+    private IEnumerator HitFlash() {
         if (mat == null) yield break;
 
         float half = hitFlashTime * 0.5f;
 
-        for (int phase = 0; phase < 2; phase++)
-        {
+        for (int phase = 0; phase < 2; phase++) {
             float t = 0f;
-            while (t < half)
-            {
+            while (t < half) {
                 t += Time.deltaTime;
                 float k = t / half;
                 mat.SetFloat("_FlashAmount", phase == 0 ? k : 1f - k);

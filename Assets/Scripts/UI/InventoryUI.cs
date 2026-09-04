@@ -2,8 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class InventoryUI : MonoBehaviour
-{
+public class InventoryUI : MonoBehaviour {
     public static bool IsOpen { get; private set; }
 
     [Header("Hotkeys")]
@@ -36,8 +35,7 @@ public class InventoryUI : MonoBehaviour
     [SerializeField] private LumenUI lumenUI;
 
     [System.Serializable]
-    public class AbilityIconBinding
-    {
+    public class AbilityIconBinding {
         public AbilityType ability;
         public Image icon;
         public bool  hideWhenLocked = false;
@@ -46,15 +44,13 @@ public class InventoryUI : MonoBehaviour
     private readonly List<GameObject> spawnedEntries = new();
     private PlayerHealth playerHealth;
 
-    private void Start()
-    {
+    private void Start() {
         if (inventoryPanel != null) inventoryPanel.SetActive(false);
         IsOpen = false;
     }
 
     // Torn down while open must not leave the game frozen.
-    private void OnDisable()
-    {
+    private void OnDisable() {
         if (!IsOpen) return;
 
         IsOpen = false;
@@ -62,11 +58,9 @@ public class InventoryUI : MonoBehaviour
         TimeManager.Release(this);
     }
 
-    private void Update()
-    {
+    private void Update() {
         // Ticks at timeScale 0, so the close hotkey keeps working.
-        if (Input.GetKeyDown(toggleKey))
-        {
+        if (Input.GetKeyDown(toggleKey)) {
             if (IsOpen) Close();
             else        Open();
             return;
@@ -76,8 +70,7 @@ public class InventoryUI : MonoBehaviour
             Close();
     }
 
-    public void Open()
-    {
+    public void Open() {
         if (IsOpen) return;
 
         // One gate, so a new panel never has to be added here.
@@ -95,8 +88,7 @@ public class InventoryUI : MonoBehaviour
         TimeManager.Freeze(this);
     }
 
-    public void Close()
-    {
+    public void Close() {
         if (!IsOpen) return;
 
         IsOpen = false;
@@ -106,8 +98,7 @@ public class InventoryUI : MonoBehaviour
         TimeManager.Release(this);
     }
 
-    public void Toggle()
-    {
+    public void Toggle() {
         if (IsOpen) Close();
         else        Open();
     }
@@ -115,8 +106,7 @@ public class InventoryUI : MonoBehaviour
     // Only the loadout is checkpoint-bound; consumables work anywhere.
     private static bool CanEditLoadout => CheckPoint.PlayerAtCheckpoint;
 
-    public void Refresh()
-    {
+    public void Refresh() {
         if (loadoutLockedHint != null) loadoutLockedHint.SetActive(!CanEditLoadout);
 
         RefreshAbilities();
@@ -124,33 +114,28 @@ public class InventoryUI : MonoBehaviour
         RefreshOwnedList();
     }
 
-    private void RefreshAbilities()
-    {
+    private void RefreshAbilities() {
         if (abilityIcons == null) return;
 
         // From the run profile, so the panel cannot disagree with the player.
         var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
 
-        foreach (var binding in abilityIcons)
-        {
+        foreach (var binding in abilityIcons) {
             if (binding == null || binding.icon == null) continue;
 
             bool unlocked = run != null && run.IsAbilityUnlocked(binding.ability);
 
-            if (binding.hideWhenLocked)
-            {
+            if (binding.hideWhenLocked) {
                 binding.icon.gameObject.SetActive(unlocked);
             }
-            else
-            {
+            else {
                 binding.icon.gameObject.SetActive(true);
                 binding.icon.color = unlocked ? unlockedColor : lockedColor;
             }
         }
     }
 
-    private void RefreshSockets()
-    {
+    private void RefreshSockets() {
         var run = GameManager.Instance.activeRun;
         bool editable = CanEditLoadout;
 
@@ -158,8 +143,7 @@ public class InventoryUI : MonoBehaviour
             abilitySocket.Bind(run.equippedAbility,
                 run.equippedAbility == null || !editable ? null : UnequipAbility);
 
-        for (int i = 0; i < talismanSockets.Length; i++)
-        {
+        for (int i = 0; i < talismanSockets.Length; i++) {
             int slot = i;
             Talisman equipped = i < run.equippedTalismans.Length ? run.equippedTalismans[i] : null;
 
@@ -168,15 +152,13 @@ public class InventoryUI : MonoBehaviour
         }
     }
 
-    private void RefreshOwnedList()
-    {
+    private void RefreshOwnedList() {
         var run = GameManager.Instance.activeRun;
         bool editable = CanEditLoadout;
 
         ClearSpawned();
 
-        foreach (ActiveAbility a in run.ownedAbilities)
-        {
+        foreach (ActiveAbility a in run.ownedAbilities) {
             ActiveAbility captured = a;
             bool equipped = run.equippedAbility == a;
             Spawn(abilityListParent, a.icon, 1, equipped || !editable,
@@ -184,8 +166,7 @@ public class InventoryUI : MonoBehaviour
         }
         if (run.ownedAbilities.Count == 0) SpawnEmpty(abilityListParent);
 
-        foreach (Talisman t in run.ownedTalismans)
-        {
+        foreach (Talisman t in run.ownedTalismans) {
             Talisman captured = t;
             bool equipped = run.IsEquipped(t);
             Spawn(talismanListParent, t.icon, 1, equipped || !editable,
@@ -193,8 +174,7 @@ public class InventoryUI : MonoBehaviour
         }
         if (run.ownedTalismans.Count == 0) SpawnEmpty(talismanListParent);
 
-        foreach (var pair in run.bundles)
-        {
+        foreach (var pair in run.bundles) {
             LumenBundle captured = pair.Key;
             Spawn(bundleListParent, captured.icon, pair.Value, false, () => UseBundle(captured));
         }
@@ -205,8 +185,7 @@ public class InventoryUI : MonoBehaviour
     }
 
     // From the topmost layout group, so nested groups resolve.
-    private static void RebuildLayout(Transform from)
-    {
+    private static void RebuildLayout(Transform from) {
         RectTransform top = null;
 
         for (Transform p = from; p != null; p = p.parent)
@@ -220,16 +199,14 @@ public class InventoryUI : MonoBehaviour
     }
 
     // Only cells this script spawned.
-    private void ClearSpawned()
-    {
+    private void ClearSpawned() {
         foreach (GameObject go in spawnedEntries)
             if (go != null) Destroy(go);
 
         spawnedEntries.Clear();
     }
 
-    private void Spawn(Transform parent, Sprite icon, int count, bool dimmed, System.Action click)
-    {
+    private void Spawn(Transform parent, Sprite icon, int count, bool dimmed, System.Action click) {
         InventoryEntryUI entry = Instantiate(entryPrefab, parent, false);
         entry.Bind(icon, count, dimmed, click);
         spawnedEntries.Add(entry.gameObject);
@@ -237,8 +214,7 @@ public class InventoryUI : MonoBehaviour
 
     private void SpawnEmpty(Transform parent) => Spawn(parent, null, 0, true, null);
 
-    private void Equip(Talisman talisman)
-    {
+    private void Equip(Talisman talisman) {
         if (!CanEditLoadout) return;
 
         // Both full: free one rather than silently swapping.
@@ -249,8 +225,7 @@ public class InventoryUI : MonoBehaviour
         Refresh();
     }
 
-    private void Unequip(int slot)
-    {
+    private void Unequip(int slot) {
         if (!CanEditLoadout) return;
 
         var run = GameManager.Instance.activeRun;
@@ -263,8 +238,7 @@ public class InventoryUI : MonoBehaviour
         Refresh();
     }
 
-    private void EquipAbility(ActiveAbility ability)
-    {
+    private void EquipAbility(ActiveAbility ability) {
         if (!CanEditLoadout) return;
         if (!GameManager.Instance.activeRun.EquipAbility(ability)) return;
 
@@ -272,8 +246,7 @@ public class InventoryUI : MonoBehaviour
         Refresh();
     }
 
-    private void UnequipAbility()
-    {
+    private void UnequipAbility() {
         if (!CanEditLoadout) return;
 
         GameManager.Instance.activeRun.UnequipAbility();
@@ -282,14 +255,12 @@ public class InventoryUI : MonoBehaviour
     }
 
     // MarkDirty already fired, so a null here saves a stale maxHp.
-    private void RefreshPlayerMaxHealth()
-    {
+    private void RefreshPlayerMaxHealth() {
         if (playerHealth == null) playerHealth = FindFirstObjectByType<PlayerHealth>();
         playerHealth?.RefreshMaxHealth();
     }
 
-    private void UseBundle(LumenBundle bundle)
-    {
+    private void UseBundle(LumenBundle bundle) {
         if (GameManager.Instance.UseBundle(bundle))
             Refresh();
     }

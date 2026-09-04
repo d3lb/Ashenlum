@@ -3,8 +3,7 @@ using TMPro;
 using UnityEngine;
 
 // onFinished fires after the box closes - that is the boss's and the shop's cue.
-public class DialogueManager : MonoBehaviour
-{
+public class DialogueManager : MonoBehaviour {
     public static DialogueManager Instance { get; private set; }
 
     // Static so gameplay scripts can gate on it with no reference and no null check.
@@ -26,10 +25,8 @@ public class DialogueManager : MonoBehaviour
     private int       lastInputFrame = -1;
     private System.Action finished;
 
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
+    private void Awake() {
+        if (Instance != null && Instance != this) {
             Destroy(gameObject);
             return;
         }
@@ -40,8 +37,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     // A static "frozen" flag must never outlive this object, or the player is locked out.
-    private void OnDisable()
-    {
+    private void OnDisable() {
         if (Instance != this) return;
 
         closeRoutine  = null;
@@ -51,13 +47,11 @@ public class DialogueManager : MonoBehaviour
         finished = null;
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         if (Instance == this) Instance = null;
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (!IsDialogueActive) return;
 
         // Ignore the press that opened the box, forwarded by the NPC earlier this frame.
@@ -69,10 +63,8 @@ public class DialogueManager : MonoBehaviour
             HandleAdvance();
     }
 
-    public void StartDialogue(Conversation conversation, System.Action onFinished = null)
-    {
-        if (conversation == null || conversation.sentences == null || conversation.sentences.Length == 0)
-        {
+    public void StartDialogue(Conversation conversation, System.Action onFinished = null) {
+        if (conversation == null || conversation.sentences == null || conversation.sentences.Length == 0) {
             Debug.LogWarning("[DialogueManager] Empty Conversation asset.", this);
             onFinished?.Invoke();
             return;
@@ -95,8 +87,7 @@ public class DialogueManager : MonoBehaviour
         ShowSentence(sentences[index]);
     }
 
-    private void HandleAdvance()
-    {
+    private void HandleAdvance() {
         lastInputFrame = Time.frameCount;
 
         if (isTyping)                      CompleteSentence();
@@ -104,14 +95,12 @@ public class DialogueManager : MonoBehaviour
         else                                 EndDialogue();
     }
 
-    private void ShowSentence(string sentence)
-    {
+    private void ShowSentence(string sentence) {
         if (typingRoutine != null) StopCoroutine(typingRoutine);
         typingRoutine = StartCoroutine(TypeRoutine(sentence));
     }
 
-    private IEnumerator TypeRoutine(string sentence)
-    {
+    private IEnumerator TypeRoutine(string sentence) {
         isTyping = true;
 
         // Set once and revealed by character: no per-character allocations, tags stay intact.
@@ -121,8 +110,7 @@ public class DialogueManager : MonoBehaviour
         dialogueText.maxVisibleCharacters = 0;
 
         var wait = new WaitForSeconds(typeSpeed);
-        for (int shown = 1; shown <= total; shown++)
-        {
+        for (int shown = 1; shown <= total; shown++) {
             dialogueText.maxVisibleCharacters = shown;
             yield return wait;
         }
@@ -131,16 +119,14 @@ public class DialogueManager : MonoBehaviour
         typingRoutine = null;
     }
 
-    private void CompleteSentence()
-    {
+    private void CompleteSentence() {
         if (typingRoutine != null) StopCoroutine(typingRoutine);
         typingRoutine = null;
         dialogueText.maxVisibleCharacters = int.MaxValue;
         isTyping = false;
     }
 
-    private void EndDialogue()
-    {
+    private void EndDialogue() {
         if (typingRoutine != null) StopCoroutine(typingRoutine);
         typingRoutine = null;
         isTyping      = false;
@@ -153,8 +139,7 @@ public class DialogueManager : MonoBehaviour
     }
 
     // Hold the flag one extra frame so the closing keypress cannot reopen a conversation.
-    private IEnumerator ReleaseActiveFlag()
-    {
+    private IEnumerator ReleaseActiveFlag() {
         yield return null;
 
         IsDialogueActive = false;

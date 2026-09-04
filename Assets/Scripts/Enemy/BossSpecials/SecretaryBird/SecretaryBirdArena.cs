@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class SecretaryBirdArena : MonoBehaviour
-{
+public class SecretaryBirdArena : MonoBehaviour {
     [Header("Bounds (offset from this transform)")]
     [SerializeField] private Vector2 areaCenter = Vector2.zero;
     [SerializeField] private Vector2 areaSize = new Vector2(24f, 12f);
@@ -23,8 +22,7 @@ public class SecretaryBirdArena : MonoBehaviour
 
     public int SideOf(float x) => x >= CenterX ? 1 : -1;
 
-    public int FurthestWallFrom(Vector2 p)
-    {
+    public int FurthestWallFrom(Vector2 p) {
         float toLeft  = Mathf.Abs(p.x - LeftX);
         float toRight = Mathf.Abs(p.x - RightX);
         return toRight >= toLeft ? 1 : -1;
@@ -44,8 +42,7 @@ public class SecretaryBirdArena : MonoBehaviour
 
     public Vector2 Clamp(Vector2 p) => new Vector2(ClampX(p.x), ClampY(p.y));
 
-    private void OnDrawGizmos()
-    {
+    private void OnDrawGizmos() {
         Gizmos.color = new Color(1f, 0.45f, 0.1f, 0.45f);
         Gizmos.DrawWireCube(Center, areaSize);
 

@@ -1,8 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainMenu : MonoBehaviour
-{
+public class MainMenu : MonoBehaviour {
     [SerializeField] private GameObject menuPanel;
     [SerializeField] private GameObject slotPanel;
 
@@ -17,14 +16,12 @@ public class MainMenu : MonoBehaviour
     [SerializeField] private AreaName[] areaNames;
 
     [System.Serializable]
-    public class AreaName
-    {
+    public class AreaName {
         public string scene;
         public string display;
     }
 
-    private string DisplayNameFor(string scene)
-    {
+    private string DisplayNameFor(string scene) {
         if (string.IsNullOrEmpty(scene)) return "";
 
         if (areaNames != null)
@@ -34,8 +31,7 @@ public class MainMenu : MonoBehaviour
         return scene;
     }
 
-    private void Start()
-    {
+    private void Start() {
         // Settings hides itself in its own Awake.
         if (slotPanel != null)     slotPanel.SetActive(false);
         if (menuPanel != null)     menuPanel.SetActive(true);
@@ -45,28 +41,24 @@ public class MainMenu : MonoBehaviour
         RefreshMenu();
     }
 
-    private void RefreshMenu()
-    {
+    private void RefreshMenu() {
         bool anySaves = SaveSystem.UsedCount() > 0;
 
         if (continueButton != null) continueButton.interactable = anySaves;
         if (savesButton != null)    savesButton.interactable = anySaves;
     }
 
-    public void ContinueGame()
-    {
+    public void ContinueGame() {
         GameManager.Instance.ContinueGame();
     }
 
-    public void NewGame()
-    {
+    public void NewGame() {
         if (GameManager.Instance.StartNewGame()) return;
 
         OpenSlots();
     }
 
-    public void OpenSlots()
-    {
+    public void OpenSlots() {
         if (slotPanel == null) return;
 
         if (menuPanel != null) menuPanel.SetActive(false);
@@ -75,22 +67,19 @@ public class MainMenu : MonoBehaviour
         RefreshSlots();
     }
 
-    public void CloseSlots()
-    {
+    public void CloseSlots() {
         if (slotPanel != null) slotPanel.SetActive(false);
         if (menuPanel != null) menuPanel.SetActive(true);
 
         RefreshMenu();
     }
 
-    private void RefreshSlots()
-    {
+    private void RefreshSlots() {
         if (slots == null) return;
 
         ProfileIndex index = SaveSystem.LoadIndex();
 
-        for (int i = 0; i < slots.Length; i++)
-        {
+        for (int i = 0; i < slots.Length; i++) {
             if (slots[i] == null) continue;
 
             int id = i;
@@ -99,13 +88,11 @@ public class MainMenu : MonoBehaviour
     }
 
     // Resolved here, so the row never sees a save format.
-    private SlotSummary Summarise(int profileId, ProfileEntry entry)
-    {
+    private SlotSummary Summarise(int profileId, ProfileEntry entry) {
         var summary = new SlotSummary { used = SaveSystem.HasRun(profileId) };
         if (!summary.used) return summary;
 
-        if (entry != null)
-        {
+        if (entry != null) {
             summary.playTime = entry.playTime;
             summary.deaths   = entry.deaths;
             summary.kills    = entry.kills;
@@ -131,19 +118,16 @@ public class MainMenu : MonoBehaviour
         return summary;
     }
 
-    private void Play(int profileId)
-    {
+    private void Play(int profileId) {
         if (SaveSystem.HasRun(profileId)) GameManager.Instance.LoadProfile(profileId);
     }
 
-    private void Erase(int profileId)
-    {
+    private void Erase(int profileId) {
         ConfirmModal.Ask(
             $"Erase Slot {profileId + 1}?",
             "This save will be gone for good.",
             "Erase",
-            () =>
-            {
+            () => {
                 GameManager.Instance.DeleteProfile(profileId);
 
                 RefreshSlots();
@@ -151,17 +135,14 @@ public class MainMenu : MonoBehaviour
             });
     }
 
-    public void ExitGame()
-    {
+    public void ExitGame() {
         Application.Quit();
     }
 
-    public void OpenSettings()
-    {
+    public void OpenSettings() {
         if (menuPanel != null) menuPanel.SetActive(false);
 
-        SettingsPanel.Open(() =>
-        {
+        SettingsPanel.Open(() => {
             if (menuPanel != null) menuPanel.SetActive(true);
         });
     }

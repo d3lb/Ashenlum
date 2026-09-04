@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public static class UIInput
-{
+public static class UIInput {
     public static bool AdvancePressed =>
         Input.GetKeyDown(KeyCode.E) ||
         Input.GetKeyDown(KeyCode.Space) ||

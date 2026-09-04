@@ -2,21 +2,18 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // One equipped slot on the left. Click to take the talisman off.
-public class TalismanSocketUI : MonoBehaviour
-{
+public class TalismanSocketUI : MonoBehaviour {
     [SerializeField] private Image icon;
     [SerializeField] private GameObject emptyGraphic;
     [SerializeField] private Button button;
 
     private System.Action onClick;
 
-    private void Awake()
-    {
+    private void Awake() {
         button.onClick.AddListener(() => onClick?.Invoke());
     }
 
-    public void Bind(Talisman talisman, System.Action click)
-    {
+    public void Bind(Talisman talisman, System.Action click) {
         bool filled = talisman != null;
 
         icon.sprite = filled ? talisman.icon : null;

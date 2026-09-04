@@ -2,8 +2,9 @@ using UnityEngine;
 using static PlayerState;
 using System.Collections;
 
-public class PlayerAbility : MonoBehaviour
-{
+// The Light Vent. Spend your own light to heal, and everything nearby takes damage scaled to
+// how much health you were missing - the weaker you were, the harder it hits.
+public class PlayerAbility : MonoBehaviour {
     [Header("References")]
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private PlayerState state;
@@ -29,37 +30,30 @@ public class PlayerAbility : MonoBehaviour
     private float burstTimer;
     private bool isCharging;
     private float lastBurstTime;
-    public float CooldownPercent
-    {
-        get
-        {
+    public float CooldownPercent {
+        get {
             float timePassed = Time.time - lastBurstTime;
             return Mathf.Clamp01(timePassed / burstCooldown);
         }
     }
 
-    private void Awake()
-    {
+    private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         input = GetComponent<PlayerInput>();
         lastBurstTime = -burstCooldown;
     }
 
 
-    private void Update()
-    {
-        if (input.HealAbilityHeld)
-        {
+    private void Update() {
+        if (input.HealAbilityHeld) {
             StartOrContinueCharge();
         }
-        else
-        {
+        else {
             CancelCharge();
         }
     }
 
-    private void DoBurst()
-    {
+    private void DoBurst() {
         // heal player
         float percent = burstHealPercent + (GameManager.Instance != null
             ? GameManager.Instance.activeRun.bonusHealPercent : 0f);
@@ -69,23 +63,16 @@ public class PlayerAbility : MonoBehaviour
         int damage = Mathf.RoundToInt(Mathf.Lerp(minBurstDamage, maxBurstDamage, missingPercent));
 
         // damage enemies in radius
-        Collider2D[] hits = Physics2D.OverlapCircleAll(
-            transform.position,
-            burstRadius,
-            enemyLayer
-        );
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, burstRadius, enemyLayer);
 
-        foreach (var hit in hits)
-        {
+        foreach (var hit in hits) {
             hit.GetComponent<EnemyHealth>()?.TakeDamage(damage, transform.position);
             effectSpawner.SpawnHitEffect(hit.transform.position, false);
         }
     }
 
-    private void StartOrContinueCharge()
-    {
-        if (!isCharging)
-        {
+    private void StartOrContinueCharge() {
+        if (!isCharging) {
             if (Time.time < lastBurstTime + burstCooldown)
                 return;
 
@@ -100,8 +87,7 @@ public class PlayerAbility : MonoBehaviour
         }
 
         // cancel if hit
-        if (Time.time <= playerHealth.LastHitTime + 0.01f)
-        {
+        if (Time.time <= playerHealth.LastHitTime + 0.01f) {
             CancelCharge();
             return;
         }
@@ -115,8 +101,7 @@ public class PlayerAbility : MonoBehaviour
         t = Mathf.Clamp01(t);
         rb.linearVelocity = Vector2.Lerp(burstStartVelocity * 0.5f, Vector2.zero, t);
 
-        if (burstTimer >= burstChargeTime)
-        {
+        if (burstTimer >= burstChargeTime) {
             DoBurst();
             animator.SetTrigger("BurstRelease");
             Instantiate(wingBurstPrefab, transform.position, Quaternion.identity);
@@ -124,8 +109,7 @@ public class PlayerAbility : MonoBehaviour
             StartCoroutine(FinishBurst());
         }
     }
-    private IEnumerator FinishBurst()
-    {
+    private IEnumerator FinishBurst() {
         isCharging = false;
 
         yield return new WaitForSeconds(0.2f);
@@ -135,8 +119,7 @@ public class PlayerAbility : MonoBehaviour
         burstTimer = 0f;
     }
 
-    private void CancelCharge()
-    {
+    private void CancelCharge() {
         if (!isCharging)
             return;
 
@@ -146,8 +129,7 @@ public class PlayerAbility : MonoBehaviour
     }
 
     // debug gizmo
-    private void OnDrawGizmosSelected()
-    {
+    private void OnDrawGizmosSelected() {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, burstRadius);
     }

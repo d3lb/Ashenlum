@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AbilityProjectile : MonoBehaviour
-{
+public class AbilityProjectile : MonoBehaviour {
     [Header("Flight")]
     [SerializeField] private float lifetime = 3f;
     [SerializeField] private float spriteAngleOffset = 0f;
@@ -30,8 +29,7 @@ public class AbilityProjectile : MonoBehaviour
     private int damage;
     private float despawnAt;
 
-    public void Launch(Vector2 dir, float speed, int dmg)
-    {
+    public void Launch(Vector2 dir, float speed, int dmg) {
         direction = dir.normalized;
         baseSpeed = speed;
         damage = dmg;
@@ -41,8 +39,7 @@ public class AbilityProjectile : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, a);
     }
 
-    private void Update()
-    {
+    private void Update() {
         elapsed += Time.deltaTime;
 
         float k = curveTime <= 0f ? 1f : Mathf.Clamp01(elapsed / curveTime);
@@ -51,14 +48,12 @@ public class AbilityProjectile : MonoBehaviour
         Vector2 from = transform.position;
         Vector2 step = direction * speed * Time.deltaTime;
 
-        if (step.sqrMagnitude > 0.0000001f)
-        {
+        if (step.sqrMagnitude > 0.0000001f) {
             RaycastHit2D[] hits = Physics2D.CircleCastAll(from, radius, step.normalized, step.magnitude, enemyLayers);
 
             System.Array.Sort(hits, (x, y) => x.distance.CompareTo(y.distance));
 
-            foreach (RaycastHit2D hit in hits)
-            {
+            foreach (RaycastHit2D hit in hits) {
                 Vector2 point = hit.distance > 0f ? hit.point : from;
 
                 IDamageable target = hit.collider.GetComponentInParent<IDamageable>();
@@ -72,8 +67,7 @@ public class AbilityProjectile : MonoBehaviour
             // shot only ever travels dead left or right, so this can only meet a wall.
             RaycastHit2D wall = Physics2D.Raycast(from, step.normalized, step.magnitude, groundLayers);
 
-            if (wall.collider != null)
-            {
+            if (wall.collider != null) {
                 Destroy(gameObject);
                 return;
             }
@@ -85,8 +79,7 @@ public class AbilityProjectile : MonoBehaviour
     }
 
 
-    private void OnDrawGizmos()
-    {
+    private void OnDrawGizmos() {
         Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, radius);
     }

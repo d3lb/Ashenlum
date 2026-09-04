@@ -3,8 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // InventoryUI hands it a sprite and a click action; it knows nothing else.
-public class InventoryEntryUI : MonoBehaviour
-{
+public class InventoryEntryUI : MonoBehaviour {
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text countText;
     [SerializeField] private Button button;
@@ -14,13 +13,11 @@ public class InventoryEntryUI : MonoBehaviour
 
     private System.Action onClick;
 
-    private void Awake()
-    {
+    private void Awake() {
         button.onClick.AddListener(() => onClick?.Invoke());
     }
 
-    public void Bind(Sprite sprite, int count, bool dimmed, System.Action click)
-    {
+    public void Bind(Sprite sprite, int count, bool dimmed, System.Action click) {
         icon.sprite = sprite;
         icon.enabled = sprite != null;
         icon.color = dimmed ? dimmedColor : normalColor;

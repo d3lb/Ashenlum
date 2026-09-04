@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // Four arrows from the top corners, converging on one point.
-public class KingArrow : KingAttack
-{
+public class KingArrow : KingAttack {
     [Header("References")]
     [SerializeField] private KingArena arena;
 
@@ -35,8 +34,7 @@ public class KingArrow : KingAttack
     // Commit this long before firing; zero leaves no dodge until after launch.
     [SerializeField] private float lockLead = 0.18f;
 
-    protected override void Awake()
-    {
+    protected override void Awake() {
         base.Awake();
 
         if (arena == null) arena = FindFirstObjectByType<KingArena>();
@@ -45,8 +43,7 @@ public class KingArrow : KingAttack
             Debug.LogError($"[KingArrow] '{name}' found no KingArena.", this);
     }
 
-    public override IEnumerator Act(Transform player)
-    {
+    public override IEnumerator Act(Transform player) {
         if (arena == null || player == null) yield break;
 
         float aim = Telegraph(aimTime);
@@ -57,12 +54,10 @@ public class KingArrow : KingAttack
         var dirs = new Vector2[per * 2];
 
         int n = 0;
-        for (int side = -1; side <= 1; side += 2)
-        {
+        for (int side = -1; side <= 1; side += 2) {
             float baseX = side < 0 ? arena.LeftX + cornerInset : arena.RightX - cornerInset;
 
-            for (int i = 0; i < per; i++)
-            {
+            for (int i = 0; i < per; i++) {
                 Vector2 start = new Vector2(baseX + side * i * pairSpacing, y);
                 arrows[n] = SpawnLight(start, arrowSize, 0f, aim, flightTime);
                 n++;
@@ -73,18 +68,14 @@ public class KingArrow : KingAttack
         float lockAt = Mathf.Max(0f, aim - lockLead);
         float t = 0f;
 
-        while (t < aim)
-        {
+        while (t < aim) {
             t += Time.deltaTime;
 
-            if (t < lockAt && player != null)
-            {
-                for (int i = 0; i < arrows.Length; i++)
-                {
+            if (t < lockAt && player != null) {
+                for (int i = 0; i < arrows.Length; i++) {
                     if (arrows[i] == null) continue;
 
-                    Vector2 d = ((Vector2)player.position -
-                                 (Vector2)arrows[i].transform.position).normalized;
+                    Vector2 d = ((Vector2)player.position - (Vector2)arrows[i].transform.position).normalized;
 
                     dirs[i] = d;
                     arrows[i].transform.rotation =
@@ -96,8 +87,7 @@ public class KingArrow : KingAttack
         }
 
         float flight = 0f;
-        while (flight < flightTime)
-        {
+        while (flight < flightTime) {
             flight += Time.deltaTime;
 
             float v = speed * speedCurve.Evaluate(flightTime <= 0f ? 1f : flight / flightTime);
@@ -110,8 +100,7 @@ public class KingArrow : KingAttack
         }
     }
 
-    private void OnDrawGizmosSelected()
-    {
+    private void OnDrawGizmosSelected() {
         if (arena == null) arena = FindFirstObjectByType<KingArena>();
         if (arena == null) return;
 
@@ -119,8 +108,7 @@ public class KingArrow : KingAttack
         float y = arena.CeilY - dropFromCeiling;
         int per = Mathf.Max(1, perCorner);
 
-        for (int side = -1; side <= 1; side += 2)
-        {
+        for (int side = -1; side <= 1; side += 2) {
             float baseX = side < 0 ? arena.LeftX + cornerInset : arena.RightX - cornerInset;
 
             for (int i = 0; i < per; i++)

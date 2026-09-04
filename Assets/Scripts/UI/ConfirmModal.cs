@@ -3,8 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // ConfirmModal.Ask("Erase Slot 1?", "This cannot be undone.", "Erase", () => Delete(1));
-public class ConfirmModal : MonoBehaviour
-{
+public class ConfirmModal : MonoBehaviour {
     public static ConfirmModal Instance { get; private set; }
     public static bool IsOpen { get; private set; }
 
@@ -26,10 +25,8 @@ public class ConfirmModal : MonoBehaviour
 
     private System.Action onConfirm;
 
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
+    private void Awake() {
+        if (Instance != null && Instance != this) {
             Destroy(gameObject);
             return;
         }
@@ -43,29 +40,24 @@ public class ConfirmModal : MonoBehaviour
         if (panel != null) panel.SetActive(false);
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         if (Instance == this) Instance = null;
     }
 
     // Closing during teardown must not leave the game frozen.
-    private void OnDisable()
-    {
+    private void OnDisable() {
         if (!IsOpen) return;
 
         IsOpen = false;
         if (freezeTime) TimeManager.Release(this);
     }
 
-    private void Update()
-    {
+    private void Update() {
         if (IsOpen && Input.GetKeyDown(KeyCode.Escape)) Cancel();
     }
 
-    public static void Ask(string title, string message, string confirmWord, System.Action onConfirm)
-    {
-        if (Instance == null)
-        {
+    public static void Ask(string title, string message, string confirmWord, System.Action onConfirm) {
+        if (Instance == null) {
             // Doing nothing beats confirming a destructive action nobody agreed to.
             Debug.LogError("[ConfirmModal] No modal in the scene - the request was dropped.");
             return;
@@ -74,8 +66,7 @@ public class ConfirmModal : MonoBehaviour
         Instance.Open(title, message, confirmWord, onConfirm);
     }
 
-    private void Open(string title, string message, string confirmWord, System.Action confirmed)
-    {
+    private void Open(string title, string message, string confirmWord, System.Action confirmed) {
         onConfirm = confirmed;
 
         if (titleText != null)   titleText.text = title;
@@ -96,8 +87,7 @@ public class ConfirmModal : MonoBehaviour
 
     public void Cancel() => Close();
 
-    private void Confirm()
-    {
+    private void Confirm() {
         System.Action callback = onConfirm;
 
         // Closed first, so the callback can load a scene or open another modal.
@@ -105,8 +95,7 @@ public class ConfirmModal : MonoBehaviour
         callback?.Invoke();
     }
 
-    private void Close()
-    {
+    private void Close() {
         onConfirm = null;
         IsOpen = false;
 

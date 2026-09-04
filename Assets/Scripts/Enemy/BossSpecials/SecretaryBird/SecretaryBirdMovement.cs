@@ -1,8 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SecretaryBirdMovement : MonoBehaviour
-{
+public class SecretaryBirdMovement : MonoBehaviour {
     [Header("References")]
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private SecretaryBirdState state;
@@ -47,23 +46,19 @@ public class SecretaryBirdMovement : MonoBehaviour
     public Vector2 Position => rb.position;
     public float DefaultGravity => defaultGravity;
 
-    private void Reset()
-    {
+    private void Reset() {
         rb = GetComponent<Rigidbody2D>();
         state = GetComponent<SecretaryBirdState>();
     }
 
     // He perches ON a wall, so an unfiltered contact check ends every dash on frame one.
-    public void ReportImpact(Collision2D c)
-    {
+    public void ReportImpact(Collision2D c) {
         if (!dashing) return;
         if (Time.time < impactOpensAt) return;
         if (((1 << c.gameObject.layer) & impactLayers) == 0) return;
 
-        for (int i = 0; i < c.contactCount; i++)
-        {
-            if (Vector2.Dot(c.GetContact(i).normal, dashDir) <= -impactFacing)
-            {
+        for (int i = 0; i < c.contactCount; i++) {
+            if (Vector2.Dot(c.GetContact(i).normal, dashDir) <= -impactFacing) {
                 impacted = true;
                 if (logDashEnd)
                     Debug.Log($"[SecretaryBird] dash ended on '{c.gameObject.name}'", c.gameObject);
@@ -72,8 +67,7 @@ public class SecretaryBirdMovement : MonoBehaviour
         }
     }
 
-    public void Stop()
-    {
+    public void Stop() {
         if (rb == null) return;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
@@ -82,22 +76,19 @@ public class SecretaryBirdMovement : MonoBehaviour
     public void SetGravity(float g) => rb.gravityScale = g;
     public void ResetGravity()      => rb.gravityScale = defaultGravity;
 
-    public void ClampInsideArena()
-    {
+    public void ClampInsideArena() {
         if (arena != null) rb.position = arena.Clamp(rb.position);
     }
 
     public IEnumerator Dash(Vector2 target, float speed, float arcGravity = 0f,
                             float maxTime = 2f, float arriveDist = 0.35f,
-                            bool anticipate = true, bool feedbackOnImpact = true)
-    {
+                            bool anticipate = true, bool feedbackOnImpact = true) {
         var wait = new WaitForFixedUpdate();
 
         Vector2 start = rb.position;
 
         // Already there - without this the pull-back fires in an arbitrary direction.
-        if (Vector2.Distance(start, target) <= arriveDist)
-        {
+        if (Vector2.Distance(start, target) <= arriveDist) {
             Stop();
             rb.gravityScale = 0f;
             yield return wait;
@@ -110,12 +101,10 @@ public class SecretaryBirdMovement : MonoBehaviour
         rb.gravityScale = 0f;
 
         //  Anticipation: a short pull-back AGAINST the dash direction. 
-        if (anticipate && anticipationTime > 0f && anticipationDistance > 0f)
-        {
+        if (anticipate && anticipationTime > 0f && anticipationDistance > 0f) {
             Vector2 back = start - dir * anticipationDistance;
             float a = 0f;
-            while (a < anticipationTime)
-            {
+            while (a < anticipationTime) {
                 a += Time.fixedDeltaTime;
                 rb.MovePosition(Vector2.Lerp(start, back, Mathf.Clamp01(a / anticipationTime)));
                 yield return wait;
@@ -132,8 +121,7 @@ public class SecretaryBirdMovement : MonoBehaviour
         float gravAccum = 0f;
         float deadline = Time.time + maxTime;
 
-        while (!impacted && Time.time < deadline)
-        {
+        while (!impacted && Time.time < deadline) {
             float remaining = Vector2.Dot(target - rb.position, dir);
             if (remaining <= arriveDist) break;
 
@@ -152,8 +140,7 @@ public class SecretaryBirdMovement : MonoBehaviour
         if (feedbackOnImpact && impacted) ImpactFeedback();
     }
 
-    private void ImpactFeedback()
-    {
+    private void ImpactFeedback() {
         if (impactHitStop > 0f && TimeManager.Instance != null)
             TimeManager.Instance.HitStop(impactHitStop);
 
@@ -161,8 +148,7 @@ public class SecretaryBirdMovement : MonoBehaviour
             CameraShakeManager.Instance.Shake(impactShakeDuration, impactShakeAmplitude, impactShakeFrequency);
     }
 
-    public IEnumerator Glide(Vector2 target, float speed, float arriveDist = 0.1f, float maxTime = 3f)
-    {
+    public IEnumerator Glide(Vector2 target, float speed, float arriveDist = 0.1f, float maxTime = 3f) {
         state.CurrentState = SecretaryBirdState.BossStateType.Reposition;
         rb.gravityScale = 0f;
         rb.linearVelocity = Vector2.zero;
@@ -170,8 +156,7 @@ public class SecretaryBirdMovement : MonoBehaviour
         var wait = new WaitForFixedUpdate();
         float deadline = Time.time + maxTime;
 
-        while (Vector2.Distance(rb.position, target) > arriveDist && Time.time < deadline)
-        {
+        while (Vector2.Distance(rb.position, target) > arriveDist && Time.time < deadline) {
             rb.MovePosition(Vector2.MoveTowards(rb.position, target, speed * Time.fixedDeltaTime));
             yield return wait;
         }
@@ -179,8 +164,7 @@ public class SecretaryBirdMovement : MonoBehaviour
         yield return wait;
     }
 
-    public IEnumerator Hold(float seconds)
-    {
+    public IEnumerator Hold(float seconds) {
         Stop();
         rb.gravityScale = 0f;
         if (seconds > 0f) yield return new WaitForSeconds(seconds);

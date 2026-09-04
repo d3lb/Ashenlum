@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // Floor spike under the player. count above 1 is a volley that re-aims between each.
-public class KingSpike : KingAttack
-{
+public class KingSpike : KingAttack {
     [Header("References")]
     [SerializeField] private KingArena arena;
 
@@ -19,8 +18,7 @@ public class KingSpike : KingAttack
     [SerializeField] private float telegraphTime = 0.55f;
     [SerializeField] private float activeTime = 0.25f;
 
-    protected override void Awake()
-    {
+    protected override void Awake() {
         base.Awake();
 
         if (arena == null) arena = FindFirstObjectByType<KingArena>();
@@ -29,15 +27,13 @@ public class KingSpike : KingAttack
             Debug.LogError($"[KingSpike] '{name}' found no KingArena.", this);
     }
 
-    public override IEnumerator Act(Transform player)
-    {
+    public override IEnumerator Act(Transform player) {
         if (arena == null || player == null) yield break;
 
         int shots = Mathf.Max(1, count);
         float telegraph = Telegraph(telegraphTime);
 
-        for (int i = 0; i < shots; i++)
-        {
+        for (int i = 0; i < shots; i++) {
             // Locked on placement; a spike that tracks while warning cannot be dodged.
             float x = arena.ClampX(player.position.x);
             Vector2 pos = new Vector2(x, arena.FloorY + spikeSize.y * 0.5f);
@@ -50,8 +46,7 @@ public class KingSpike : KingAttack
         yield return new WaitForSeconds(telegraph + activeTime);
     }
 
-    private void OnDrawGizmosSelected()
-    {
+    private void OnDrawGizmosSelected() {
         if (arena == null) arena = FindFirstObjectByType<KingArena>();
         if (arena == null) return;
 

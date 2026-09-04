@@ -2,8 +2,7 @@ using UnityEngine;
 
 // Bought at a premium; survives death, unlike loose lumens.
 [CreateAssetMenu(fileName = "New Lumen Bundle", menuName = "Ashenlum/Lumen Bundle")]
-public class LumenBundle : ShopGood
-{
+public class LumenBundle : ShopGood {
     // What you get back when you use it.
     public int value = 100;
     // What it costs to buy. Higher than value - that gap is the insurance premium.

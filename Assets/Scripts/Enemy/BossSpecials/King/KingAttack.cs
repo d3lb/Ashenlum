@@ -2,8 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 // One move. Subclass it, drop it on the King, and the brain finds it.
-public abstract class KingAttack : MonoBehaviour
-{
+public abstract class KingAttack : MonoBehaviour {
     [Header("Selection")]
     [SerializeField] private string label = "";
     [SerializeField] private int weight = 1;
@@ -28,8 +27,7 @@ public abstract class KingAttack : MonoBehaviour
     public virtual string DisplayName =>
         string.IsNullOrEmpty(label) ? GetType().Name : label;
 
-    protected virtual void Awake()
-    {
+    protected virtual void Awake() {
         State = GetComponent<KingState>();
         Brain = GetComponent<KingBrain>();
 
@@ -50,8 +48,7 @@ public abstract class KingAttack : MonoBehaviour
 
     // Damage, layer and look come from the brain; attacks pick only where and how big.
     protected KingLight SpawnLight(Vector2 position, Vector2 size, float angle,
-                                   float telegraphTime, float activeTime)
-    {
+                                   float telegraphTime, float activeTime) {
         return KingLight.Spawn(Brain, position, size, angle, telegraphTime, activeTime);
     }
 }

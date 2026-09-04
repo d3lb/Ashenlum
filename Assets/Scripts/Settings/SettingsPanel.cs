@@ -4,8 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // SettingsPanel.Open(() => menuPanel.SetActive(true));
-public class SettingsPanel : MonoBehaviour
-{
+public class SettingsPanel : MonoBehaviour {
     public static SettingsPanel Instance { get; private set; }
 
     [Header("Panel")]
@@ -45,21 +44,18 @@ public class SettingsPanel : MonoBehaviour
     private bool built;
 
     // Own panel, not the static flag - another scene's instance may have left it set.
-    private void Update()
-    {
+    private void Update() {
         if (panel != null && panel.activeSelf && Input.GetKeyDown(KeyCode.Escape))
             Close();
     }
 
     // Unconditional, or a teardown while open leaves UIState.Busy stuck true.
-    private void OnDisable()
-    {
+    private void OnDisable() {
         IsOpen = false;
     }
 
     // An inactive GameObject never runs Awake, so setup cannot live only there.
-    private void EnsureBuilt()
-    {
+    private void EnsureBuilt() {
         if (built) return;
         built = true;
 
@@ -72,8 +68,7 @@ public class SettingsPanel : MonoBehaviour
         Bind();
     }
 
-    private void Awake()
-    {
+    private void Awake() {
         if (Instance != null && Instance != this)
             Debug.LogWarning($"[SettingsPanel] '{name}' is a second SettingsPanel in this " +
                              $"scene, alongside '{Instance.name}'. Only one will be used.", this);
@@ -84,13 +79,11 @@ public class SettingsPanel : MonoBehaviour
         panel.SetActive(false);
     }
 
-    private void OnDestroy()
-    {
+    private void OnDestroy() {
         if (Instance == this) Instance = null;
     }
 
-    private void Bind()
-    {
+    private void Bind() {
         Slide(masterSlider, masterLabel, GameSettings.SetMasterVolume, Percent);
         Slide(musicSlider, musicLabel, GameSettings.SetMusicVolume, Percent);
         Slide(sfxSlider, sfxLabel, GameSettings.SetSfxVolume, Percent);
@@ -103,15 +96,13 @@ public class SettingsPanel : MonoBehaviour
             vsyncToggle.onValueChanged.AddListener(v => { if (!building) GameSettings.SetVSync(v); });
 
         if (resolutionDropdown != null)
-            resolutionDropdown.onValueChanged.AddListener(i =>
-            {
+            resolutionDropdown.onValueChanged.AddListener(i => {
                 if (building || i < 0 || i >= resolutions.Count) return;
                 GameSettings.SetResolution(resolutions[i].x, resolutions[i].y);
             });
 
         if (windowDropdown != null)
-            windowDropdown.onValueChanged.AddListener(i =>
-            {
+            windowDropdown.onValueChanged.AddListener(i => {
                 if (building) return;
                 GameSettings.SetWindowMode((GameSettings.WindowMode)i);
             });
@@ -126,19 +117,16 @@ public class SettingsPanel : MonoBehaviour
 
     // Label updates while building too, so readouts are right on open.
     private void Slide(Slider slider, TMP_Text label, System.Action<float> set,
-                       System.Func<float, string> format)
-    {
+                       System.Func<float, string> format) {
         if (slider == null) return;
 
-        slider.onValueChanged.AddListener(v =>
-        {
+        slider.onValueChanged.AddListener(v => {
             if (label != null) label.text = format(v);
             if (!building) set(v);
         });
     }
 
-    private void BuildWindowModes()
-    {
+    private void BuildWindowModes() {
         if (windowDropdown == null) return;
 
         windowDropdown.ClearOptions();
@@ -146,12 +134,10 @@ public class SettingsPanel : MonoBehaviour
     }
 
     // Screen.resolutions repeats each size once per refresh rate.
-    private void BuildResolutions()
-    {
+    private void BuildResolutions() {
         resolutions.Clear();
 
-        foreach (Resolution r in Screen.resolutions)
-        {
+        foreach (Resolution r in Screen.resolutions) {
             Vector2Int size = new Vector2Int(r.width, r.height);
             if (!resolutions.Contains(size)) resolutions.Add(size);
         }
@@ -167,10 +153,8 @@ public class SettingsPanel : MonoBehaviour
         resolutionDropdown.AddOptions(labels);
     }
 
-    public static void Open(System.Action whenClosed = null)
-    {
-        if (Instance == null)
-        {
+    public static void Open(System.Action whenClosed = null) {
+        if (Instance == null) {
             Debug.LogError("[SettingsPanel] No SettingsPanel in the scene, so the " +
                            "request was dropped. It must sit on an object that is " +
                            "active, or Awake never runs and this stays null.");
@@ -181,8 +165,7 @@ public class SettingsPanel : MonoBehaviour
         Instance.Show(whenClosed);
     }
 
-    private void Show(System.Action whenClosed)
-    {
+    private void Show(System.Action whenClosed) {
         onClose = whenClosed;
 
         EnsureBuilt();
@@ -192,8 +175,7 @@ public class SettingsPanel : MonoBehaviour
         IsOpen = true;
     }
 
-    public void Close()
-    {
+    public void Close() {
         EnsureBuilt();
 
         IsOpen = false;
@@ -206,8 +188,7 @@ public class SettingsPanel : MonoBehaviour
     }
 
     // Saved values, not whatever the prefab was authored with.
-    private void Refresh()
-    {
+    private void Refresh() {
         building = true;
 
         Set(masterSlider, masterLabel, GameSettings.MasterVolume, Percent);
@@ -218,14 +199,12 @@ public class SettingsPanel : MonoBehaviour
 
         if (vsyncToggle != null) vsyncToggle.isOn = GameSettings.VSync;
 
-        if (windowDropdown != null)
-        {
+        if (windowDropdown != null) {
             windowDropdown.SetValueWithoutNotify((int)GameSettings.Window);
             windowDropdown.RefreshShownValue();
         }
 
-        if (resolutionDropdown != null)
-        {
+        if (resolutionDropdown != null) {
             int index = resolutions.IndexOf(new Vector2Int(GameSettings.Width, GameSettings.Height));
 
             // Saved size this monitor cannot do falls back to the largest.
@@ -239,8 +218,7 @@ public class SettingsPanel : MonoBehaviour
     }
 
     private static void Set(Slider slider, TMP_Text label, float value,
-                            System.Func<float, string> format)
-    {
+                            System.Func<float, string> format) {
         if (slider != null) slider.value = value;
         if (label != null) label.text = format(value);
     }

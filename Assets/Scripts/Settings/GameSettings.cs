@@ -1,8 +1,7 @@
 using UnityEngine;
 
 // Belongs to the machine, not the save profile - hence PlayerPrefs, not RunSave.
-public static class GameSettings
-{
+public static class GameSettings {
     private const string MasterKey = "vol_master";
     private const string MusicKey = "vol_music";
     private const string SfxKey = "vol_sfx";
@@ -34,8 +33,7 @@ public static class GameSettings
 
     private static bool loaded;
 
-    public static void Load()
-    {
+    public static void Load() {
         if (loaded) return;
         loaded = true;
 
@@ -60,8 +58,7 @@ public static class GameSettings
     public static void SetMusicVolume(float v) { MusicVolume = Clamp(v); ApplyAudio(); Write(); }
     public static void SetSfxVolume(float v) { SfxVolume = Clamp(v); ApplyAudio(); Write(); }
 
-    public static void SetResolution(int width, int height)
-    {
+    public static void SetResolution(int width, int height) {
         Width = width;
         Height = height;
 
@@ -69,24 +66,21 @@ public static class GameSettings
         Write();
     }
 
-    public static void SetWindowMode(WindowMode mode)
-    {
+    public static void SetWindowMode(WindowMode mode) {
         Window = mode;
 
         ApplyScreen();
         Write();
     }
 
-    public static void SetVSync(bool on)
-    {
+    public static void SetVSync(bool on) {
         VSync = on;
 
         ApplyVSync();
         Write();
     }
 
-    public static void SetBrightness(float v)
-    {
+    public static void SetBrightness(float v) {
         Brightness = Clamp(v);
 
         // The Volume that applies it lives in the scene.
@@ -94,8 +88,7 @@ public static class GameSettings
         Write();
     }
 
-    public static void SetScreenShake(float v)
-    {
+    public static void SetScreenShake(float v) {
         ScreenShake = Clamp(v);
         Write();
     }
@@ -104,8 +97,7 @@ public static class GameSettings
     public static float BrightnessExposure => (Brightness - 0.5f) * 2f;
 
     // Pulled by SoundManager once its mixer exists, so load order cannot matter.
-    public static void ApplyAudio()
-    {
+    public static void ApplyAudio() {
         SoundManager s = SoundManager.Instance;
         if (s == null) return;
 
@@ -114,15 +106,13 @@ public static class GameSettings
         s.SetSfxVolume(SfxVolume);
     }
 
-    private static FullScreenMode ModeOf(WindowMode m) => m switch
-    {
+    private static FullScreenMode ModeOf(WindowMode m) => m switch {
         WindowMode.Fullscreen => FullScreenMode.ExclusiveFullScreen,
         WindowMode.Borderless => FullScreenMode.FullScreenWindow,
         _ => FullScreenMode.Windowed,
     };
 
-    private static void ApplyScreen()
-    {
+    private static void ApplyScreen() {
         if (Width <= 0 || Height <= 0) return;
 
         FullScreenMode mode = ModeOf(Window);
@@ -136,8 +126,7 @@ public static class GameSettings
 
     private static void ApplyVSync() => QualitySettings.vSyncCount = VSync ? 1 : 0;
 
-    private static void Write()
-    {
+    private static void Write() {
         PlayerPrefs.SetFloat(MasterKey, MasterVolume);
         PlayerPrefs.SetFloat(MusicKey, MusicVolume);
         PlayerPrefs.SetFloat(SfxKey, SfxVolume);

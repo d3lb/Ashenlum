@@ -1,8 +1,7 @@
 using UnityEngine;
 
 // Decoration only - the reset already happened behind it.
-public class RestWave : MonoBehaviour
-{
+public class RestWave : MonoBehaviour {
     [Header("Shape")]
     [SerializeField] private Transform circle;
     [SerializeField] private SpriteRenderer fade;
@@ -20,13 +19,11 @@ public class RestWave : MonoBehaviour
 
     private bool Finished => elapsed >= growTime + holdTime + fadeTime;
 
-    private void Awake()
-    {
+    private void Awake() {
         if (circle == null) circle = transform;
     }
 
-    private void Update()
-    {
+    private void Update() {
         // Unscaled: resting freezes the game, the wave still has to play.
         elapsed += Time.unscaledDeltaTime;
 

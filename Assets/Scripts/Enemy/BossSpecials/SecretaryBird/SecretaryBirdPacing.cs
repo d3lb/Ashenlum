@@ -1,8 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class PhaseTuning
-{
+public class PhaseTuning {
     public string name = "Phase";
     public float idleBeat = 0.9f;
     public float telegraphScale = 1.4f;
@@ -14,11 +13,9 @@ public class PhaseTuning
     [Range(0f, 1f)] public float feintChance = 0f;
 }
 
-public class SecretaryBirdPacing : MonoBehaviour
-{
+public class SecretaryBirdPacing : MonoBehaviour {
     [SerializeField]
-    private PhaseTuning[] phases =
-    {
+    private PhaseTuning[] phases = {
         new PhaseTuning { name = "1 - Teach",  idleBeat = 0.9f, telegraphScale = 1.4f,
                           recoveryScale = 1f,    speedScale = 0.9f, maxFeints = 0, feintChance = 0f },
 
@@ -31,8 +28,7 @@ public class SecretaryBirdPacing : MonoBehaviour
 
     private static readonly PhaseTuning fallback = new PhaseTuning();
 
-    public PhaseTuning For(int phase)
-    {
+    public PhaseTuning For(int phase) {
         if (phases == null || phases.Length == 0) return fallback;
         return phases[Mathf.Clamp(phase - 1, 0, phases.Length - 1)] ?? fallback;
     }
