@@ -24954,7 +24954,7 @@ MonoBehaviour:
   doors:
   - {fileID: 763475755}
   cameraSwitcher: {fileID: 174973607}
-  reward: 0
+  reward: {fileID: 11400000, guid: e82f0c23ff4322345a0242816c653ee6, type: 2}
 --- !u!4 &874740696
 Transform:
   m_ObjectHideFlags: 0

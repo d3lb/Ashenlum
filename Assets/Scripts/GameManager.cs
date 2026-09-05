@@ -363,6 +363,33 @@ public class GameManager : MonoBehaviour {
         return !string.IsNullOrEmpty(eventId) && activeRun.seenEvents.Contains(eventId);
     }
 
+    // Every grant goes through here, so the card is never a thing a call site can forget.
+    public void GrantAbility(AbilityType ability) {
+        if (activeRun.IsAbilityUnlocked(ability)) return;
+
+        activeRun.SetAbilityUnlocked(ability, true);
+        MarkDirty();
+
+        CoreAbilityInfo info = assetDatabase != null ? assetDatabase.FindCoreAbility(ability) : null;
+
+        if (info == null) {
+            Debug.LogWarning($"[GameManager] No CoreAbilityInfo for {ability} in the asset " +
+                             "database, so it was granted without a card.", this);
+            return;
+        }
+
+        AbilityGetUI.Show(info.icon, info.DisplayName, info.description);
+    }
+
+    public void GrantAbility(ActiveAbility ability) {
+        if (ability == null || activeRun.OwnsAbility(ability)) return;
+
+        activeRun.AddAbility(ability);
+        MarkDirty();
+
+        AbilityGetUI.Show(ability.icon, ability.abilityName, ability.description);
+    }
+
     public System.Action<int> OnLumensChanged;
 
     public void AddLumens(int amount) {

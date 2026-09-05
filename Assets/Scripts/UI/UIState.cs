@@ -6,6 +6,7 @@ public static class UIState {
         ShopUI.IsOpen ||
         ConfirmModal.IsOpen ||
         SettingsPanel.IsOpen ||
+        AbilityGetUI.IsOpen ||
         DialogueManager.IsDialogueActive ||
         (PauseManager.Instance != null && PauseManager.Instance.IsPaused);
 

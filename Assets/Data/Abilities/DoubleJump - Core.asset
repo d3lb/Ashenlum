@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b977ee5ec0668f469febc87c1d9098c, type: 3}
+  m_Name: DoubleJump - Core
+  m_EditorClassIdentifier: Assembly-CSharp::CoreAbilityInfo
+  ability: 1
+  displayName: Rekindle
+  description: Catch yourself in open air and rise a second time.
+  icon: {fileID: -116059596369708853, guid: 541a4d755b213944c90d4ce4df283a69, type: 3}

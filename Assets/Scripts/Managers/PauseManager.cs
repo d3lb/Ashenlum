@@ -12,7 +12,7 @@ public class PauseManager : MonoBehaviour {
     private void Awake() {
         if (Instance == null) {
             Instance = this;
-            DontDestroyOnLoad(gameObject);
+            DontDestroyOnLoad(transform.root.gameObject);
         }
         else {
             Destroy(gameObject);

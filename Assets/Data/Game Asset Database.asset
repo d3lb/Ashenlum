@@ -19,3 +19,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fe9ba080b6e60034fa9450c83eb4299b, type: 2}
   abilities:
   - {fileID: 11400000, guid: a68cf47db9bbb9848b134f41bf74b828, type: 2}
+  coreAbilities:
+  - {fileID: 11400000, guid: e82f0c23ff4322345a0242816c653ee6, type: 2}
+  - {fileID: 11400000, guid: 99ee9059621c15c4a821aa7bf809bba0, type: 2}
+  - {fileID: 11400000, guid: d9d328318c22a4f4baa6dbafb026f863, type: 2}

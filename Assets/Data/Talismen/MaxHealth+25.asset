@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MaxHealth+25
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
   id: max-health-25
-  displayName: Health Upgrade
+  displayName: Blow of Light
   description: Increases your max health
   icon: {fileID: 1566745724729579636, guid: f36089822f28ffc4590e6af14f4af8ed, type: 3}
   type: 0

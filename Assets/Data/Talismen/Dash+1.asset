@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Dash+1
   m_EditorClassIdentifier: Assembly-CSharp::Upgrade
   id: dash-1
-  displayName: Dash Upgrade
+  displayName: Split Second
   description: Gives you a second dash.
   icon: {fileID: 2584262176649439783, guid: 495c56ad777d9a54885aeb83c1d6e79e, type: 3}
   type: 2

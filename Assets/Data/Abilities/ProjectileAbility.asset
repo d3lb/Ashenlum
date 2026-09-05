@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f19967d34d4de2a4f94e254f0616b375, type: 3}
   m_Name: ProjectileAbility
   m_EditorClassIdentifier: Assembly-CSharp::ProjectileAbility
-  id: 
+  id: bolt
   abilityName: Source of light
   description: Shoots a light orb
   icon: {fileID: -1229858627709956937, guid: 6a213ebc3254de244ac94a149f53cee5, type: 3}

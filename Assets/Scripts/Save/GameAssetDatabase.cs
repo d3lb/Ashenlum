@@ -6,6 +6,18 @@ public class GameAssetDatabase : ScriptableObject {
     [SerializeField] private ShopGood[] goods;
     [SerializeField] private ActiveAbility[] abilities;
 
+    // Presentation for the core three. Not saved - the unlock is a bool on the run.
+    [SerializeField] private CoreAbilityInfo[] coreAbilities;
+
+    public CoreAbilityInfo FindCoreAbility(AbilityType ability) {
+        if (coreAbilities == null) return null;
+
+        foreach (CoreAbilityInfo info in coreAbilities)
+            if (info != null && info.ability == ability) return info;
+
+        return null;
+    }
+
     public T FindGood<T>(string id) where T : ShopGood {
         if (string.IsNullOrEmpty(id) || goods == null) return null;
 

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: StrengthUpgrade
   m_EditorClassIdentifier: Assembly-CSharp::StrengthUpgrade
   id: strength-upgrade
-  displayName: Strength Upgrade
+  displayName: Cinder Shard
   description: Makes you stronger
-  icon: {fileID: -5429860603474748724, guid: 541a4d755b213944c90d4ce4df283a69, type: 3}
+  icon: {fileID: -7773505223448770901, guid: d8414e8926c060b40bfcc69a373423fb, type: 3}
   damagePerLevel: 2
   maxLevel: 3
   baseCost: 150

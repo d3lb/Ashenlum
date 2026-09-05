@@ -12,8 +12,9 @@ public class BossEncounter : MonoBehaviour {
     [Header("Camera")]
     [SerializeField] private CameraSwitcher cameraSwitcher;
 
+    // The asset carries the AbilityType, so there is no second field to disagree with it.
     [Header("Reward")]
-    [SerializeField] private AbilityType reward = AbilityType.Dash;
+    [SerializeField] private CoreAbilityInfo reward;
 
     // Cached: the boss deletes itself once beaten, and the trigger still asks after that.
     private string bossId;
@@ -46,7 +47,6 @@ public class BossEncounter : MonoBehaviour {
 
     private void OnBossDied() {
         Run?.defeatedBosses.Add(bossId);
-        Run?.SetAbilityUnlocked(reward, true);
 
         // A boss kill is the least acceptable thing to lose to a crash.
         if (GameManager.Instance != null) GameManager.Instance.SaveNow();
@@ -54,6 +54,10 @@ public class BossEncounter : MonoBehaviour {
         SetDoorsClosed(false);
 
         if (cameraSwitcher != null) cameraSwitcher.SwitchToGameplayCam();
+
+        // Last: the card freezes time, and the camera should already be on its way back.
+        if (reward != null && GameManager.Instance != null)
+            GameManager.Instance.GrantAbility(reward.ability);
     }
 
     private void SetDoorsClosed(bool closed) {
