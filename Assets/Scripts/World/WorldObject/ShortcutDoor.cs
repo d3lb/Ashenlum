@@ -14,6 +14,7 @@ public class ShortcutDoor : Interactable {
     [Header("Side")]
     [SerializeField] private bool opensFromRight = true;
     [SerializeField] private string wrongSideMessage = "Does not open from this side";
+    [SerializeField] private float wrongSideMessageTime = 1.5f;
 
     private bool opened;
     private Collider2D range;
@@ -38,11 +39,16 @@ public class ShortcutDoor : Interactable {
     private bool OnOpeningSide =>
         Player != null && (opensFromRight ? Player.position.x > DividingX : Player.position.x < DividingX);
 
-    protected override bool CanInteract => !opened && OnOpeningSide;
+    // Openable from both sides so the prompt reads the same; the side is judged on press.
+    protected override bool CanInteract => !opened;
     protected override string PromptVerb => "Open";
-    protected override string BlockedMessage => opened ? null : wrongSideMessage;
 
     protected override void Interact() {
+        if (!OnOpeningSide) {
+            Toast.Show(wrongSideMessage, wrongSideMessageTime);
+            return;
+        }
+
         opened = true;
         GameManager.Instance.RegisterEvent(doorId);
         Apply();

@@ -16,12 +16,19 @@ public class AbilityCooldownUI : MonoBehaviour {
     [SerializeField] private Color iconReady    = Color.white;
     [SerializeField] private Color iconNotReady = new Color(1f, 1f, 1f, 0.6f);
 
+    // No group toggle: the vent is never unequipped.
+    [Header("Vent")]
+    [SerializeField] private Image ventIcon;
+    [SerializeField] private Image ventMeter;
+    [SerializeField] private bool ventMeterCoversIcon = true;
+
     [Header("Dash")]
     [SerializeField] private GameObject dashGroup;
     // One per possible charge; spares hide themselves.
     [SerializeField] private DashPipUI[] dashPips;
 
     private PlayerActiveAbility ability;
+    private PlayerAbility vent;
     private PlayerMovement movement;
 
     private void Awake() {
@@ -29,15 +36,37 @@ public class AbilityCooldownUI : MonoBehaviour {
             Debug.LogError("[AbilityCooldownUI] Ability Icon and Ability Meter are the same " +
                            "Image. The meter must be the dark copy on top, or nothing animates.",
                            this);
+
+        if (ventIcon != null && ventIcon == ventMeter)
+            Debug.LogError("[AbilityCooldownUI] Vent Icon and Vent Meter are the same Image. " +
+                           "The meter must be the dark copy on top, or nothing animates.", this);
     }
 
     private void Update() {
         // The player is respawned, so these go stale.
         if (ability == null)  ability  = FindFirstObjectByType<PlayerActiveAbility>();
+        if (vent == null)     vent     = FindFirstObjectByType<PlayerAbility>();
         if (movement == null) movement = FindFirstObjectByType<PlayerMovement>();
 
         UpdateAbility();
+        UpdateVent();
         UpdateDash();
+    }
+
+    private void UpdateVent() {
+        if (vent == null) return;
+
+        // 0 while happening, 1 when done - same for charging and cooling down.
+        bool charging = vent.IsCharging;
+        float progress = charging ? vent.ChargePercent : vent.CooldownPercent;
+        bool ready = !charging && progress >= 1f;
+
+        if (ventIcon != null && ventIcon != ventMeter)
+            ventIcon.color = ready ? iconReady : iconNotReady;
+
+        if (ventMeter == null || ventMeter == ventIcon) return;
+
+        ventMeter.fillAmount = ventMeterCoversIcon ? 1f - progress : progress;
     }
 
     private void UpdateAbility() {

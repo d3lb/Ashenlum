@@ -37,6 +37,11 @@ public class PlayerAbility : MonoBehaviour {
         }
     }
 
+    public bool IsCharging => isCharging;
+
+    public float ChargePercent =>
+        burstChargeTime <= 0f ? 0f : Mathf.Clamp01(burstTimer / burstChargeTime);
+
     private void Awake() {
         rb = GetComponent<Rigidbody2D>();
         input = GetComponent<PlayerInput>();

@@ -9,6 +9,10 @@ public class SlotSummary {
     public int    hp;
     public int    maxHp;
     public int    lumens;
+
+    // Waiting in a shade. Recoverable, but a second death wipes it.
+    public int    bankedLumens;
+
     public int    deaths;
     public int    kills;
     public float  playTime;
@@ -99,7 +103,11 @@ public class SaveSlotUI : MonoBehaviour {
         if (!used) return;
 
         if (hpText != null)       hpText.text = $"{summary.hp}/{summary.maxHp}";
-        if (lumenText != null)    lumenText.text = summary.lumens.ToString();
+        if (lumenText != null)
+            lumenText.text = summary.bankedLumens > 0
+                ? $"{summary.lumens} (+{summary.bankedLumens})"
+                : summary.lumens.ToString();
+
         if (playTimeText != null) playTimeText.text = FormatTime(summary.playTime);
         if (deathsText != null)   deathsText.text = $"{summary.deaths} deaths";
         if (killsText != null)    killsText.text = $"{summary.kills} kills";

@@ -22,6 +22,11 @@ public class InventoryUI : MonoBehaviour {
     [SerializeField] private AbilitySocketUI abilitySocket;
     [SerializeField] private TalismanSocketUI[] talismanSockets;
 
+    // maxLevel drives how many pips show; the asset stays the single source.
+    [Header("Strength")]
+    [SerializeField] private StrengthUpgrade strength;
+    [SerializeField] private DashPipUI[] strengthPips;
+
     // Shown when the loadout is read-only.
     [SerializeField] private GameObject loadoutLockedHint;
 
@@ -111,7 +116,27 @@ public class InventoryUI : MonoBehaviour {
 
         RefreshAbilities();
         RefreshSockets();
+        RefreshStrength();
         RefreshOwnedList();
+    }
+
+    private void RefreshStrength() {
+        if (strengthPips == null) return;
+
+        var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
+        int level = run != null ? run.strengthLevel : 0;
+        int max = strength != null ? strength.maxLevel : strengthPips.Length;
+
+        for (int i = 0; i < strengthPips.Length; i++) {
+            DashPipUI pip = strengthPips[i];
+            if (pip == null) continue;
+
+            // Spares hide, so the row follows maxLevel without re-authoring the pips.
+            bool exists = i < max;
+            pip.gameObject.SetActive(exists);
+
+            if (exists) pip.Set(i < level, 0f);
+        }
     }
 
     private void RefreshAbilities() {

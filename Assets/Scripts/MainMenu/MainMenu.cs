@@ -104,6 +104,7 @@ public class MainMenu : MonoBehaviour {
         summary.hp     = save.currentHp;
         summary.maxHp  = save.maxHp;
         summary.lumens = save.lumens;
+        summary.bankedLumens = save.droppedLumens;
         summary.area   = DisplayNameFor(save.currentArea);
 
         GameAssetDatabase db = GameManager.Instance != null ? GameManager.Instance.Assets : null;

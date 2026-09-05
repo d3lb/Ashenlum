@@ -25,6 +25,12 @@ public class HealthBar : MonoBehaviour {
     [SerializeField] private Color midColor = new Color(0.7f, 0.4f, 0.9f);
     [SerializeField] private Color lowColor = new Color(0.6f, 0.1f, 0.8f);
 
+    [Header("Stability Icon")]
+    [SerializeField] private Image stabilityIcon;
+    [SerializeField] private Sprite highIcon;
+    [SerializeField] private Sprite midIcon;
+    [SerializeField] private Sprite lowIcon;
+
     [Header("Vignette")]
     [SerializeField] private Color vignetteColor = new Color(0.5f, 0f, 0.8f);
     [SerializeField] private float midPulseIntensity = 0.15f;
@@ -91,22 +97,26 @@ public class HealthBar : MonoBehaviour {
         }
 
         Color targetColor;
+        Sprite targetIcon;
         float pulseIntensity;
         float pulseSpeed;
 
         switch (stability) {
             case PlayerHealth.StabilityState.High:
                 targetColor = highColor;
+                targetIcon = highIcon;
                 pulseIntensity = 0f;
                 pulseSpeed = 0f;
                 break;
             case PlayerHealth.StabilityState.Mid:
                 targetColor = midColor;
+                targetIcon = midIcon;
                 pulseIntensity = midPulseIntensity;
                 pulseSpeed = midPulseSpeed;
                 break;
             default:
                 targetColor = lowColor;
+                targetIcon = lowIcon;
                 pulseIntensity = lowPulseIntensity;
                 pulseSpeed = lowPulseSpeed;
                 break;
@@ -115,6 +125,10 @@ public class HealthBar : MonoBehaviour {
         // Bar color
         if (fillImage != null)
             fillImage.color = Color.Lerp(fillImage.color, targetColor, colorLerpSpeed * Time.deltaTime);
+
+        // Assigning a sprite dirties the canvas, so only on an actual tier change.
+        if (stabilityIcon != null && stabilityIcon.sprite != targetIcon)
+            stabilityIcon.sprite = targetIcon;
 
         // Vignette pulse
         if (vignette == null) return;

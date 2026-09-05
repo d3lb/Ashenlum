@@ -2334,6 +2334,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   opensFromRight: 1
   wrongSideMessage: Does not open from this side
+  wrongSideMessageTime: 1.5
 --- !u!61 &527554046
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -5205,7 +5206,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4804012554964495937, guid: 951ac31837f69754085dace900716bb1, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -0.0009765625
+      value: -0.000030517578
       objectReference: {fileID: 0}
     - target: {fileID: 4891431310838690696, guid: 951ac31837f69754085dace900716bb1, type: 3}
       propertyPath: m_AnchorMax.y

@@ -19,16 +19,11 @@ public abstract class Interactable : MonoBehaviour {
 
     private void Update() {
         // Update runs at timeScale 0, so an open panel would still pass E through.
-        bool nearby = inRange && input != null && !UIState.Busy;
-        bool available = nearby && CanInteract;
+        bool available = inRange && input != null && !UIState.Busy && CanInteract;
 
         if (prompt != null) {
-            if (available)
-                prompt.Show(PromptVerb);
-            else if (nearby && !string.IsNullOrEmpty(BlockedMessage))
-                prompt.ShowMessage(BlockedMessage);
-            else
-                prompt.Hide();
+            if (available) prompt.Show(PromptVerb);
+            else           prompt.Hide();
         }
 
         if (available && input.InteractPressed) Interact();
@@ -36,9 +31,6 @@ public abstract class Interactable : MonoBehaviour {
 
     protected virtual bool CanInteract => true;
     protected virtual string PromptVerb => "Interact";
-
-    // Shown when close but unable to act. Null stays silent.
-    protected virtual string BlockedMessage => null;
 
     protected bool PlayerInRange => inRange;
 
