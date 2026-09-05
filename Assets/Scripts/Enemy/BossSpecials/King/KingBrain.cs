@@ -8,6 +8,7 @@ public class KingBrain : MonoBehaviour {
     [SerializeField] private KingState state;
     [SerializeField] private KingHealth health;
     [SerializeField] private KingPacing pacing;
+    [SerializeField] private EnemyHitbox bodyHitbox;
     [SerializeField] private Transform player;
 
     [Header("Phases (fraction of max health)")]
@@ -115,6 +116,10 @@ public class KingBrain : MonoBehaviour {
         if (state == null) state = GetComponent<KingState>();
         if (health == null) health = GetComponent<KingHealth>();
         if (pacing == null) pacing = GetComponent<KingPacing>();
+        if (bodyHitbox == null) bodyHitbox = GetComponent<EnemyHitbox>();
+
+        // Awake, not Start: touching him on the throne must never land a hit.
+        if (bodyHitbox != null) bodyHitbox.enabled = false;
 
         GetComponents(pool);
 
@@ -151,6 +156,8 @@ public class KingBrain : MonoBehaviour {
         if (loop != null) StopCoroutine(loop);
         loop = null;
 
+        if (bodyHitbox != null) bodyHitbox.enabled = false;
+
         if (!state.IsDead) state.CurrentState = KingState.KingStateType.Idle;
     }
 
@@ -162,6 +169,8 @@ public class KingBrain : MonoBehaviour {
             yield return Say(introConversation);
         else if (introDelay > 0f)
             yield return new WaitForSeconds(introDelay);
+
+        if (bodyHitbox != null) bodyHitbox.enabled = true;
 
         // Nested, so Deactivate's StopCoroutine(loop) still reaches it.
         yield return FightLoop();

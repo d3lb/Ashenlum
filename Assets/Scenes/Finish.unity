@@ -229,7 +229,6 @@ GameObject:
   - component: {fileID: 140726870}
   - component: {fileID: 140726869}
   - component: {fileID: 140726867}
-  - component: {fileID: 140726874}
   - component: {fileID: 140726876}
   m_Layer: 6
   m_Name: King
@@ -316,6 +315,7 @@ MonoBehaviour:
   state: {fileID: 140726864}
   health: {fileID: 140726862}
   pacing: {fileID: 140726861}
+  bodyHitbox: {fileID: 1240060942}
   player: {fileID: 2010769695}
   phase2At: 0.66
   phase3At: 0.33
@@ -619,27 +619,10 @@ MonoBehaviour:
   waves: 8
   startFromKing: 0.051
   endBeforeWall: 0.81
-  lineSize: {x: 1.2, y: 20.7}
+  lineSize: {x: 1.2, y: 20}
   telegraphTime: 0.7
   activeTime: 0.3
   waveGap: 0.7
---- !u!114 &140726874
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 140726859}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
-  damage: 10
-  hitCooldown: 0.5
-  playerLayer:
-    serializedVersion: 2
-    m_Bits: 128
 --- !u!114 &140726875
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -662,7 +645,7 @@ MonoBehaviour:
   waves: 8
   startFromKing: 0.051
   endBeforeWall: 0.81
-  lineSize: {x: 1.2, y: 20.7}
+  lineSize: {x: 1.2, y: 20}
   telegraphTime: 0.5
   activeTime: 0.3
   waveGap: 0.5
@@ -3372,6 +3355,7 @@ Transform:
   m_Children:
   - {fileID: 1338835004}
   - {fileID: 140726860}
+  - {fileID: 1240060941}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &898653150
@@ -3599,6 +3583,102 @@ Transform:
   - {fileID: 60229164}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1240060940
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1240060941}
+  - component: {fileID: 1240060943}
+  - component: {fileID: 1240060942}
+  m_Layer: 0
+  m_Name: KingBodyHitbox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1240060941
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1240060940}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 872377929}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1240060942
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1240060940}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
+  damage: 10
+  hitCooldown: 0.5
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 128
+--- !u!61 &1240060943
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1240060940}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 7, y: 7}
+  m_EdgeRadius: 0
 --- !u!1 &1319854066
 GameObject:
   m_ObjectHideFlags: 0

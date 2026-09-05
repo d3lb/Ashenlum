@@ -13,8 +13,6 @@ public class HealthBar : MonoBehaviour {
     [SerializeField] private Image fillImage;      // the health bar fill graphic
     [SerializeField] private Volume globalVolume;  // drag your Global Volume here
     [SerializeField] private float widthPerHP = 2f;
-    [SerializeField] private bool keepBarCentered = true;
-    [SerializeField] private float barCenterX = 0f;
 
     [Header("Pulse Shake")]
     [SerializeField] private float midShakeAmplitude = 0.3f;
@@ -77,15 +75,9 @@ public class HealthBar : MonoBehaviour {
         healthSlider.value = percent;
         easeHealthSlider.value = Mathf.Lerp(easeHealthSlider.value, percent, lerpSpeed * Time.deltaTime);
 
+        // Left pivot: the extra width from max HP upgrades extends rightward on its own.
         float width = playerHealth.MaxHP * widthPerHP;
         barTransform.sizeDelta = new Vector2(width, barTransform.sizeDelta.y);
-
-        // anchoredPosition places the pivot, so shift by its distance from the middle.
-        if (keepBarCentered) {
-            Vector2 pos = barTransform.anchoredPosition;
-            pos.x = barCenterX + width * (barTransform.pivot.x - 0.5f);
-            barTransform.anchoredPosition = pos;
-        }
 
         UpdateStabilityVisuals();
     }
