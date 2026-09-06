@@ -1,8 +1,18 @@
 using UnityEngine;
 
 public class Shop : Interactable {
+    // Keys the per-shop sale counts, so two shops can stock the same good independently.
+    [SerializeField] private string shopId;
+
     [SerializeField] private Conversation greeting;
-    [SerializeField] private ShopGood[] stock;
+    [SerializeField] private ShopEntry[] stock;
+
+    protected override void Awake() {
+        base.Awake();
+
+        if (string.IsNullOrEmpty(shopId))
+            Debug.LogError($"[Shop] '{name}' has no Shop Id, so its stock cannot be saved.", this);
+    }
 
     protected override string PromptVerb => "Trade";
 
@@ -16,6 +26,16 @@ public class Shop : Interactable {
     }
 
     private void OpenShop() {
-        if (ShopUI.Instance != null) ShopUI.Instance.Open(stock);
+        if (stock != null)
+            foreach (ShopEntry entry in stock)
+                if (entry != null) entry.shopId = shopId;
+
+        if (ShopUI.Instance == null) {
+            Debug.LogError($"[Shop] '{name}' pressed with no ShopUI in the scene. " +
+                           "The UI Canvas prefab is missing from this scene.", this);
+            return;
+        }
+
+        ShopUI.Instance.Open(stock);
     }
 }

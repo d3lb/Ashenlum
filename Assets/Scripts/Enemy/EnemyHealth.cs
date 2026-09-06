@@ -157,9 +157,13 @@ public class EnemyHealth : MonoBehaviour, IDamageable {
     }
 
 
+    // Same hook the two bosses expose, for enemies that owe something on death.
+    public System.Action OnDied;
+
     // death
     private void Die() {
         GameManager.Instance?.CountKill();
+        OnDied?.Invoke();
 
         GetComponentInChildren<LumenDropper>()?.Drop();
 

@@ -54,6 +54,10 @@ public class RunSave {
     public List<string> bundleIds    = new();
     public List<int>    bundleCounts = new();
 
+    // Keys are "shopId|goodId".
+    public List<string> shopSoldKeys   = new();
+    public List<int>    shopSoldCounts = new();
+
     [Header("Upgrades")]
     public int          strengthLevel;
     public List<string> ownedTalismans    = new();

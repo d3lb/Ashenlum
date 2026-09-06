@@ -21,19 +21,21 @@ public class ShopSlotUI : MonoBehaviour {
     [SerializeField] private Color tooExpensiveColor = new Color(0.8f, 0.3f, 0.3f);
     [SerializeField] private Color soldOutColor = new Color(1f, 1f, 1f, 0.35f);
 
+    private ShopEntry entry;
     private ShopGood good;
     private GameRunProfile run;
-    private System.Action<ShopGood, int> onBuy;
+    private System.Action<ShopEntry, int> onBuy;
     private int quantity = 1;
 
     private void Awake() {
-        buyButton.onClick.AddListener(() => onBuy?.Invoke(good, quantity));
+        buyButton.onClick.AddListener(() => onBuy?.Invoke(entry, quantity));
         minusButton.onClick.AddListener(() => Step(-1));
         plusButton.onClick.AddListener(() => Step(1));
     }
 
-    public void Bind(ShopGood item, GameRunProfile profile, System.Action<ShopGood, int> buyCallback) {
-        good = item;
+    public void Bind(ShopEntry item, GameRunProfile profile, System.Action<ShopEntry, int> buyCallback) {
+        entry = item;
+        good = item.good;
         run = profile;
         onBuy = buyCallback;
         quantity = 1;
@@ -47,8 +49,8 @@ public class ShopSlotUI : MonoBehaviour {
     }
 
     private void UpdateVisuals() {
-        int stock = good.StockRemaining(run);
-        int max = good.MaxBuyable(run);
+        int stock = entry.StockRemaining(run);
+        int max = entry.MaxBuyable(run);
 
         quantity = Mathf.Clamp(quantity, 1, Mathf.Max(1, max));
 
@@ -62,7 +64,7 @@ public class ShopSlotUI : MonoBehaviour {
 
         quantityText.text = $"{quantity}/{(stock < 0 ? "∞" : stock.ToString())}";
 
-        bool soldOut = good.SoldOut(run);
+        bool soldOut = entry.SoldOut(run);
         bool canBuy = !soldOut && max >= quantity;
 
         priceText.text = soldOut ? "Sold" : good.TotalPrice(run, quantity).ToString();

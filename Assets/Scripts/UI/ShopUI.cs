@@ -11,7 +11,8 @@ public class ShopUI : MonoBehaviour {
     [SerializeField] private LumenUI lumenUI;
 
     private readonly List<ShopSlotUI> spawned = new();
-    private ShopGood[] stock;
+    // Filtered at open: BuildList skipped blanks, Refresh did not, and the rows drifted.
+    private readonly List<ShopEntry> lines = new();
 
     private void Awake() {
         if (Instance != null && Instance != this) {
@@ -40,10 +41,14 @@ public class ShopUI : MonoBehaviour {
         if (IsOpen && Input.GetKeyDown(KeyCode.Escape)) Close();
     }
 
-    public void Open(ShopGood[] goods) {
+    public void Open(ShopEntry[] entries) {
         if (IsOpen) return;
 
-        stock = goods;
+        lines.Clear();
+        if (entries != null)
+            foreach (ShopEntry entry in entries)
+                if (entry != null && entry.good != null) lines.Add(entry);
+
         IsOpen = true;
         if (shopPanel != null) shopPanel.SetActive(true);
         lumenUI?.Show();
@@ -69,33 +74,31 @@ public class ShopUI : MonoBehaviour {
             Destroy(slotParent.GetChild(i).gameObject);
         spawned.Clear();
 
-        if (stock == null) return;
-
-        foreach (ShopGood good in stock) {
-            if (good == null) continue;
+        for (int i = 0; i < lines.Count; i++)
             spawned.Add(Instantiate(slotPrefab, slotParent));
-        }
     }
 
     private void Refresh() {
         var run = GameManager.Instance.activeRun;
 
-        for (int i = 0; i < spawned.Count && i < stock.Length; i++)
-            spawned[i].Bind(stock[i], run, Buy);
+        for (int i = 0; i < spawned.Count && i < lines.Count; i++)
+            spawned[i].Bind(lines[i], run, Buy);
     }
 
-    private void Buy(ShopGood good, int quantity) {
+    private void Buy(ShopEntry entry, int quantity) {
         var run = GameManager.Instance.activeRun;
 
         // One at a time, re-checking each step - a rising price can stop you partway.
         for (int i = 0; i < quantity; i++) {
-            int price = good.PriceFor(run);
-            if (good.SoldOut(run) || run.lumens < price) break;
+            int price = entry.good.PriceFor(run);
+            if (entry.SoldOut(run) || run.lumens < price) break;
 
             GameManager.Instance.TakeLumens(price);
-            good.Purchase(run);
+            entry.good.Purchase(run);
+            run.RecordShopSale(entry.shopId, entry.good.Id);
         }
 
+        GameManager.Instance.MarkDirty();
         Refresh();
     }
 }

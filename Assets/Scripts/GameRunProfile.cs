@@ -54,6 +54,19 @@ public class GameRunProfile {
         return true;
     }
 
+    // Counted per shop, so shop stock and world drops never eat each other's supply.
+    public Dictionary<string, int> shopSold = new();
+
+    private static string ShopKey(string shopId, string goodId) => $"{shopId}|{goodId}";
+
+    public int ShopSold(string shopId, string goodId) =>
+        shopSold.TryGetValue(ShopKey(shopId, goodId), out int n) ? n : 0;
+
+    public void RecordShopSale(string shopId, string goodId) {
+        string key = ShopKey(shopId, goodId);
+        shopSold[key] = (shopSold.TryGetValue(key, out int n) ? n : 0) + 1;
+    }
+
     public const int TalismanSlots = 2;
 
     public int strengthLevel = 0;
@@ -180,6 +193,11 @@ public class GameRunProfile {
             save.bundleCounts.Add(pair.Value);
         }
 
+        foreach (var pair in shopSold) {
+            save.shopSoldKeys.Add(pair.Key);
+            save.shopSoldCounts.Add(pair.Value);
+        }
+
         foreach (ActiveAbility a in ownedAbilities)
             if (a != null) save.ownedAbilities.Add(a.Id);
 
@@ -230,6 +248,10 @@ public class GameRunProfile {
 
         for (int i = 0; i < equippedTalismans.Length && i < save.equippedTalismans.Count; i++)
             equippedTalismans[i] = db.FindGood<Talisman>(save.equippedTalismans[i]);
+
+        shopSold = new Dictionary<string, int>();
+        for (int i = 0; i < save.shopSoldKeys.Count && i < save.shopSoldCounts.Count; i++)
+            if (save.shopSoldCounts[i] > 0) shopSold[save.shopSoldKeys[i]] = save.shopSoldCounts[i];
 
         for (int i = 0; i < save.bundleIds.Count && i < save.bundleCounts.Count; i++) {
             LumenBundle bundle = db.FindGood<LumenBundle>(save.bundleIds[i]);
