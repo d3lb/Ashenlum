@@ -59,6 +59,10 @@ public class GameManager : MonoBehaviour {
 
     private void OnDestroy() {
         SceneManager.sceneLoaded -= OnSceneLoaded;
+
+        // Left set, Instance points at a destroyed object: guarded callers see null while
+        // the 44 unguarded activeRun reads throw instead.
+        if (Instance == this) Instance = null;
     }
 
     // A new run always takes the next free slot.

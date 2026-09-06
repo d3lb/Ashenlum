@@ -12,4 +12,50 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6acfc7230e0051647b6a1997ed484f93, type: 3}
   m_Name: Sound Bank
   m_EditorClassIdentifier: Assembly-CSharp::SoundBank
-  entries: []
+  entries:
+  - id: 16
+    clips:
+    - {fileID: 8300000, guid: cf24acca4cd26144aab1e10bd6877852, type: 3}
+    volume: 0.504
+    pitchVariance: 0.131
+    minInterval: 0
+  - id: 7
+    clips:
+    - {fileID: 8300000, guid: f50a0176aac863344a296c2dd8aa3659, type: 3}
+    volume: 0.201
+    pitchVariance: 0.122
+    minInterval: 0
+  - id: 8
+    clips:
+    - {fileID: 8300000, guid: af213937a5a84984fa53c20374a5f953, type: 3}
+    volume: 0.098
+    pitchVariance: 0.12
+    minInterval: 0
+  - id: 1
+    clips:
+    - {fileID: 8300000, guid: cf95e7bb51aa1564e8280cc13adce501, type: 3}
+    - {fileID: 8300000, guid: 6b3e66e7e0036e0468fdf3d2a8e26d84, type: 3}
+    - {fileID: 8300000, guid: 1b9cb26a8b491184c99d92cfddc3a2d3, type: 3}
+    - {fileID: 8300000, guid: 5ab5094a37f99d04c9da880b111a0176, type: 3}
+    - {fileID: 8300000, guid: 7a0a2ec0eb4ffb046a2e1a83ddf340b8, type: 3}
+    volume: 0.049
+    pitchVariance: 0.222
+    minInterval: 0.3
+  - id: 2
+    clips:
+    - {fileID: 8300000, guid: c9b3e860bb04cb24fb58b56c7b14ed55, type: 3}
+    volume: 0.057
+    pitchVariance: 0.12
+    minInterval: 0.3
+  - id: 4
+    clips:
+    - {fileID: 8300000, guid: d658abae43cf02843a0f46b84a3268fa, type: 3}
+    volume: 0.079
+    pitchVariance: 0.12
+    minInterval: 0.3
+  - id: 12
+    clips:
+    - {fileID: 8300000, guid: e424e673d5aae634fabdcb1cd7663004, type: 3}
+    volume: 1
+    pitchVariance: 0.101
+    minInterval: 0.01
