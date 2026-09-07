@@ -15,6 +15,7 @@ public class ShortcutDoor : Interactable {
     [SerializeField] private bool opensFromRight = true;
     [SerializeField] private string wrongSideMessage = "Does not open from this side";
     [SerializeField] private float wrongSideMessageTime = 1.5f;
+    [SerializeField] private Color wrongSideColor = new Color(0.85f, 0.25f, 0.25f);
 
     private bool opened;
     private Collider2D range;
@@ -45,7 +46,7 @@ public class ShortcutDoor : Interactable {
 
     protected override void Interact() {
         if (!OnOpeningSide) {
-            Toast.Show(wrongSideMessage, wrongSideMessageTime);
+            Toast.Show(wrongSideMessage, wrongSideMessageTime, wrongSideColor);
             return;
         }
 

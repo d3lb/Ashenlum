@@ -210,7 +210,10 @@ public class PlayerMovement : MonoBehaviour {
             jumpNumber = 0;
         }
 
-        if (state.IsGrounded && !wasGroundedLastFrame) SoundManager.Play(SoundId.Land);
+        // IsGrounded is coyote time, not contact, so it goes true again a frame or two into a
+        // jump while still inside the ground box. Rising upward is never a landing.
+        if (state.IsGrounded && !wasGroundedLastFrame && rb.linearVelocity.y <= 0.01f)
+            SoundManager.Play(SoundId.Land);
 
         wasGroundedLastFrame = state.IsGrounded;
 

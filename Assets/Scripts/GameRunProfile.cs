@@ -41,7 +41,9 @@ public class GameRunProfile {
 
     public void AddBundle(LumenBundle bundle) {
         if (bundle == null) return;
+
         bundles[bundle] = BundleCount(bundle) + 1;
+        Notification.Show(bundle.icon, bundle.DisplayName, bundle.description);
     }
 
     public bool ConsumeBundle(LumenBundle bundle) {
@@ -71,13 +73,25 @@ public class GameRunProfile {
 
     public int strengthLevel = 0;
 
+    public void AddStrength(StrengthUpgrade upgrade) {
+        strengthLevel++;
+
+        if (upgrade != null)
+            Notification.Show(upgrade.icon, upgrade.DisplayName, upgrade.description);
+    }
+
     public List<Talisman> ownedTalismans = new();
     public Talisman[] equippedTalismans = new Talisman[TalismanSlots];
 
     public bool Owns(Talisman t) => t != null && ownedTalismans.Contains(t);
 
+    // The notice lives here, not at the call site: shop, reward and cheat menu all arrive
+    // through this one door, and ApplySave deliberately does not.
     public void AddTalisman(Talisman t) {
-        if (t != null && !ownedTalismans.Contains(t)) ownedTalismans.Add(t);
+        if (t == null || ownedTalismans.Contains(t)) return;
+
+        ownedTalismans.Add(t);
+        Notification.Show(t.icon, t.DisplayName, t.description);
     }
 
     public bool IsEquipped(Talisman t) =>

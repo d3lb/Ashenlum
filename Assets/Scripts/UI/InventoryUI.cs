@@ -135,7 +135,16 @@ public class InventoryUI : MonoBehaviour {
             bool exists = i < max;
             pip.gameObject.SetActive(exists);
 
-            if (exists) pip.Set(i < level, 0f);
+            bool earned = exists && i < level;
+            if (exists) pip.Set(earned, 0f);
+
+            // Self or a child: the pip's graphic often sits on a child, and the hover
+            // component has to live wherever the raycast target is.
+            NotificationHover hover = pip.GetComponentInChildren<NotificationHover>(true);
+            if (hover == null || strength == null) continue;
+
+            hover.Set(strength.icon, $"{strength.DisplayName}   {i + 1}/{max}",
+                      strength.description, earned);
         }
     }
 
@@ -145,10 +154,23 @@ public class InventoryUI : MonoBehaviour {
         // From the run profile, so the panel cannot disagree with the player.
         var run = GameManager.Instance != null ? GameManager.Instance.activeRun : null;
 
+        // Names and descriptions for the core three live on their CoreAbilityInfo assets.
+        GameAssetDatabase db = GameManager.Instance != null ? GameManager.Instance.Assets : null;
+
         foreach (var binding in abilityIcons) {
             if (binding == null || binding.icon == null) continue;
 
             bool unlocked = run != null && run.IsAbilityUnlocked(binding.ability);
+
+            NotificationHover hover = binding.icon.GetComponentInParent<NotificationHover>();
+            if (hover == null) hover = binding.icon.GetComponentInChildren<NotificationHover>(true);
+
+            if (hover != null) {
+                CoreAbilityInfo info = db != null ? db.FindCoreAbility(binding.ability) : null;
+
+                if (info != null) hover.Set(info.icon, info.DisplayName, info.description, unlocked);
+                else              hover.Clear();
+            }
 
             if (binding.hideWhenLocked) {
                 binding.icon.gameObject.SetActive(unlocked);
@@ -186,7 +208,8 @@ public class InventoryUI : MonoBehaviour {
         foreach (ActiveAbility a in run.ownedAbilities) {
             ActiveAbility captured = a;
             bool equipped = run.equippedAbility == a;
-            Spawn(abilityListParent, a.icon, 1, equipped || !editable,
+            Spawn(abilityListParent, a.icon, a.abilityName, a.description, 1,
+                  equipped || !editable,
                   equipped || !editable ? null : () => EquipAbility(captured));
         }
         if (run.ownedAbilities.Count == 0) SpawnEmpty(abilityListParent);
@@ -194,14 +217,16 @@ public class InventoryUI : MonoBehaviour {
         foreach (Talisman t in run.ownedTalismans) {
             Talisman captured = t;
             bool equipped = run.IsEquipped(t);
-            Spawn(talismanListParent, t.icon, 1, equipped || !editable,
+            Spawn(talismanListParent, t.icon, t.DisplayName, t.description, 1,
+                  equipped || !editable,
                   equipped || !editable ? null : () => Equip(captured));
         }
         if (run.ownedTalismans.Count == 0) SpawnEmpty(talismanListParent);
 
         foreach (var pair in run.bundles) {
             LumenBundle captured = pair.Key;
-            Spawn(bundleListParent, captured.icon, pair.Value, false, () => UseBundle(captured));
+            Spawn(bundleListParent, captured.icon, captured.DisplayName, captured.description,
+                  pair.Value, false, () => UseBundle(captured));
         }
         if (run.bundles.Count == 0) SpawnEmpty(bundleListParent);
 
@@ -231,13 +256,15 @@ public class InventoryUI : MonoBehaviour {
         spawnedEntries.Clear();
     }
 
-    private void Spawn(Transform parent, Sprite icon, int count, bool dimmed, System.Action click) {
+    private void Spawn(Transform parent, Sprite icon, string name, string description,
+                       int count, bool dimmed, System.Action click) {
         InventoryEntryUI entry = Instantiate(entryPrefab, parent, false);
-        entry.Bind(icon, count, dimmed, click);
+        entry.Bind(icon, name, description, count, dimmed, click);
         spawnedEntries.Add(entry.gameObject);
     }
 
-    private void SpawnEmpty(Transform parent) => Spawn(parent, null, 0, true, null);
+    // No name: an empty slot has nothing to describe, so hovering it says nothing.
+    private void SpawnEmpty(Transform parent) => Spawn(parent, null, null, null, 0, true, null);
 
     private void Equip(Talisman talisman) {
         if (!CanEditLoadout) return;

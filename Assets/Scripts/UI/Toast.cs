@@ -1,11 +1,13 @@
 using TMPro;
 using UnityEngine;
 
-// One HUD line any system can push a short notice to. Newest message wins.
+// One HUD line of plain text. Newest message wins. Anything with an icon or a description
+// is a Notification, not this.
 public class Toast : MonoBehaviour {
     public static Toast Instance { get; private set; }
 
     [SerializeField] private TMP_Text label;
+    [SerializeField] private Color defaultColor = Color.white;
 
     // Seconds of fade at the end of a message. 0 pops it off.
     [SerializeField] private float fadeTime = 0.3f;
@@ -32,13 +34,18 @@ public class Toast : MonoBehaviour {
 
     // Static so callers never hold a reference, and a scene with no Toast is silent.
     public static void Show(string text, float seconds) {
-        if (Instance != null) Instance.Push(text, seconds);
+        if (Instance != null) Instance.Push(text, seconds, Instance.defaultColor);
     }
 
-    private void Push(string text, float seconds) {
+    public static void Show(string text, float seconds, Color color) {
+        if (Instance != null) Instance.Push(text, seconds, color);
+    }
+
+    private void Push(string text, float seconds, Color color) {
         if (label == null) return;
 
         label.text = text;
+        label.color = color;
         label.alpha = 1f;
         label.enabled = true;
 

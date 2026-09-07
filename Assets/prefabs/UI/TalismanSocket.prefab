@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 647952430366491048}
   - component: {fileID: 4830606496517134084}
   - component: {fileID: 7851202204690137856}
+  - component: {fileID: 2774799952105159570}
   m_Layer: 5
   m_Name: TalismanSocket
   m_TagString: Untagged
@@ -120,6 +121,18 @@ MonoBehaviour:
   icon: {fileID: 4830455625907786024}
   emptyGraphic: {fileID: 3884793998364314971}
   button: {fileID: 4830606496517134084}
+--- !u!114 &2774799952105159570
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2061705923312264145}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a9febf936b873b343ba2c180a2ca2712, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::NotificationHover
 --- !u!1 &3884793998364314971
 GameObject:
   m_ObjectHideFlags: 0

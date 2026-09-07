@@ -8,9 +8,11 @@ public class AbilitySocketUI : MonoBehaviour {
     [SerializeField] private Button button;
 
     private System.Action onClick;
+    private NotificationHover hover;
 
     private void Awake() {
         button.onClick.AddListener(() => onClick?.Invoke());
+        hover = GetComponentInChildren<NotificationHover>(true);
     }
 
     public void Bind(ActiveAbility ability, System.Action click) {
@@ -20,6 +22,11 @@ public class AbilitySocketUI : MonoBehaviour {
         icon.enabled = filled && ability.icon != null;
 
         if (emptyGraphic != null) emptyGraphic.SetActive(!filled);
+
+        if (hover != null) {
+            if (filled) hover.Set(ability.icon, ability.abilityName, ability.description);
+            else        hover.Clear();
+        }
 
         onClick = click;
         button.interactable = filled;

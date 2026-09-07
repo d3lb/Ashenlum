@@ -41,6 +41,7 @@ public class Reward : Interactable {
         if (coreAbility != null) GameManager.Instance.GrantAbility(coreAbility.ability);
         if (activeAbility != null) GameManager.Instance.GrantAbility(activeAbility);
 
+        // Both raise their own Notification from inside the run profile.
         if (talisman != null) run.AddTalisman(talisman);
 
         // SoldOut is the cap check the shop already uses.
