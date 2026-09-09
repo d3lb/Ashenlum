@@ -443,6 +443,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3164864950749295154}
   - component: {fileID: 8966519003102632383}
+  - component: {fileID: 1005438865413402613}
   m_Layer: 0
   m_Name: Spot Light
   m_TagString: Untagged
@@ -517,6 +518,22 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
+--- !u!114 &1005438865413402613
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7557990306067763043}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e317a41dd414f5740b809c9c4572ecd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerLightGutter
+  spotLight: {fileID: 8966519003102632383}
+  dipTo: 0.08
+  outTime: 0
+  backTime: 0.6
 --- !u!1 &7571594634009847637
 GameObject:
   m_ObjectHideFlags: 0
@@ -565,11 +582,6 @@ MonoBehaviour:
   smallHitPrefab: {fileID: 6872354023078328444, guid: 1733307614a0ed54fa5af38193ea8f4d, type: 3}
   smallOffset: 0.15
   randomAngle: 15
-  landDustPrefab: {fileID: 7861897511864097044, guid: a7bfe0d861cfd7a41b965a2e987f2b4b, type: 3}
-  dashDustPrefab: {fileID: 7861897511864097044, guid: a7bfe0d861cfd7a41b965a2e987f2b4b, type: 3}
-  slideDustPrefab: {fileID: 0}
-  minLandSpeed: 8
-  slideDustInterval: 0.12
 --- !u!1 &8849866329559990079
 GameObject:
   m_ObjectHideFlags: 0
@@ -791,7 +803,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   physicsData: {fileID: 11400000, guid: d7f2cb8d92e57f94a9e08187c5b3c6f7, type: 2}
   state: {fileID: 9070195286219344354}
-  effectSpawner: {fileID: 6188443945364886173}
+  stepDistance: 2.2
   _groundCheckPoint: {fileID: 8719789730045427767}
   _groundCheckSize: {x: 0.9, y: 0.1}
   _frontWallCheckPoint: {fileID: 7813412877864477775}

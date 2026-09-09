@@ -106,6 +106,8 @@ public class PlayerHealth : MonoBehaviour {
         hp -= dmg;
 
         SoundManager.Play(SoundId.HitTaken);
+        PlayerLightGutter.Gutter();
+
         isInvincible = true;
         iFrameTimer = iFrameTime;
 

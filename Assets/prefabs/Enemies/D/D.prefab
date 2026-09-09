@@ -263,7 +263,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
-  damage: 20
+  damage: 15
   hitCooldown: 0.5
   playerLayer:
     serializedVersion: 2
@@ -390,7 +390,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
-  damage: 35
+  damage: 20
   hitCooldown: 0.5
   playerLayer:
     serializedVersion: 2
@@ -486,7 +486,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
-  damage: 35
+  damage: 20
   hitCooldown: 0.5
   playerLayer:
     serializedVersion: 2
@@ -686,7 +686,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
   corpsePrefab: {fileID: 0}
-  whiteFlashMat: {fileID: 2100000, guid: 9659d46c6a5fa964d8b670eeede936f7, type: 2}
   hp: 15
   knockbackable: 0
   knockbackStrength: 5
@@ -724,7 +723,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAnimation
   animator: {fileID: 907088029426025559}
   state: {fileID: 781630570922481611}
-  rb: {fileID: 412128084326863224}
 --- !u!95 &907088029426025559
 Animator:
   serializedVersion: 7
@@ -952,7 +950,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
-  damage: 35
+  damage: 20
   hitCooldown: 0.5
   playerLayer:
     serializedVersion: 2
@@ -1048,7 +1046,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1035df2f40f5838419f29dc99c94181d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHitbox
-  damage: 35
+  damage: 20
   hitCooldown: 0.5
   playerLayer:
     serializedVersion: 2
