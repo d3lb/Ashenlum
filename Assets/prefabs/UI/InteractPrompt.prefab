@@ -84,7 +84,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 999
+  m_SortingOrder: 9999
   m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: cf3579ec58a5e514aa555f3496c945d1, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -385,7 +385,7 @@ MeshRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 9999
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
 --- !u!114 &4914244658482000942
