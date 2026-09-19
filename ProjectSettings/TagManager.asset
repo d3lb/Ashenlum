@@ -47,11 +47,5 @@ TagManager:
   - name: Environment
     uniqueID: 270112577
     locked: 0
-  - name: Object
-    uniqueID: 2051284657
-    locked: 0
-  - name: Detail
-    uniqueID: 1670969789
-    locked: 0
   m_RenderingLayers:
   - Default

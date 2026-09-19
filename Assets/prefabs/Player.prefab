@@ -951,7 +951,7 @@ MonoBehaviour:
   highDamage: 2
   midDamage: 3
   lowDamage: 5
-  damagePerStrengthLevel: 1
+  strength: {fileID: 11400000, guid: fe9ba080b6e60034fa9450c83eb4299b, type: 2}
   attackCooldown: 0.4
   attackDuration: 0.1
   attackSpeed: 1

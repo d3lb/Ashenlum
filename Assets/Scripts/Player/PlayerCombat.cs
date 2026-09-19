@@ -29,7 +29,9 @@ public class PlayerCombat : MonoBehaviour {
     [SerializeField] private int highDamage = 2;
     [SerializeField] private int midDamage = 3;
     [SerializeField] private int lowDamage = 5;
-    [SerializeField] private int damagePerStrengthLevel = 1;
+    // The asset, not a copy of its number: the shop's description and the damage the player
+    // actually deals came from two separate fields and had already drifted apart.
+    [SerializeField] private StrengthUpgrade strength;
     [Space(2)]
     [SerializeField] private float attackCooldown = 0.2f;
     [SerializeField] private float attackDuration = 0.1f;
@@ -183,8 +185,8 @@ public class PlayerCombat : MonoBehaviour {
                 break;
         }
 
-        if (GameManager.Instance != null)
-            damage += GameManager.Instance.activeRun.strengthLevel * damagePerStrengthLevel;
+        if (GameManager.Instance != null && strength != null)
+            damage += GameManager.Instance.activeRun.strengthLevel * strength.damagePerLevel;
 
         // Per swing, so healing, resting and loading all resolve with no wiring.
         ApplyAttackSize(SizeFor(Stability));
