@@ -49,11 +49,20 @@ public class KingLight : MonoBehaviour {
         // On a child, or scaling the picture would resize the collider.
         GameObject art = new GameObject("Visual");
         art.transform.SetParent(go.transform, false);
-        art.transform.localScale = new Vector3(size.x, size.y, 1f);
 
         light.visual = art.AddComponent<SpriteRenderer>();
         light.visual.sprite = brain != null && brain.LightSprite != null
             ? brain.LightSprite : FallbackSprite;
+
+        // Divided by the sprite's own world size, so any pixels-per-unit matches the box.
+        // Scaling by size alone only lines up for a sprite that is exactly one unit square.
+        Vector2 spriteSize = light.visual.sprite.bounds.size;
+
+        art.transform.localScale = new Vector3(
+            spriteSize.x > 0.0001f ? size.x / spriteSize.x : size.x,
+            spriteSize.y > 0.0001f ? size.y / spriteSize.y : size.y,
+            1f);
+
         light.visual.color = brain != null ? brain.TelegraphColor : Color.yellow;
 
         if (brain != null) {

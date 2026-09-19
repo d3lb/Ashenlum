@@ -13,6 +13,7 @@ public class CheatMenu : MonoBehaviour {
 
     private bool isOpen = false;
     private Vector2 scrollPos;
+    private float eclipsePreview;
 
     private Rect windowRect = new Rect(20, 20, 280, 500);
     private Camera cam;
@@ -22,8 +23,13 @@ public class CheatMenu : MonoBehaviour {
             cam = FindFirstObjectByType<Camera>();
 
 
-        if (Input.GetKeyDown(toggleKey))
+        if (Input.GetKeyDown(toggleKey)) {
             isOpen = !isOpen;
+
+            // Closing hands the eclipse back. Left sticky, the slider silently stops health
+            // from driving it for the rest of the session.
+            if (!isOpen) FindFirstObjectByType<KingEclipse>()?.StopPreview();
+        }
 
         if (isOpen && Input.GetMouseButtonDown(2)) {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
@@ -153,6 +159,30 @@ public class CheatMenu : MonoBehaviour {
                 GUI.enabled = true;
 
                 GUILayout.EndHorizontal();
+            }
+        }
+
+        //  ECLIPSE
+        KingEclipse eclipse = FindFirstObjectByType<KingEclipse>();
+
+        if (eclipse != null) {
+            Section("Eclipse");
+
+            GUILayout.Label(eclipse.Previewing
+                ? $"Progress  {eclipsePreview * 100f:0}%   (SLIDER - health ignored)"
+                : $"Progress  {eclipse.Current * 100f:0}%   (health)");
+
+            float moved = GUILayout.HorizontalSlider(eclipsePreview, 0f, 1f);
+
+            // Only on an actual drag, or this would fight the health-driven value every frame.
+            if (!Mathf.Approximately(moved, eclipsePreview)) {
+                eclipsePreview = moved;
+                eclipse.Preview(moved);
+            }
+
+            if (GUILayout.Button("Hand Back To Health")) {
+                eclipse.StopPreview();
+                eclipsePreview = eclipse.Current;
             }
         }
 
