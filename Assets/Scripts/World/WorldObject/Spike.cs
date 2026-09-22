@@ -6,6 +6,10 @@ using UnityEngine;
 public class Spike : MonoBehaviour {
     [SerializeField] private int damageAmount = 20;
 
+    // Off turns this into a plain damage surface: no put-down, no freeze, no shake. Defaults
+    // true so every spike already placed keeps behaving exactly as it did.
+    [SerializeField] private bool ejectPlayer = true;
+
     // Hand placed, because "somewhere safe near a spike pit" is a level design question and
     // not one a rule can answer. As many as the pit needs; the nearest one wins.
     [Header("Put down at")]
@@ -49,6 +53,8 @@ public class Spike : MonoBehaviour {
 
         // Dead already: the respawn owns where he ends up.
         if (health.CurrentHP <= 0) return;
+
+        if (!ejectPlayer) return;
 
         PlayerMovement movement = collision.GetComponentInParent<PlayerMovement>();
         if (movement == null || movement.rb == null) return;

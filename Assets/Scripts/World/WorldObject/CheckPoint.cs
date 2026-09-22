@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class CheckPoint : Interactable {
     [SerializeField] private string checkpointEntranceId;
@@ -9,7 +10,25 @@ public class CheckPoint : Interactable {
     // Only used when there is no wave prefab to wait on.
     [SerializeField] private float freezeTime = 1.5f;
 
+    // Two states: Dormant holds the unlit image, Discovering runs the clip and holds the lit
+    // one. Turn Loop Time off on the clip or it will never settle on the last frame.
+    [Header("Discovery")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private string discoveredBool = "Discovered";
+
+    // Must match the state name in the Animator window, not the clip's file name.
+    [SerializeField] private string discoveredState = "Discovering";
+
+    [SerializeField] private Light2D glow;
+    [SerializeField] private float dormantIntensity;
+    [SerializeField] private float litIntensity = 1f;
+
+    // Scaled time, so the light and the clip stay in step.
+    [SerializeField] private float riseDelay = 0.1f;
+    [SerializeField] private float riseTime = 0.6f;
+
     private bool resting;
+    private bool discovering;
 
     // Counted, so two checkpoints resting at once cannot clear each other's flag.
     private static int restingCount;
@@ -34,9 +53,54 @@ public class CheckPoint : Interactable {
     private bool Discovered =>
         GameManager.Instance.activeRun.openedCheckpoints.Contains(checkpointEntranceId);
 
-    protected override bool CanInteract => !resting;
+    protected override bool CanInteract => !resting && !discovering;
 
     protected override string PromptVerb => Discovered ? "Rest" : "Discover";
+
+    // Start, not Awake: GameManager is up by then, so the saved state can be read.
+    private void Start() => Apply(true);
+
+    // instant skips the clip and the rise. Without it, re-entering a scene would play the
+    // discovery again on a checkpoint that was lit hours ago.
+    private void Apply(bool instant) {
+        bool lit = Discovered;
+
+        if (animator != null) {
+            animator.SetBool(discoveredBool, lit);
+
+            // Dropped on the last frame of the clip. Fast-forwarding with a big Update does not
+            // reliably resolve a transition, which is why the animation was replaying on entry.
+            // Update(0) flushes it now, so no frame of the unlit state is ever shown.
+            if (instant && lit) {
+                animator.Play(discoveredState, 0, 1f);
+                animator.Update(0f);
+            }
+        }
+
+        if (instant || !lit) {
+            if (glow != null) glow.intensity = lit ? litIntensity : dormantIntensity;
+            return;
+        }
+
+        StartCoroutine(Rise());
+    }
+
+    // Also the gate on CanInteract, so the clip cannot be cut short by a second press.
+    private IEnumerator Rise() {
+        discovering = true;
+
+        if (glow != null) glow.intensity = dormantIntensity;
+
+        for (float t = 0f; t < riseDelay; t += Time.deltaTime) yield return null;
+
+        for (float t = 0f; t < riseTime; t += Time.deltaTime) {
+            if (glow != null) glow.intensity = Mathf.Lerp(dormantIntensity, litIntensity, t / riseTime);
+            yield return null;
+        }
+
+        if (glow != null) glow.intensity = litIntensity;
+        discovering = false;
+    }
 
     // Added regardless of discovery - it can be lit while standing here.
     protected override void OnPlayerEnter() => nearby.Add(this);
@@ -48,7 +112,9 @@ public class CheckPoint : Interactable {
         if (!Discovered) {
             GameManager.Instance.activeRun.openedCheckpoints.Add(checkpointEntranceId);
             GameManager.Instance.MarkDirty();
-            // First visit only lights it. Discovery animation goes here.
+
+            // First visit only lights it. Resting is the second press.
+            Apply(false);
             return;
         }
 
@@ -93,6 +159,12 @@ public class CheckPoint : Interactable {
     // Torn down mid-rest must not leave the game frozen.
     private void OnDisable() {
         nearby.Remove(this);
+
+        // The coroutine dies with the object, so the light would stop wherever it was.
+        if (discovering) {
+            discovering = false;
+            if (glow != null) glow.intensity = litIntensity;
+        }
 
         if (!resting) return;
 

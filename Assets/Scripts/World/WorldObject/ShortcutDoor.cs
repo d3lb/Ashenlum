@@ -31,7 +31,7 @@ public class ShortcutDoor : Interactable {
     // Start, not Awake, so GameManager is up.
     private void Start() {
         opened = GameManager.Instance != null && GameManager.Instance.HasSeenEvent(doorId);
-        Apply();
+        Apply(true);
     }
 
     // From the trigger, not the pivot - the pivot is often outside the doorway.
@@ -55,11 +55,20 @@ public class ShortcutDoor : Interactable {
         Apply();
     }
 
-    private void Apply() {
+    // instant skips the opening animation. Without it, walking back into a door you already
+    // opened plays it again from closed, with nobody touching it.
+    private void Apply(bool instant = false) {
         if (blocker != null) blocker.enabled = !opened;
 
-        if (animator != null) animator.SetBool("IsOpen", opened);
-        else if (visual != null) visual.enabled = !opened;
+        if (animator == null) {
+            if (visual != null) visual.enabled = !opened;
+            return;
+        }
+
+        animator.SetBool("IsOpen", opened);
+
+        // Fast-forwards the state machine past the transition and the clip.
+        if (instant) animator.Update(10f);
     }
 
     // Red is the split, green is the opening side.

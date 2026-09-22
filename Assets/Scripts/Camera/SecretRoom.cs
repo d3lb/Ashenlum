@@ -67,6 +67,13 @@ public class SecretRoom : MonoBehaviour {
     private void Fade(float target) {
         if (cover == null) return;
 
+        // Deactivating the volume makes Unity fire OnTriggerExit2D on the way out, and a
+        // coroutine cannot start on an object that is already going away.
+        if (!isActiveAndEnabled) {
+            SetCoverAlpha(target);
+            return;
+        }
+
         if (fade != null) StopCoroutine(fade);
         fade = StartCoroutine(FadeTo(target));
     }
