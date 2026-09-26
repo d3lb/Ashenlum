@@ -262782,6 +262782,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pegion 2
       objectReference: {fileID: 0}
+    - target: {fileID: 4284585211483245426, guid: ab0ef131773127e4eb80284d60ce4655, type: 3}
+      propertyPath: corpsePrefab
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -269040,7 +269044,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 289140071784360349, guid: c9c8c9e9b61498b46bd9d22fbe97c51d, type: 3}
       propertyPath: m_Name
-      value: D
+      value: Harpy
       objectReference: {fileID: 0}
     - target: {fileID: 4106488171868644726, guid: c9c8c9e9b61498b46bd9d22fbe97c51d, type: 3}
       propertyPath: id
@@ -269105,6 +269109,10 @@ PrefabInstance:
     - target: {fileID: 7370885339248276923, guid: c9c8c9e9b61498b46bd9d22fbe97c51d, type: 3}
       propertyPath: m_Offset.y
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7644703001478055288, guid: c9c8c9e9b61498b46bd9d22fbe97c51d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 16.77
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

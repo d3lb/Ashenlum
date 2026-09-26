@@ -25,6 +25,11 @@ public class EnemyAnimation : MonoBehaviour {
         animator.SetTrigger("IsAttacking");
     }
 
+    // Held rather than triggered, because the brute's dash runs longer than its clip.
+    public void SetDashing(bool dashing) {
+        animator.SetBool("IsDashing", dashing);
+    }
+
     public void TriggerSlam() {
         animator.SetTrigger("Slam");
     }

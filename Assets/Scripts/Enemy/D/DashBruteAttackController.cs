@@ -4,12 +4,17 @@ using System.Collections;
 public class DashBruteAttackController : MonoBehaviour, IRespawnReset {
     [Header("References")]
     [SerializeField] private EnemyAnimation enemyAnimation;
-    [SerializeField] private Collider2D leftMeleeHitbox;
-    [SerializeField] private Collider2D rightMeleeHitbox;
+    [SerializeField] private AfterImage afterImage;
     [SerializeField] private Collider2D leftDashHitbox;
     [SerializeField] private Collider2D rightDashHitbox;
 
     
+    // Stands in for a prepare animation: the eyes light up, the body does not move.
+    [Header("Telegraph")]
+    [SerializeField] private GameObject telegraphPrefab;
+    [SerializeField] private Transform leftTelegraphPoint;
+    [SerializeField] private Transform rightTelegraphPoint;
+
     [Header("Edges")]
     [SerializeField] private CombatZone combatZone;
 
@@ -17,15 +22,13 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset {
     [SerializeField] private float globalAttackCooldown = 1f;
     [SerializeField] private float recoverTime = 0.45f;
 
-    [Header("Melee Attack")]
-    [SerializeField] private float meleeWindup = 0.25f;
-    [SerializeField] private float meleeActiveTime = 0.15f;
-    [SerializeField] private float meleeLungeForce = 4f;
-
     [Header("Dash Attack")]
     [SerializeField] private float dashWindup = 0.45f;
-    [SerializeField] private float dashBackstepForce = 3f;
     [SerializeField] private float dashSpeed = 13f;
+
+    // Multiplies dashSpeed across the dash. Front loaded, or it reads as sliding.
+    [SerializeField] private AnimationCurve dashSpeedCurve =
+        new AnimationCurve(new Keyframe(0f, 1.6f), new Keyframe(0.35f, 1f), new Keyframe(1f, 0.15f));
     [SerializeField] private float dashDuration = 0.45f;
     [SerializeField] private float dashEndLag = 0.25f;
 
@@ -35,6 +38,7 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset {
 
     private float lastAttackTime;
     private bool isPerformingAttack;
+    private GameObject telegraph;
 
     private void Awake() {
         state = GetComponent<EnemyState>();
@@ -48,10 +52,30 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset {
         isPerformingAttack = false;
         lastAttackTime = 0f;
 
-        leftMeleeHitbox.enabled = false;
-        rightMeleeHitbox.enabled = false;
+        ClearTelegraph();
+        enemyAnimation.SetDashing(false);
+
+        if (afterImage != null) afterImage.Stop();
+
         leftDashHitbox.enabled = false;
         rightDashHitbox.enabled = false;
+    }
+
+    // Parented to the point, so it rides the head through the backstep.
+    private void SpawnTelegraph() {
+        ClearTelegraph();
+
+        Transform point = state.IsFacingRight ? rightTelegraphPoint : leftTelegraphPoint;
+        if (telegraphPrefab == null || point == null) return;
+
+        telegraph = Instantiate(telegraphPrefab, point.position,
+                                point.rotation * Quaternion.Euler(0f, 0f, 90f), point);
+    }
+
+    // Killed on the frame he commits, so the glow never overlaps the swing.
+    private void ClearTelegraph() {
+        if (telegraph != null) Destroy(telegraph);
+        telegraph = null;
     }
 
     public bool CanAttack() {
@@ -73,44 +97,11 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset {
         return true;
     }
 
-    public void StartMeleeAttack() {
-        if (!CanAttack())
-            return;
-
-        StartCoroutine(MeleeAttackRoutine());
-    }
-
     public void StartDashAttack(Transform target) {
         if (!CanAttack())
             return;
 
         StartCoroutine(DashAttackRoutine(target));
-    }
-
-    private IEnumerator MeleeAttackRoutine() {
-        BeginAttack();
-
-        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-
-        enemyAnimation.TriggerPrepare();
-
-        yield return new WaitForSeconds(meleeWindup);
-
-        enemyAnimation.TriggerAttack();
-
-        Collider2D activeHitbox = state.IsFacingRight ? rightMeleeHitbox : leftMeleeHitbox;
-
-        float direction = state.IsFacingRight ? 1f : -1f;
-
-        rb.AddForce(new Vector2(direction * meleeLungeForce, 0f), ForceMode2D.Impulse);
-
-        activeHitbox.enabled = true;
-
-        yield return new WaitForSeconds(meleeActiveTime);
-
-        activeHitbox.enabled = false;
-
-        yield return RecoverRoutine();
     }
 
     private IEnumerator DashAttackRoutine(Transform target) {
@@ -121,24 +112,16 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset {
         if (target != null)
             state.IsFacingRight = target.position.x > transform.position.x;
 
-        enemyAnimation.TriggerPrepare();
+        SpawnTelegraph();
 
         float direction = state.IsFacingRight ? 1f : -1f;
 
-        float minX = Mathf.Min(combatZone.pointA.position.x, combatZone.pointB.position.x);
-        float maxX = Mathf.Max(combatZone.pointA.position.x, combatZone.pointB.position.x);
-
-        if (direction > 0f && transform.position.x > minX + 0.5f) {
-            rb.AddForce(new Vector2(-direction * dashBackstepForce, 0f), ForceMode2D.Impulse);
-        }
-
-        else if (direction < 0f && transform.position.x < maxX - 0.5f) {
-            rb.AddForce(new Vector2(-direction * dashBackstepForce, 0f), ForceMode2D.Impulse);
-        }
-
         yield return new WaitForSeconds(dashWindup);
 
-        enemyAnimation.TriggerAttack();
+        ClearTelegraph();
+        enemyAnimation.SetDashing(true);
+
+        if (afterImage != null) afterImage.Play();
 
         Collider2D activeHitbox = state.IsFacingRight ? rightDashHitbox : leftDashHitbox;
 
@@ -156,12 +139,17 @@ public class DashBruteAttackController : MonoBehaviour, IRespawnReset {
                 break;
 
             timer += Time.deltaTime;
-            rb.linearVelocity = new Vector2(direction * dashSpeed, rb.linearVelocity.y);
+
+            float speed = dashSpeed * dashSpeedCurve.Evaluate(timer / dashDuration);
+            rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
 
             yield return null;
         }
 
         activeHitbox.enabled = false;
+        enemyAnimation.SetDashing(false);
+
+        if (afterImage != null) afterImage.Stop();
 
         rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
 
