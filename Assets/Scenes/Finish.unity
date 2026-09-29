@@ -1985,7 +1985,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9e9f3f5f3d8020843a2fa9824a6faca9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KingHealth
-  maxHp: 200
+  maxHp: 250
   hitFlashTime: 0.15
   iFrameTime: 0.1
   deathDelay: 1.2

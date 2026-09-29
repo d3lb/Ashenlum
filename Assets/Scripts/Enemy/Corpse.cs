@@ -1,51 +1,42 @@
 using UnityEngine;
 
+// Death leaves a scatter of particles where the body used to be. Still a Corpse: WorldReset
+// sweeps this type on a rest, so the remains clear exactly when everything else does.
 public class Corpse : MonoBehaviour {
-    [SerializeField] private float popForce = 3f;
-    [SerializeField] private float upForce = 2f;
+    [SerializeField] private ParticleSystem particles;
 
-    [Header("Ground Check")]
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private float groundRadius = 0.1f;
-    [SerializeField] private LayerMask groundLayer;
+    // Degrees the spray leans away from whatever landed the killing blow.
+    [SerializeField] private float tilt = 25f;
 
-    [Header("Settle")]
-    [SerializeField] private float settleTime = 0.1f;
+    // Paused rather than left to expire: a paused system holds its particles forever, so the
+    // lifetime does not have to be set to some absurd number to make them stay put.
+    [SerializeField] private float freezeAfter = 2.5f;
 
-    private Rigidbody2D rb;
-    private bool landed;
-    private float settleTimer;
+    private float freezeAt;
+    private bool frozen;
 
     private void Awake() {
-        rb = GetComponent<Rigidbody2D>();
+        if (particles == null) particles = GetComponentInChildren<ParticleSystem>();
+
+        if (particles == null)
+            Debug.LogError($"[Corpse] '{name}' has no Particle System, so death leaves nothing.", this);
+
+        freezeAt = Time.time + freezeAfter;
     }
 
     public void Pop(Vector2 direction) {
-        rb.AddForce(new Vector2(Mathf.Sign(direction.x) * popForce, upForce), ForceMode2D.Impulse);
+        float sign = direction.x >= 0f ? 1f : -1f;
+
+        // World space and on the root only, so the child keeps whatever rotation aims its cone.
+        transform.Rotate(0f, 0f, -sign * tilt, Space.World);
+
+        if (particles != null) particles.Play();
     }
 
     private void Update() {
-        if (landed)
-            return;
+        if (frozen || Time.time < freezeAt) return;
 
-        bool onGround = Physics2D.OverlapCircle(groundCheck.position, groundRadius, groundLayer);
-
-        if (onGround) {
-            settleTimer += Time.deltaTime;
-
-            if (settleTimer >= settleTime)
-                Freeze();
-        }
-        else {
-            settleTimer = 0f;
-        }
-    }
-
-    private void Freeze() {
-        landed = true;
-
-        rb.linearVelocity = Vector2.zero;
-        rb.angularVelocity = 0f;
-        rb.bodyType = RigidbodyType2D.Static;
+        frozen = true;
+        if (particles != null) particles.Pause();
     }
 }

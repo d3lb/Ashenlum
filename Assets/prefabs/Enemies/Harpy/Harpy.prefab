@@ -592,7 +592,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f5e4f26f599200b4b99b40ffe8029a50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyHealth
-  corpsePrefab: {fileID: 529880344268797859, guid: d71722c34b2b74444857bcb0cf326483, type: 3}
+  corpsePrefab: {fileID: 7912412954191203423, guid: c78c2af8ac924354e9982845ae93e6d5, type: 3}
   hp: 15
   knockbackable: 0
   knockbackStrength: 5

@@ -262823,10 +262823,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Pegion 2
       objectReference: {fileID: 0}
-    - target: {fileID: 4284585211483245426, guid: ab0ef131773127e4eb80284d60ce4655, type: 3}
-      propertyPath: corpsePrefab
-      value: 
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -269218,15 +269214,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5860815089994392549, guid: 329f6c31c3953ac45ba9b1bd179f65a7, type: 3}
       propertyPath: m_Color.b
-      value: 1
+      value: 0.6509434
       objectReference: {fileID: 0}
     - target: {fileID: 5860815089994392549, guid: 329f6c31c3953ac45ba9b1bd179f65a7, type: 3}
       propertyPath: m_Color.g
-      value: 1
+      value: 0.6509434
       objectReference: {fileID: 0}
     - target: {fileID: 5860815089994392549, guid: 329f6c31c3953ac45ba9b1bd179f65a7, type: 3}
       propertyPath: m_Color.r
-      value: 1
+      value: 0.6509434
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
