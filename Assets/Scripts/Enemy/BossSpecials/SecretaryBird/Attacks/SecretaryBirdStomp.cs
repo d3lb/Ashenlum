@@ -34,18 +34,33 @@ public class SecretaryBirdStomp : SecretaryBirdAttack {
         yield return move.Hold(hangTime);
 
         Vector2 target = new Vector2(move.Position.x, Arena.FloorY);
+
+        // The coil is the whole telegraph: he hangs in it for as long as the warning lasts.
+        if (anim != null) anim.SetStomping(true);
+
         yield return ShowPath(target, telegraphTime);
 
         yield return move.Hold(markTime * Pace.telegraphScale);
 
         state.CurrentState = SecretaryBirdState.BossStateType.Attacking;
+
+        if (anim != null) anim.SetStomping(false);
+
         hitboxes.EnableDiveHitbox();
-        yield return move.Dash(target, Speed(slamSpeed), slamGravity, 1.5f);
+        // No pull-back: the coil already was the windup, and the frames it costs are frames
+        // the Animator spends between the coil and the dash with nothing to show.
+        yield return move.Dash(target, Speed(slamSpeed), slamGravity, 1.5f,
+                               anticipate: false);
         hitboxes.DisableDiveHitbox();
 
         SpawnShockwaves();
 
         yield return move.Hold(buriedTime);
+    }
+
+    // The watchdog can kill Act mid-windup, which would leave him stuck in the coil.
+    private void OnDisable() {
+        if (anim != null) anim.SetStomping(false);
     }
 
     private void SpawnShockwaves() {

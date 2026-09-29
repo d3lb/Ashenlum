@@ -6,6 +6,7 @@ public class SecretaryBirdMovement : MonoBehaviour {
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private SecretaryBirdState state;
     [SerializeField] private SecretaryBirdArena arena;
+    [SerializeField] private SecretaryBirdAnimation anim;
 
     [Header("Dash feel")]
     [SerializeField] private AnimationCurve dashSpeedCurve = new AnimationCurve(
@@ -41,6 +42,7 @@ public class SecretaryBirdMovement : MonoBehaviour {
     private Vector2 dashDir;
     private float impactOpensAt;
 
+    public bool IsDashing => dashing;
     public SecretaryBirdArena Arena => arena;
     public Rigidbody2D Body => rb;
     public Vector2 Position => rb.position;
@@ -49,6 +51,13 @@ public class SecretaryBirdMovement : MonoBehaviour {
     private void Reset() {
         rb = GetComponent<Rigidbody2D>();
         state = GetComponent<SecretaryBirdState>();
+        anim = GetComponent<SecretaryBirdAnimation>();
+    }
+
+    // Reset only runs when the component is first added, so an older prefab would sit here
+    // with an empty slot and never raise IsDashing.
+    private void Awake() {
+        if (anim == null) anim = GetComponent<SecretaryBirdAnimation>();
     }
 
     // He perches ON a wall, so an unfiltered contact check ends every dash on frame one.
@@ -67,7 +76,12 @@ public class SecretaryBirdMovement : MonoBehaviour {
         }
     }
 
+    // Also the recovery point for the dash flags. A watchdog can kill Act mid-flight, and
+    // every path that ends movement comes through here, including Hold.
     public void Stop() {
+        dashing = false;
+        if (anim != null) anim.SetDashing(false);
+
         if (rb == null) return;
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;
@@ -90,6 +104,8 @@ public class SecretaryBirdMovement : MonoBehaviour {
         // Already there - without this the pull-back fires in an arbitrary direction.
         if (Vector2.Distance(start, target) <= arriveDist) {
             Stop();
+            if (anim != null) anim.ClearAim();
+
             rb.gravityScale = 0f;
             yield return wait;
             yield break;
@@ -97,10 +113,13 @@ public class SecretaryBirdMovement : MonoBehaviour {
 
         Vector2 dir = (target - start).normalized;
 
-        state.SetFacing(dir.x >= 0f);
+        // A straight up or down dash has no side to face. Reading the sign of a near zero x
+        // snaps him around on noise, so his facing is left as it was.
+        if (Mathf.Abs(dir.x) > 0.2f) state.SetFacing(dir.x >= 0f);
+
         rb.gravityScale = 0f;
 
-        //  Anticipation: a short pull-back AGAINST the dash direction. 
+        //  Anticipation: a short pull-back AGAINST the dash direction.
         if (anticipate && anticipationTime > 0f && anticipationDistance > 0f) {
             Vector2 back = start - dir * anticipationDistance;
             float a = 0f;
@@ -115,6 +134,13 @@ public class SecretaryBirdMovement : MonoBehaviour {
         impacted = false;
         dashing = true;
         dashDir = dir;
+
+        // Tilted on the same frame the dash clip starts, never before it. Aiming any earlier
+        // rotates whatever pose is still on screen during the pull-back.
+        if (anim != null) {
+            anim.Aim(dir);
+            anim.SetDashing(true);
+        }
         impactOpensAt = Time.time + impactGrace;
 
         float totalDist = Mathf.Max(0.01f, Vector2.Distance(rb.position, target));
@@ -136,6 +162,14 @@ public class SecretaryBirdMovement : MonoBehaviour {
 
         dashing = false;
         Stop();
+
+        // Cleared on arrival, not on departure. Whoever lands him somewhere sets it again in
+        // the same frame, so the Animator never sees a gap and never flashes the idle pose.
+        if (anim != null) {
+            anim.SetDashing(false);
+            anim.SetPerched(false);
+            anim.ClearAim();
+        }
 
         if (feedbackOnImpact && impacted) ImpactFeedback();
     }

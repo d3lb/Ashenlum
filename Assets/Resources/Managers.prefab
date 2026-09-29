@@ -201,6 +201,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ShadeSpawner
   shadePrefab: {fileID: 3796072555729718023, guid: 43f444001baa5664b8a72a97674d6acd, type: 3}
+  yOffset: 2
 --- !u!1 &3124678583147100008
 GameObject:
   m_ObjectHideFlags: 0

@@ -28,6 +28,12 @@ public class SecretaryBirdState : MonoBehaviour {
 
     public bool IsVulnerableWindow => CurrentState == BossStateType.Recover;
 
+    private void Awake() {
+        if (flipRoot == null)
+            Debug.LogError($"[SecretaryBirdState] '{name}' has no Flip Root, so he will never " +
+                           "turn around.", this);
+    }
+
     public void SetFacing(bool right) {
         IsFacingRight = right;
         if (flipRoot == null) return;

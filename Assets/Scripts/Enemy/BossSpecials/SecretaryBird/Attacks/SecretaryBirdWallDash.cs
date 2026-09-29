@@ -37,6 +37,12 @@ public class SecretaryBirdWallDash : SecretaryBirdAttack {
             hitboxes.DisableDashHitbox();
 
             side = -side;
+
+            // A dash always ends against the far wall, and a chained one never runs PerchOn,
+            // so he would stay turned toward the wall he just slammed into.
+            state.SetFacing(side < 0);
+            if (anim != null) anim.SetPerched(true);
+
             if (i < dashes - 1) yield return move.Hold(betweenDashes);
         }
     }

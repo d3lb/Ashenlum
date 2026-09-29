@@ -5,8 +5,13 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack {
     [Header("Perch")]
     [SerializeField, Range(0f, 1f)] private float perchHeight = 0.7f;
 
+    // No animation for the windup: his eyes light up instead, the same tell the brute uses.
     [Header("Telegraph")]
     [SerializeField] private float fanTime = 0.4f;
+    [SerializeField] private GameObject eyeGlowPrefab;
+    [SerializeField] private Transform eyeGlowPoint;
+
+    private GameObject eyeGlow;
 
     [Header("Volley")]
     [SerializeField] private GameObject featherPrefab;
@@ -30,7 +35,10 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack {
         // No line: a spread has no single path to promise.
         Vector2 aim = player.position;
         state.CurrentState = SecretaryBirdState.BossStateType.Windup;
+
+        SpawnGlow();
         yield return move.Hold(fanTime);
+        ClearGlow();
 
         for (int v = 0; v < volleys; v++) {
             state.CurrentState = SecretaryBirdState.BossStateType.Attacking;
@@ -40,6 +48,23 @@ public class SecretaryBirdFeatherVolley : SecretaryBirdAttack {
 
         yield return move.Hold(0.12f);
     }
+
+    // Parented, so the glow rides his head. One point only: the flip root mirrors it for him.
+    private void SpawnGlow() {
+        ClearGlow();
+
+        if (eyeGlowPrefab == null || eyeGlowPoint == null) return;
+
+        eyeGlow = Instantiate(eyeGlowPrefab, eyeGlowPoint.position, eyeGlowPoint.rotation, eyeGlowPoint);
+    }
+
+    private void ClearGlow() {
+        if (eyeGlow != null) Destroy(eyeGlow);
+        eyeGlow = null;
+    }
+
+    // The watchdog can kill Act mid-windup, leaving his eyes lit forever.
+    private void OnDisable() => ClearGlow();
 
     private void Fire(Vector2 aim) {
         if (featherPrefab == null) return;

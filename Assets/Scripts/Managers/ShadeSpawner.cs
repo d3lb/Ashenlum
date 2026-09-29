@@ -4,6 +4,9 @@ using UnityEngine;
 public class ShadeSpawner : MonoBehaviour {
     [SerializeField] private PlayerShade shadePrefab;
 
+    // The drop position is the player's pivot, which sits at his feet.
+    [SerializeField] private float yOffset = 0.5f;
+
     // Start, not OnEnable: Awake order against GameManager is not guaranteed.
     private void Start() {
         if (GameManager.Instance != null)
@@ -26,6 +29,7 @@ public class ShadeSpawner : MonoBehaviour {
             return;
         }
 
-        Instantiate(shadePrefab, run.dropPosition, Quaternion.identity);
+        Vector3 at = run.dropPosition + Vector2.up * yOffset;
+        Instantiate(shadePrefab, at, Quaternion.identity);
     }
 }

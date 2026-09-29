@@ -33,6 +33,7 @@ public abstract class SecretaryBirdAttack : MonoBehaviour {
     protected SecretaryBirdAttackController hitboxes;
     protected SecretaryBirdTelegraph telegraph;
     protected SecretaryBirdPacing pacing;
+    protected SecretaryBirdAnimation anim;
     protected SecretaryBirdArena Arena => move.Arena;
 
     private static readonly PhaseTuning fallbackPace = new PhaseTuning();
@@ -48,6 +49,13 @@ public abstract class SecretaryBirdAttack : MonoBehaviour {
         move      = GetComponent<SecretaryBirdMovement>();
         hitboxes  = GetComponent<SecretaryBirdAttackController>();
         pacing    = GetComponent<SecretaryBirdPacing>();
+        anim      = GetComponentInParent<SecretaryBirdAnimation>();
+
+        // An attack sitting on a child object finds nothing with GetComponent, and every
+        // SetPerched call in here silently does nothing while the dash still animates.
+        if (anim == null)
+            Debug.LogError($"[{GetType().Name}] '{name}' cannot reach a SecretaryBirdAnimation, " +
+                           "so he will never leave the dash pose.", this);
         telegraph = GetComponentInChildren<SecretaryBirdTelegraph>(true);
     }
 
@@ -104,6 +112,8 @@ public abstract class SecretaryBirdAttack : MonoBehaviour {
     private IEnumerator PerchOn(int side, float heightT) {
         yield return BlinkTo(Arena.Perch(side, heightT));
         state.SetFacing(side < 0);
+
+        if (anim != null) anim.SetPerched(true);
     }
 
     protected IEnumerator ShowPath(Vector2 to, float duration, bool danger = true) {

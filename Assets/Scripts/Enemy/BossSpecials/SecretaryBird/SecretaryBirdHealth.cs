@@ -42,6 +42,13 @@ public class SecretaryBirdHealth : MonoBehaviour, IDamageable {
 
         if (sprite != null)
             mat = sprite.material = new Material(sprite.material);
+
+        // SetFloat on a missing property does nothing and says nothing, so the flash would
+        // just never appear.
+        if (mat != null && !mat.HasProperty("_FlashAmount"))
+            Debug.LogError($"[SecretaryBirdHealth] '{sprite.name}' uses material " +
+                           $"'{mat.shader.name}', which has no _FlashAmount. He will not " +
+                           "flash white when hit.", sprite);
     }
 
     private void Update() {

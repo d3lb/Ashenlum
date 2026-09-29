@@ -554,7 +554,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
+  - {fileID: 2100000, guid: ce9a156d67a321b438e7060686a19437, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -701,7 +701,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   corpsePrefab: {fileID: 529880344268797859, guid: 8dbb5a04b35044246b27a8d7696a5d1f, type: 3}
-  whiteFlashMat: {fileID: 2100000, guid: 9659d46c6a5fa964d8b670eeede936f7, type: 2}
   hp: 6
   knockbackable: 1
   knockbackStrength: 6
@@ -780,7 +779,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   animator: {fileID: 4419327351716935001}
   state: {fileID: 6813185668088363309}
-  rb: {fileID: 599324714975147344}
 --- !u!114 &5850155692116594479
 MonoBehaviour:
   m_ObjectHideFlags: 0
