@@ -1,9 +1,26 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 // Warn, hurt, vanish. Built in code; falls back to a generated white square.
 public class KingLight : MonoBehaviour {
     private static Sprite fallbackSprite;
+
+    // Each one outlives the attack that spawned it, so they have to be reachable to be called off.
+    private static readonly List<KingLight> live = new();
+
+    public static void KillAll() {
+        for (int i = live.Count - 1; i >= 0; i--) {
+            if (live[i] == null) continue;
+
+            // Before the Destroy: the object survives until the end of the frame and Update
+            // would get one more pass at the player.
+            live[i].armed = false;
+            Destroy(live[i].gameObject);
+        }
+
+        live.Clear();
+    }
 
     public static Sprite FallbackSprite {
         get {
@@ -70,9 +87,13 @@ public class KingLight : MonoBehaviour {
             light.visual.sortingOrder = brain.SortingOrder;
         }
 
+        live.Add(light);
+
         light.StartCoroutine(light.Run(telegraphTime, activeTime));
         return light;
     }
+
+    private void OnDestroy() => live.Remove(this);
 
     private void Update() {
         if (!armed || box == null) return;

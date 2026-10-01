@@ -65,6 +65,9 @@ public class KingEncounter : MonoBehaviour {
             yield return new WaitUntil(() => done);
         }
 
+        // Nested here, not started on the King: he destroys himself at the end of it.
+        if (kingHealth != null) yield return kingHealth.Burn();
+
         if (credits != null) yield return credits.Play();
 
         // After the card, so the room is still sealed behind the black.

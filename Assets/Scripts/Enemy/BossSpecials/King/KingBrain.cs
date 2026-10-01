@@ -240,6 +240,10 @@ public class KingBrain : MonoBehaviour {
             CurrentMain = null;
             CurrentExtra = null;
 
+            // Straight back to the top: the phase step happens now, not after a recovery he
+            // was cut out of anyway.
+            if (interrupted) continue;
+
             state.CurrentState = KingState.KingStateType.Recover;
             yield return new WaitForSeconds(main.Recovery * Pace.recoveryScale * GreedScale);
         }
@@ -252,14 +256,18 @@ public class KingBrain : MonoBehaviour {
             DialogueManager.Instance != null && FirstTime("phase3"))
             yield return Say(phase3Conversation);
 
+        // Never self-cancelling: the transition is the thing a cancel exists to reach.
         if (transitionAttack != null)
-            yield return RunAttacks(transitionAttack, null);
+            yield return RunAttacks(transitionAttack, null, false);
     }
 
+    private bool interrupted;
+
     // Waits for both, so an overlapping pair cannot leak into the next beat.
-    private IEnumerator RunAttacks(KingAttack a, KingAttack b) {
+    private IEnumerator RunAttacks(KingAttack a, KingAttack b, bool interruptOnPhase = true) {
         StopRunning();
 
+        interrupted = false;
         state.CurrentState = KingState.KingStateType.Attacking;
 
         float deadline = Time.time + Mathf.Max(a != null ? a.Timeout : 0f, b != null ? b.Timeout : 0f);
@@ -270,10 +278,18 @@ public class KingBrain : MonoBehaviour {
         if (a != null) running.Add(StartCoroutine(Wrap(a, () => finished++)));
         if (b != null) running.Add(StartCoroutine(Wrap(b, () => finished++)));
 
-        while (finished < expected && Time.time < deadline && !state.IsDead)
-            yield return null;
+        while (finished < expected && Time.time < deadline && !state.IsDead) {
+            // The hit that breaks a threshold drops whatever he was doing, beams included.
+            if (interruptOnPhase && PhaseDue) {
+                interrupted = true;
+                KingLight.KillAll();
+                break;
+            }
 
-        if (finished < expected)
+            yield return null;
+        }
+
+        if (!interrupted && finished < expected)
             Debug.LogWarning($"[King] an attack timed out and was aborted.", this);
 
         StopRunning();
@@ -304,12 +320,20 @@ public class KingBrain : MonoBehaviour {
         punishQueued = true;
     }
 
-    private bool UpdatePhase() {
-        float f = health != null ? health.Normalized : 1f;
-        int target = f <= phase3At ? 3 : f <= phase2At ? 2 : 1;
+    // Reads the thresholds without advancing, so an attack can ask whether it is still wanted.
+    // Only the head of the fight loop steps the phase.
+    private bool PhaseDue {
+        get {
+            float f = health != null ? health.Normalized : 1f;
+            int target = f <= phase3At ? 3 : f <= phase2At ? 2 : 1;
 
+            return target > state.Phase;
+        }
+    }
+
+    private bool UpdatePhase() {
         // One step at a time - a big hit crossing both thresholds must not skip phase 2.
-        if (target <= state.Phase) return false;
+        if (!PhaseDue) return false;
 
         state.Phase++;
         bag.Clear();

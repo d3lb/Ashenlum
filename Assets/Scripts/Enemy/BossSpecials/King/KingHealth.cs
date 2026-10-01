@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class KingHealth : MonoBehaviour, IDamageable {
     [Header("Health")]
@@ -12,8 +13,15 @@ public class KingHealth : MonoBehaviour, IDamageable {
     [SerializeField] private float iFrameTime = 0.1f;
 
     [Header("Death")]
+    [SerializeField] private float whiteOutTime = 0.6f;
+    [SerializeField] private float whiteHold = 0.15f;
     [SerializeField] private float deathDelay = 1.2f;
+
+    // The ash. Unparented, so it outlives him.
     [SerializeField] private GameObject deathEffect;
+
+    // An empty child placed over his body. The root pivot is rarely where he looks like he is.
+    [SerializeField] private Transform deathEffectPoint;
 
     [Header("References")]
     [SerializeField] private KingState state;
@@ -102,18 +110,72 @@ public class KingHealth : MonoBehaviour, IDamageable {
 
         if (brain != null) brain.Deactivate();
 
+        // Deactivate stops the brain, not the beams it already put in the air. Without this
+        // the killing blow can be answered by a telegraph that was mid-count.
+        KingLight.KillAll();
+
         state.CurrentState = KingState.KingStateType.Dead;
 
         GameManager.Instance?.CountKill();
 
-        if (deathEffect != null)
-            Instantiate(deathEffect, transform.position, Quaternion.identity);
+        // He stands there through his last words. The encounter calls Burn when they end.
+        if (OnDied != null) OnDied.Invoke();
+        else yield return Burn();
+    }
 
-        OnDied?.Invoke();
+    // Driven by whoever owns the ending, so it cannot start before the dialogue is done.
+    public IEnumerator Burn() {
+        yield return WhiteOut();
+
+        HideVisuals();
+
+        if (deathEffect != null) {
+            Transform at = deathEffectPoint != null ? deathEffectPoint : transform;
+            Instantiate(deathEffect, at.position, at.rotation);
+        }
+        else
+            Debug.LogError($"[KingHealth] '{name}' has no Death Effect, so he leaves nothing.", this);
 
         yield return new WaitForSeconds(deathDelay);
 
         Destroy(gameObject);
+    }
+
+    // Burns out rather than flashing: one ramp to full white with no fade back.
+    private IEnumerator WhiteOut() {
+        if (flashCoroutine != null) StopCoroutine(flashCoroutine);
+        flashCoroutine = null;
+
+        SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>(true);
+
+        for (float t = 0f; t < whiteOutTime; t += Time.deltaTime) {
+            SetFlash(renderers, Mathf.Clamp01(t / whiteOutTime));
+            yield return null;
+        }
+
+        SetFlash(renderers, 1f);
+
+        if (whiteHold > 0f) yield return new WaitForSeconds(whiteHold);
+    }
+
+    // Skips anything on a material without the property, so the staff star and any sprite on
+    // a plain material simply do not take part.
+    private static void SetFlash(SpriteRenderer[] renderers, float amount) {
+        foreach (SpriteRenderer r in renderers) {
+            if (r == null) continue;
+
+            Material m = r.material;
+            if (m.HasProperty("_FlashAmount")) m.SetFloat("_FlashAmount", amount);
+        }
+    }
+
+    // He does not fade, he is simply gone the moment the ash starts.
+    private void HideVisuals() {
+        foreach (SpriteRenderer r in GetComponentsInChildren<SpriteRenderer>(true))
+            r.enabled = false;
+
+        foreach (Light2D l in GetComponentsInChildren<Light2D>(true))
+            l.enabled = false;
     }
 
     private IEnumerator HitFlash() {

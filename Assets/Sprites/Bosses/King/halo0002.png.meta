@@ -1,10 +1,13 @@
 fileFormatVersion: 2
-guid: 5f5dfc317470ce74e978f88b6efc76dd
+guid: 37f347e88a86b9d4aa0ff69fe2ee23de
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -2315708433425512126
-    second: megaknight_0
+      213: 8434774469064729530
+    second: halo0002_0
+  - first:
+      213: -8924662868223159404
+    second: halo0002_1
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -46,12 +49,12 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 2
+  spriteMode: 1
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 50
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -75,7 +78,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -113,13 +116,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: megaknight_0
+      name: halo0002_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 780
-        height: 704
+        x: 351
+        y: 563
+        width: 197
+        height: 144
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -128,8 +131,30 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 249cb4ee273fcdfd0800000000000000
-      internalID: -2315708433425512126
+      spriteID: ab32325b0b65e0570800000000000000
+      internalID: 8434774469064729530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: halo0002_1
+      rect:
+        serializedVersion: 2
+        x: 428
+        y: 659
+        width: 86
+        height: 69
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 493907ff76a352480800000000000000
+      internalID: -8924662868223159404
       vertices: []
       indices: 
       edges: []
@@ -148,7 +173,8 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      megaknight_0: -2315708433425512126
+      halo0002_0: 8434774469064729530
+      halo0002_1: -8924662868223159404
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
